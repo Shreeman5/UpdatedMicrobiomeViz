@@ -478,7 +478,7 @@ class Tab2Viz{
         .attr("fill", "Green")
         .style("font-weight", "bold")
         .style("text-decoration", "underline")
-        .text("LEGEND(with dummy data)")
+        .text("LEGEND(with fake data)")
 
         svg.append("text")
         .attr("x", 130)
