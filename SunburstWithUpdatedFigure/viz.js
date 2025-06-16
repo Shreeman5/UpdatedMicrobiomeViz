@@ -584,10 +584,10 @@ class Tab2Viz{
         svg.append("text")
         .attr("x", 0)
         .attr("y", 165)
-        .attr("font-size", "24")
+        .attr("font-size", "22.5")
         .attr("fill", "Green")
         .style("font-weight", "bold")
-        .text("Donut + Strip shows all the organisms (10) present in dummy data")
+        .text("Donut (2) + Strip (8) shows the organisms (10) present in dummy data")
 
         svg.append("text")
         .attr("x", 0)
