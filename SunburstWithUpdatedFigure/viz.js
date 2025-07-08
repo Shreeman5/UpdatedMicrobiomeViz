@@ -415,14 +415,26 @@ class Tab2Viz{
 
         const radius = (donutHeight / 1.4) - 400;
 
+        donutArray.push({
+            CDFdifference: undefined,
+            color: "rgb(255, 255, 255)", // white
+            colorDifference: undefined,
+            interventionColor: undefined,
+            ncbi_taxon_id: undefined,
+            organism: undefined,
+            weight: "0.5"
+        });
+
         const totalWeight = d3.sum(donutArray, d => Math.abs(d.weight));
         const normalizedWeights = donutArray.map(d => Math.abs(d.weight) / totalWeight);
 
-
+        
 
         const pie = d3.pie()
         .value((d, i) => normalizedWeights[i])
-        .sort(null);
+        .sort(null)
+        .startAngle(Math.PI)        // Start at 6 o'clock
+        .endAngle(Math.PI / 2 - 2 * Math.PI);  // Go counter-clockwise (-3π/2)
 
         const arc = d3.arc()
         .innerRadius(radius * 0.6)
@@ -452,6 +464,7 @@ class Tab2Viz{
         .attr("transform", `translate(${380}, ${565})`);
 
         const arcData = pie(donutArray);
+        console.log(donutArray)
 
         donutGroup.selectAll("path.main")
             .data(arcData)
@@ -484,16 +497,26 @@ class Tab2Viz{
             .attr("id", "LIOHIO") 
             .attr("d", outerArc2)
             .attr("fill", "none")
-            .attr("stroke", d => d.data.weight > 0 ? "black" : "white")
+            .attr("stroke", d => d.data.weight > 0 && d.data.color != 'rgb(255, 255, 255)' ? "black" : "white")
             .style("stroke-width", "10px")
             .style("opacity", 0)
+
+        svg.append("line")
+        .attr("class", "label-line")
+        .attr("x1", 360)
+        .attr("y1", 820)
+        .attr("x2", 360)
+        .attr("y2", 945)
+        .attr("stroke", "black")
+        .attr("stroke-width", 3)
+        .attr("marker-end", "url(#barcode-arrowhead)")
 
         const barWidth = (width / barcodeArray.length) - 31;
         let barcodechartwidth = barWidth * barcodeArray.length
 
         
         const barcodeGroup = svg.append("g")
-        .attr("transform", `translate(${120}, ${1050})`);
+        .attr("transform", `translate(${105}, ${980})`);
         
         // Create bars
         barcodeGroup.selectAll("rect")
@@ -534,24 +557,24 @@ class Tab2Viz{
             .attr("viewBox", "0 -5 10 10")
             .attr("refX", 8)
             .attr("refY", 0)
-            .attr("markerWidth", 15)
-            .attr("markerHeight", 15)
+            .attr("markerWidth", 10)
+            .attr("markerHeight", 10)
             .attr("orient", "auto-start-reverse")
             .append("path")
             .attr("d", "M0,-5L10,0L0,5")
-            .attr("fill", "green");
+            .attr("fill", "black");
 
         barcodeGroup.append("defs").append("marker")
             .attr("id", "barcode-arrowhead")
             .attr("viewBox", "0 -5 10 10")
             .attr("refX", 8)
             .attr("refY", 0)
-            .attr("markerWidth", 15)
-            .attr("markerHeight", 15)
+            .attr("markerWidth", 10)
+            .attr("markerHeight", 10)
             .attr("orient", "auto-start-reverse")
             .append("path")
             .attr("d", "M0,-5L10,0L0,5")
-            .attr("fill", "green");
+            .attr("fill", "black");
 
         const firstBlackInnerStroke = donutGroup.selectAll("path.inner-stroke")
             .filter(function() {
@@ -573,6 +596,54 @@ class Tab2Viz{
         .text("LEGEND (with fake data)")
 
         svg.append("text")
+        .attr("x", 535)
+        .attr("y", 85)
+        .attr("font-size", "30")
+        .attr("fill", "Green")
+        .style("font-weight", "bold")
+        .text("🤔")
+        .on("mouseover", function(event) {
+            // Get mouse position
+            const [mouseX, mouseY] = d3.pointer(event);
+            
+            // Create tooltip box
+            const tooltip = svg.append("g")
+              .attr("class", "tooltip-box");
+              
+            // Add rectangle background
+            tooltip.append("rect")
+                .attr("x", mouseX - 550)
+                .attr("y", mouseY + 30)
+                .attr("width", 480)  // Increased width from 220 to 550
+                .attr("height", 80)  // Increased height from 50 to 70 to accommodate larger text
+                .attr("fill", "white")
+                .attr("stroke", "black")
+                .attr("stroke-width", 1)
+                .attr("rx", 5)
+                .attr("ry", 5);
+
+                // Add text inside the box
+            tooltip.append("text")
+                .attr("x", mouseX - 540)
+                .attr("y", mouseY + 60)
+                .attr("font-size", "29")
+                .attr("fill", "black")
+                .text("Legend is here to help you interpret");
+
+            tooltip.append("text")
+                .attr("x", mouseX - 540)
+                .attr("y", mouseY+90)
+                .attr("font-size", "29")
+                .attr("fill", "black")
+                .text("the REAL DATA on the right.");
+
+          })
+          .on("mouseout", function() {
+            // Remove tooltip when not hovering
+            svg.selectAll(".tooltip-box").remove();
+          });
+
+        svg.append("text")
         .attr("x", 130)
         .attr("y", 125)
         .attr("font-size", "28")
@@ -584,19 +655,19 @@ class Tab2Viz{
         svg.append("text")
         .attr("x", 0)
         .attr("y", 165)
-        .attr("font-size", "22.5")
+        .attr("font-size", "23")
         .attr("fill", "Green")
         .style("font-weight", "bold")
-        .text("Donut (2) + Strip (8) shows the organisms (10) present in dummy data")
+        .text("Donut (2 arcs) + Strip (8 rectangles) show organisms (10) in fake data")
 
         svg.append("text")
         .attr("x", 0)
         .attr("y", 215)
-        .attr("font-size", "22.5")
+        .attr("font-size", "23.5")
         .attr("fill", "Green")
         .style("font-weight", "bold")
         .style("text-decoration", "underline")
-        .text("Donut shows organisms with higher frequency in disease literature")
+        .text("Organisms in donut appear more frequently in disease literature")
 
         svg.append("text")
           .attr("x", 720)
@@ -618,7 +689,7 @@ class Tab2Viz{
               tooltip.append("rect")
                   .attr("x", mouseX - 550)
                   .attr("y", mouseY + 30)
-                  .attr("width", 520)  // Increased width from 220 to 550
+                  .attr("width", 530)  // Increased width from 220 to 550
                   .attr("height", 130)  // Increased height from 50 to 70 to accommodate larger text
                   .attr("fill", "white")
                   .attr("stroke", "black")
@@ -632,28 +703,28 @@ class Tab2Viz{
                   .attr("y", mouseY + 60)
                   .attr("font-size", "29")
                   .attr("fill", "black")
-                  .text("Organisms ordered by arc size in");
+                  .text("Organisms ordered by arc size in donut,");
   
               tooltip.append("text")
                   .attr("x", mouseX - 540)
                   .attr("y", mouseY+90)
                   .attr("font-size", "29")
                   .attr("fill", "black")
-                  .text("donut, starting and ending at 12'o'clock.");
+                  .text("starting and ending at 6'o'clock, going");
   
               tooltip.append("text")
                   .attr("x", mouseX - 540)
                   .attr("y", mouseY+120)
                   .attr("font-size", "29")
                   .attr("fill", "black")
-                  .text("Top two organisms in literature shown");
+                  .text("counter-clockwise. Top two frequent");
   
               tooltip.append("text")
                   .attr("x", mouseX - 540)
                   .attr("y", mouseY+150)
                   .attr("font-size", "29")
                   .attr("fill", "black")
-                  .text("here.");
+                  .text("organisms in literature shown here.");
             })
             .on("mouseout", function() {
               // Remove tooltip when not hovering
@@ -674,15 +745,15 @@ class Tab2Viz{
                 .attr("x1", lineStartX + 300)
                 .attr("y1", lineStartY)
                 .attr("x2", lineEndX + 570)
-                .attr("y2", lineEndY + 210)
+                .attr("y2", lineEndY + 190)
                 .attr("stroke", "black")
                 .attr("stroke-width", 3)
                 .style("opacity", 0)
 
         svg.append("text")
         .attr("id", "LIOHIO")
-        .attr("x", 570)
-        .attr("y", 810)
+        .attr("x", 590)
+        .attr("y", 760)
         .attr("font-size", "29")
         .attr("fill", "Black")
         .attr("text-anchor", "start")
@@ -692,8 +763,8 @@ class Tab2Viz{
 
         svg.append("text")
         .attr("id", "LIOHIO")
-        .attr("x", 570)
-        .attr("y", 840)
+        .attr("x", 590)
+        .attr("y", 790)
         .attr("font-size", "29")
         .attr("fill", "Black")
         .attr("text-anchor", "start")
@@ -703,8 +774,8 @@ class Tab2Viz{
 
         svg.append("text")
         .attr("id", "LIOHIO")
-        .attr("x", 570)
-        .attr("y", 870)
+        .attr("x", 590)
+        .attr("y", 820)
         .attr("font-size", "29")
         .attr("fill", "Black")
         .attr("text-anchor", "start")
@@ -714,8 +785,8 @@ class Tab2Viz{
 
         svg.append("text")
         .attr("id", "LIOHIO")
-        .attr("x", 570)
-        .attr("y", 900)
+        .attr("x", 590)
+        .attr("y", 850)
         .attr("font-size", "29")
         .attr("fill", "Black")
         .attr("text-anchor", "start")
@@ -725,8 +796,8 @@ class Tab2Viz{
 
         svg.append("text")
           .attr("id", "LIOHIO")
-          .attr("x", 690)
-          .attr("y", 900)
+          .attr("x", 695)
+          .attr("y", 855)
           .attr("font-size", "29")
           .attr("fill", "Black")
           .attr("text-anchor", "start")
@@ -962,41 +1033,39 @@ class Tab2Viz{
 
         svg.append("line")
         .attr("class", "label-line")
-        .attr("x1", 400)
-        .attr("y1", 780)
-        .attr("x2", 400)
-        .attr("y2", 900)
+        .attr("x1", 500)
+        .attr("y1", 740)
+        .attr("x2", 500)
+        .attr("y2", 860)
         .attr("stroke", "black")
         .attr("stroke-width", 3)
-        // .attr("marker-start", "url(#barcode-arrowhead)")
-        // .attr("marker-end", "url(#barcode-arrowhead)")
 
         svg.append("text")
-        .attr("x", 250)
-        .attr("y", 925)
+        .attr("x", 390)
+        .attr("y", 885)
         .attr("font-size", "29")
         .attr("fill", "Black")
         .attr("text-anchor", "start")
         .style("font-weight", "bold")
-        .text("Arc length indicates")
+        .text("Arc size indicates")
 
         svg.append("text")
-        .attr("x", 250)
-        .attr("y", 955)
+        .attr("x", 390)
+        .attr("y", 915)
         .attr("font-size", "29")
         .attr("fill", "Black")
         .attr("text-anchor", "start")
         .style("font-weight", "bold")
-        .text("literature weight")
+        .text("frequency in disease")
 
         svg.append("text")
-          .attr("x", 480)
-          .attr("y", 955)
+          .attr("x", 390)
+          .attr("y", 945)
           .attr("font-size", "29")
           .attr("fill", "Black")
           .attr("text-anchor", "start")
           .style("font-weight", "bold")
-          .text("🤔")
+          .text("literature 🤔")
           .on("mouseover", function(event) {
               // Get mouse position
               const [mouseX, mouseY] = d3.pointer(event);
@@ -1007,10 +1076,10 @@ class Tab2Viz{
                 
               // Add rectangle background
               tooltip.append("rect")
-                  .attr("x", mouseX - 250)
+                  .attr("x", mouseX - 350)
                   .attr("y", mouseY + 30)
-                  .attr("width", 500)  // Increased width from 220 to 550
-                  .attr("height", 80)  // Increased height from 50 to 70 to accommodate larger text
+                  .attr("width", 550)  // Increased width from 220 to 550
+                  .attr("height",260)  // Increased height from 50 to 70 to accommodate larger text
                   .attr("fill", "white")
                   .attr("stroke", "black")
                   .attr("stroke-width", 1)
@@ -1019,18 +1088,60 @@ class Tab2Viz{
   
                   // Add text inside the box
               tooltip.append("text")
-                  .attr("x", mouseX - 240)
+                  .attr("x", mouseX - 340)
                   .attr("y", mouseY + 60)
                   .attr("font-size", "29")
                   .attr("fill", "black")
-                  .text("Organisms appears with the highest");
+                  .text("This organism appears most frequently in");
   
               tooltip.append("text")
-                  .attr("x", mouseX - 240)
+                  .attr("x", mouseX - 340)
                   .attr("y", mouseY+90)
                   .attr("font-size", "29")
                   .attr("fill", "black")
-                  .text("frequency in disease literature");
+                  .text("disease literature. Therefore, this is the");
+
+                tooltip.append("text")
+                  .attr("x", mouseX - 340)
+                  .attr("y", mouseY+120)
+                  .attr("font-size", "29")
+                  .attr("fill", "black")
+                  .text("biggest arc. The blue arc contains an");
+
+                tooltip.append("text")
+                  .attr("x", mouseX - 340)
+                  .attr("y", mouseY+150)
+                  .attr("font-size", "29")
+                  .attr("fill", "black")
+                  .text("organism that appears 2nd most");
+
+                tooltip.append("text")
+                  .attr("x", mouseX - 340)
+                  .attr("y", mouseY+180)
+                  .attr("font-size", "29")
+                  .attr("fill", "black")
+                  .text("frequently in disease literature. Therefore,");
+
+                tooltip.append("text")
+                  .attr("x", mouseX - 340)
+                  .attr("y", mouseY+210)
+                  .attr("font-size", "29")
+                  .attr("fill", "black")
+                  .text("that is the 2nd biggest arc. And so on...");
+
+                tooltip.append("text")
+                  .attr("x", mouseX - 340)
+                  .attr("y", mouseY+240)
+                  .attr("font-size", "29")
+                  .attr("fill", "black")
+                  .text("Less frequent organisms are pushed to");
+
+                tooltip.append("text")
+                  .attr("x", mouseX - 340)
+                  .attr("y", mouseY+270)
+                  .attr("font-size", "29")
+                  .attr("fill", "black")
+                  .text("strip.");
             })
             .on("mouseout", function() {
               // Remove tooltip when not hovering
@@ -1039,17 +1150,17 @@ class Tab2Viz{
 
         svg.append("text")
         .attr("x", 0)
-        .attr("y", 1015)
-        .attr("font-size", "23.5")
+        .attr("y", 1085)
+        .attr("font-size", "24.5")
         .attr("fill", "Green")
         .style("font-weight", "bold")
         .style("text-decoration", "underline")
-        .text("Strip shows organisms with lower frequency in disease literature")
+        .text("Organisms in strip appear less frequently in disease literature")
 
         svg.append("text")
           .attr("x", 730)
-          .attr("y", 1015)
-          .attr("font-size", "23.5")
+          .attr("y", 1085)
+          .attr("font-size", "24")
           .attr("fill", "Green")
           .style("font-weight", "bold")
           .text("🤔")
@@ -1065,7 +1176,7 @@ class Tab2Viz{
               tooltip.append("rect")
                   .attr("x", mouseX - 600)
                   .attr("y", mouseY + 30)
-                  .attr("width", 590)  // Increased width from 220 to 550
+                  .attr("width", 610)  // Increased width from 220 to 550
                   .attr("height", 80)  // Increased height from 50 to 70 to accommodate larger text
                   .attr("fill", "white")
                   .attr("stroke", "black")
@@ -1079,14 +1190,14 @@ class Tab2Viz{
                   .attr("y", mouseY + 60)
                   .attr("font-size", "29")
                   .attr("fill", "black")
-                  .text("Organisms ordered left to right in strip.");
+                  .text("Organisms ordered left to right in strip. Bottom");
   
               tooltip.append("text")
                   .attr("x", mouseX - 590)
                   .attr("y", mouseY + 90)
                   .attr("font-size", "29")
                   .attr("fill", "black")
-                  .text("Bottom 8 organisms in literature shown here.");
+                  .text("8 frequent organisms in literature shown here.");
   
             })
             .on("mouseout", function() {
@@ -1243,9 +1354,9 @@ class Tab2Viz{
         svg.append("line")
         .attr("class", "label-line")
         .attr("id", "LIOHIO")
-        .attr("x1", 155)
-        .attr("y1", 1120)
-        .attr("x2", 155)
+        .attr("x1", 132)
+        .attr("y1", 1055)
+        .attr("x2", 132)
         .attr("y2", 1160)
         .attr("stroke", "black")
         .attr("stroke-width", 3)
@@ -1347,15 +1458,7 @@ class Tab2Viz{
                 });
 
 
-        // svg.append("line")
-        // .attr("class", "label-line")
-        // .attr("x1", 535)
-        // .attr("y1", 940)
-        // .attr("x2", 535)
-        // .attr("y2", 1060)
-        // .attr("stroke", "black")
-        // .attr("stroke-width", 3)
-        // // .attr("marker-end", "url(#barcode-arrowhead)")
+        
 
         // svg.append("text")
         // .attr("x", 445)
@@ -3225,13 +3328,26 @@ class Tab2Viz{
                 // Set up the donut chart (top 60%)
                 const radius = (donutHeight / 1.4) - 30;
 
+                donutArray.push({
+                    CDFdifference: undefined,
+                    color: "rgb(255, 255, 255)", // white
+                    colorDifference: undefined,
+                    interventionColor: undefined,
+                    ncbi_taxon_id: undefined,
+                    organism: undefined,
+                    weight: "3"
+                });
+                
+
                 // Normalize weights for donut
                 const totalWeight = d3.sum(donutArray, d => Math.abs(d.weight));
                 const normalizedWeights = donutArray.map(d => Math.abs(d.weight) / totalWeight);
 
                 const pie = d3.pie()
                 .value((d, i) => normalizedWeights[i])
-                .sort(null);
+                .sort(null)
+                .startAngle(Math.PI)        // Start at 6 o'clock
+                .endAngle(Math.PI / 2 - 2 * Math.PI);  // Go counter-clockwise (-3π/2)
 
                 const arc = d3.arc()
                 .innerRadius(radius * 0.6)
@@ -3322,7 +3438,7 @@ class Tab2Viz{
                     .attr("class", "outer-stroke")
                     .attr("d", outerArc)
                     .attr("fill", "none")
-                    .attr("stroke", d => d.data.weight > 0 ? "black" : "white")
+                    .attr("stroke", d => d.data.weight > 0 && d.data.color != 'rgb(255, 255, 255)' ? "black" : "white")
                     .style("stroke-width", "10px")
                     .style("opacity", 0)
 
@@ -3578,6 +3694,15 @@ class Tab2Viz{
                 //         });
 
 
+                svg.append("line")
+                    .attr("class", "label-line")
+                    .attr("x1", -550)
+                    .attr("y1", 420)
+                    .attr("x2", -550)
+                    .attr("y2", 540)
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 3)
+                    .attr("marker-end", "url(#barcode-arrowhead)")
 
                 // Create bar code chart (bottom 40%)
                 const barWidth = (width / barcodeArray.length) - 4;
@@ -3586,7 +3711,7 @@ class Tab2Viz{
 
                 let startingpoint = -575 + availablespace - 540
                 const barcodeGroup = svg.append("g")
-                .attr("transform", `translate(${startingpoint}, ${500})`);
+                .attr("transform", `translate(${startingpoint}, ${550})`);
 
                 // Create bars
                 barcodeGroup.selectAll("rect")
