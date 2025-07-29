@@ -525,22 +525,22 @@ class Tab2Viz{
             .style("stroke-width", "10px")
             .style("opacity", 0)
 
-        svg.append("line")
-        .attr("class", "label-line")
-        .attr("x1", 360)
-        .attr("y1", 820)
-        .attr("x2", 360)
-        .attr("y2", 945)
-        .attr("stroke", "black")
-        .attr("stroke-width", 3)
-        .attr("marker-end", "url(#barcode-arrowhead)")
+        // svg.append("line")
+        // .attr("class", "label-line")
+        // .attr("x1", 360)
+        // .attr("y1", 820)
+        // .attr("x2", 360)
+        // .attr("y2", 945)
+        // .attr("stroke", "black")
+        // .attr("stroke-width", 3)
+        // .attr("marker-end", "url(#barcode-arrowhead)")
 
         const barWidth = (width / barcodeArray.length) - 31;
         let barcodechartwidth = barWidth * barcodeArray.length
 
         
         const barcodeGroup = svg.append("g")
-        .attr("transform", `translate(${105}, ${980})`);
+        .attr("transform", `translate(${5}, ${980})`);
         
         // Create bars
         barcodeGroup.selectAll("rect")
@@ -1043,21 +1043,39 @@ class Tab2Viz{
               svg.selectAll(".tooltip-box").remove();
             });
 
+        svg.append("line")
+            .attr("class", "label-line")
+            .attr("x1", 322)
+            .attr("y1", 829)
+            .attr("x2", 5)
+            .attr("y2", 980)
+            .attr("stroke", "black")
+            .attr("stroke-width", 3)
+            .attr("stroke-dasharray", "5,5")
 
+        svg.append("line")
+            .attr("class", "label-line")
+            .attr("x1", 378)
+            .attr("y1", 836)
+            .attr("x2", 515)
+            .attr("y2", 980)
+            .attr("stroke", "black")
+            .attr("stroke-width", 3)
+            .attr("stroke-dasharray", "5,5")
 
 
         svg.append("line")
         .attr("class", "label-line")
         .attr("x1", 500)
         .attr("y1", 740)
-        .attr("x2", 500)
-        .attr("y2", 860)
+        .attr("x2", 600)
+        .attr("y2", 880)
         .attr("stroke", "black")
         .attr("stroke-width", 3)
 
         svg.append("text")
-        .attr("x", 390)
-        .attr("y", 885)
+        .attr("x", 515)
+        .attr("y", 905)
         .attr("font-size", "29")
         .attr("fill", "Black")
         .attr("text-anchor", "start")
@@ -1065,109 +1083,118 @@ class Tab2Viz{
         .text("Arc size indicates")
 
         svg.append("text")
-        .attr("x", 390)
-        .attr("y", 915)
+        .attr("x", 515)
+        .attr("y", 935)
         .attr("font-size", "29")
         .attr("fill", "Black")
         .attr("text-anchor", "start")
         .style("font-weight", "bold")
-        .text("frequency in disease")
+        .text("frequency in")
 
         svg.append("circle")
-            .attr("cx", 533)
-            .attr("cy", 935)
+            .attr("cx", 543)
+            .attr("cy", 985)
             .attr("r", 16)
             .attr("fill", "black");
 
         svg.append("text")
-        .attr("x", 390)
-        .attr("y", 945)
+        .attr("x", 515)
+        .attr("y", 965)
         .attr("font-size", "29")
         .attr("fill", "Black")
         .attr("text-anchor", "start")
         .style("font-weight", "bold")
-        .html("literature <tspan fill='white'>?</tspan>")
-        .on("mouseover", function(event) {
-            // Get mouse position
-            const [mouseX, mouseY] = d3.pointer(event);
-            
-            // Create tooltip box
-            const tooltip = svg.append("g")
-                .attr("class", "tooltip-box");
+        .html("disease literature")
+
+            svg.append("text")
+            .attr("x", 535)
+            .attr("y", 995)
+            .attr("font-size", "29")
+            .attr("fill", "Black")
+            .attr("text-anchor", "start")
+            .style("font-weight", "bold")
+            .html("<tspan fill='white'>?</tspan>")
+            .on("mouseover", function(event) {
+                // Get mouse position
+                const [mouseX, mouseY] = d3.pointer(event);
                 
-            // Add rectangle background
-            tooltip.append("rect")
-                .attr("x", mouseX - 350)
-                .attr("y", mouseY + 30)
-                .attr("width", 550)  // Increased width from 220 to 550
-                .attr("height",260)  // Increased height from 50 to 70 to accommodate larger text
-                .attr("fill", "white")
-                .attr("stroke", "black")
-                .attr("stroke-width", 1)
-                .attr("rx", 5)
-                .attr("ry", 5);
-    
-                // Add text inside the box
-            tooltip.append("text")
-                .attr("x", mouseX - 340)
-                .attr("y", mouseY + 60)
-                .attr("font-size", "29")
-                .attr("fill", "black")
-                .text("This organism appears most frequently in");
-    
-            tooltip.append("text")
-                .attr("x", mouseX - 340)
-                .attr("y", mouseY+90)
-                .attr("font-size", "29")
-                .attr("fill", "black")
-                .text("disease literature. Therefore, this is the");
-    
+                // Create tooltip box
+                const tooltip = svg.append("g")
+                    .attr("class", "tooltip-box");
+                    
+                // Add rectangle background
+                tooltip.append("rect")
+                    .attr("x", mouseX - 350)
+                    .attr("y", mouseY + 30)
+                    .attr("width", 550)  // Increased width from 220 to 550
+                    .attr("height",260)  // Increased height from 50 to 70 to accommodate larger text
+                    .attr("fill", "white")
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 1)
+                    .attr("rx", 5)
+                    .attr("ry", 5);
+        
+                    // Add text inside the box
                 tooltip.append("text")
-                .attr("x", mouseX - 340)
-                .attr("y", mouseY+120)
-                .attr("font-size", "29")
-                .attr("fill", "black")
-                .text("biggest arc. The blue arc contains an");
-    
+                    .attr("x", mouseX - 340)
+                    .attr("y", mouseY + 60)
+                    .attr("font-size", "29")
+                    .attr("fill", "black")
+                    .text("This organism appears most frequently in");
+        
                 tooltip.append("text")
-                .attr("x", mouseX - 340)
-                .attr("y", mouseY+150)
-                .attr("font-size", "29")
-                .attr("fill", "black")
-                .text("organism that appears 2nd most");
-    
-                tooltip.append("text")
-                .attr("x", mouseX - 340)
-                .attr("y", mouseY+180)
-                .attr("font-size", "29")
-                .attr("fill", "black")
-                .text("frequently in disease literature. Therefore,");
-    
-                tooltip.append("text")
-                .attr("x", mouseX - 340)
-                .attr("y", mouseY+210)
-                .attr("font-size", "29")
-                .attr("fill", "black")
-                .text("that is the 2nd biggest arc. And so on...");
-    
-                tooltip.append("text")
-                .attr("x", mouseX - 340)
-                .attr("y", mouseY+240)
-                .attr("font-size", "29")
-                .attr("fill", "black")
-                .text("Less frequent organisms are pushed to");
-    
-                tooltip.append("text")
-                .attr("x", mouseX - 340)
-                .attr("y", mouseY+270)
-                .attr("font-size", "29")
-                .attr("fill", "black")
-                .text("strip.");
-            })
-            .on("mouseout", function() {
-            // Remove tooltip when not hovering
-            svg.selectAll(".tooltip-box").remove();
-            });
+                    .attr("x", mouseX - 340)
+                    .attr("y", mouseY+90)
+                    .attr("font-size", "29")
+                    .attr("fill", "black")
+                    .text("disease literature. Therefore, this is the");
+        
+                    tooltip.append("text")
+                    .attr("x", mouseX - 340)
+                    .attr("y", mouseY+120)
+                    .attr("font-size", "29")
+                    .attr("fill", "black")
+                    .text("biggest arc. The blue arc contains an");
+        
+                    tooltip.append("text")
+                    .attr("x", mouseX - 340)
+                    .attr("y", mouseY+150)
+                    .attr("font-size", "29")
+                    .attr("fill", "black")
+                    .text("organism that appears 2nd most");
+        
+                    tooltip.append("text")
+                    .attr("x", mouseX - 340)
+                    .attr("y", mouseY+180)
+                    .attr("font-size", "29")
+                    .attr("fill", "black")
+                    .text("frequently in disease literature. Therefore,");
+        
+                    tooltip.append("text")
+                    .attr("x", mouseX - 340)
+                    .attr("y", mouseY+210)
+                    .attr("font-size", "29")
+                    .attr("fill", "black")
+                    .text("that is the 2nd biggest arc. And so on...");
+        
+                    tooltip.append("text")
+                    .attr("x", mouseX - 340)
+                    .attr("y", mouseY+240)
+                    .attr("font-size", "29")
+                    .attr("fill", "black")
+                    .text("Less frequent organisms are pushed to");
+        
+                    tooltip.append("text")
+                    .attr("x", mouseX - 340)
+                    .attr("y", mouseY+270)
+                    .attr("font-size", "29")
+                    .attr("fill", "black")
+                    .text("strip.");
+                })
+                .on("mouseout", function() {
+                // Remove tooltip when not hovering
+                svg.selectAll(".tooltip-box").remove();
+                });
 
         svg.append("text")
         .attr("x", 0)
@@ -1393,9 +1420,9 @@ class Tab2Viz{
         svg.append("line")
         .attr("class", "label-line")
         .attr("id", "LIOHIO")
-        .attr("x1", 132)
+        .attr("x1", 42)
         .attr("y1", 1055)
-        .attr("x2", 132)
+        .attr("x2", 42)
         .attr("y2", 1160)
         .attr("stroke", "black")
         .attr("stroke-width", 3)
@@ -1405,7 +1432,7 @@ class Tab2Viz{
 
         svg.append("text")
         .attr("id", "LIOHIO")
-        .attr("x", 80)
+        .attr("x", 20)
         .attr("y", 1185)
         .attr("font-size", "29")
         .attr("fill", "Black")
@@ -1416,7 +1443,7 @@ class Tab2Viz{
 
         svg.append("circle")
             .attr("id", "LIOHIO")
-            .attr("cx", 670)
+            .attr("cx", 610)
             .attr("cy", 1175)
             .attr("r", 18)
             .style("opacity", 0)
@@ -1425,7 +1452,7 @@ class Tab2Viz{
 
         svg.append("text")
             .attr("id", "LIOHIO")
-            .attr("x", 660)
+            .attr("x", 600)
             .attr("y", 1185)
             .attr("font-size", "29")
             .attr("fill", "white")
@@ -3424,18 +3451,55 @@ class Tab2Viz{
                 const arcData = pie(donutArray);
 
                 donutGroup.selectAll("path.main")
-                    .data(arcData)
-                    .enter().append("path")
-                    .attr("class", "main")
-                    .attr("d", arc)
-                    .attr("fill", d => {
-                        // if (d.data.CDFdifference == undefined){
-                        //     return "grey"
-                        // }
-                        return d.data.color
-                    })
-                    .attr("stroke", "black")
-                    .style("stroke-width", "2px");
+                .data(arcData)
+                .enter().append("path")
+                .attr("class", "main")
+                .attr("d", arc)
+                .attr("fill", d => {
+                // if (d.data.CDFdifference == undefined){
+                // return "grey"
+                // }
+                return d.data.color
+                })
+                .attr("stroke", "black")
+                .style("stroke-width", "2px")
+                // .on("mouseover", function(event, d) {
+                // if (d.data.weight !== 0) {
+                //     // Get mouse position relative to the SVG
+                //     const [mouseX, mouseY] = d3.pointer(event);
+                    
+                //     // Create tooltip box
+                //     const tooltip = svg.append("g")
+                //     .attr("class", "donut-tooltip-box")
+                    
+                    
+                    
+                //     // Add rectangle background
+                //     tooltip.append("rect")
+                //     .attr("x", mouseX - 500)
+                //     .attr("y", mouseY + 10)
+                //     .attr("width", 225)
+                //     .attr("height", 50)
+                //     .attr("fill", "white")
+                //     .attr("stroke", "black")
+                //     .attr("stroke-width", 1)
+                //     .attr("rx", 5)
+                //     .attr("ry", 5)
+                    
+                //     // Add text inside the box
+                //     const tooltipText = d.data.weight > 0 ? "This is an HIO" : "This is an LIO";
+                //     tooltip.append("text")
+                //     .attr("x", mouseX - 500)
+                //     .attr("y", mouseY + 40)
+                //     .attr("font-size", "35")
+                //     .attr("fill", "black")
+                //     .text(tooltipText);
+                // }
+                // })
+                // .on("mouseout", function() {
+                // // Remove tooltip when not hovering
+                // svg.selectAll(".donut-tooltip-box").remove();
+                // });
 
                 // Now add lines for first and last arcs
                 // const firstArc = arcData[0];
@@ -3741,17 +3805,27 @@ class Tab2Viz{
                 //                 return ""; // Show nothing if CDFdifference is 0
                 //             }
                 //         });
-
-
+                
                 svg.append("line")
                     .attr("class", "label-line")
-                    .attr("x1", -550)
-                    .attr("y1", 420)
-                    .attr("x2", -550)
-                    .attr("y2", 540)
+                    .attr("x1", -578)
+                    .attr("y1", 448)
+                    .attr("x2", -975)
+                    .attr("y2", 550)
                     .attr("stroke", "black")
                     .attr("stroke-width", 3)
-                    .attr("marker-end", "url(#barcode-arrowhead)")
+                    .attr("stroke-dasharray", "5,5")
+
+                
+                svg.append("line")
+                    .attr("class", "label-line")
+                    .attr("x1", -537)
+                    .attr("y1", 450)
+                    .attr("x2", -103)
+                    .attr("y2", 550)
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 3)
+                    .attr("stroke-dasharray", "5,5")
 
                 // Create bar code chart (bottom 40%)
                 const barWidth = (width / barcodeArray.length) - 4;
