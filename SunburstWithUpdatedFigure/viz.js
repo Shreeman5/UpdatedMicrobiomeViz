@@ -318,1457 +318,665 @@ class Tab2Viz{
             .attr("stroke-width", "1")
     }
 
-
     renderLegendofSecondRow(donutArray, barcodeArray){
+        let width = 2400
+        let height = 1300
         let svg = d3.select(".dynamic-div-x3" ).append("svg")
-        .attr("width", 760)
-        .attr("height", 1570)
+        .attr("width", width)
+        .attr("height", height)
 
         const buttonGroup = svg.append("g")
-            .attr("class", "toggle-button")
-            .attr("transform", "translate(0, 0)") // Position in top-left corner
-            .style("cursor", "pointer");
-
-        // Button shadow (black background offset)
-        buttonGroup.append("rect")
-            .attr("x", 6)
-            .attr("y", 6)
-            .attr("width", 175)
-            .attr("height", 90)
-            .attr("rx", 8)
-            .attr("fill", "black");
+            .attr("class", "control-button")  // Different class, won't get cleared
+            .attr("transform", "translate(1000, 1180)")
+            .style("cursor", "pointer")
+            .on("click", nextState);
 
         // Button background rectangle
-        const buttonRect = buttonGroup.append("rect")
-            .attr("width", 175)
-            .attr("height", 90)
-            .attr("rx", 8)
-            .attr("fill", "#007bff")
-            .attr("stroke", "#0056b3")
-            .attr("stroke-width", 2);
+        buttonGroup.append("rect")
+            .attr("width", 400)
+            .attr("height", 100)
+            .attr("rx", 6)  // Rounded corners
+            .attr("fill", "#3498db")
+            .attr("stroke", "#2980b9")
+            .attr("stroke-width", 1);
 
         // Button text
         buttonGroup.append("text")
-            .attr("x", 10)
-            .attr("y", 20)
-            .attr("text-anchor", "start")
-            .attr("font-family", "Arial, sans-serif")
-            .attr("font-size", "25px")
-            .attr("fill", "white")
-            .text("Show LIO and");
-
-        buttonGroup.append("text")
-            .attr("x", 10)
-            .attr("y", 50)
-            .attr("text-anchor", "start")
-            .attr("font-family", "Arial, sans-serif")
-            .attr("font-size", "25px")
-            .attr("fill", "white")
-            .text("HIO indicators");
-
-        // White circle for question mark
-        buttonGroup.append("circle")
-            .attr("cx", 155)
-            .attr("cy", 72)
-            .attr("r", 16)
-            .attr("fill", "black");
-
-        // Question mark
-        buttonGroup.append("text")
-            .attr("x", 155)
-            .attr("y", 77)
+            .attr("x", 60)  // Center horizontally
+            .attr("y", 25)  // Center vertically
             .attr("text-anchor", "middle")
-            .attr("font-family", "Arial, sans-serif")
-            .attr("font-size", "25px")
             .attr("fill", "white")
-            .text("?")
-            .on("mouseover", function(event) {
-                // Get mouse position
-                const [mouseX, mouseY] = d3.pointer(event);
-                
-                // Create tooltip box
-                const tooltip = svg.append("g")
-                .attr("class", "tooltip-box");
-                
-                // Add rectangle background
-                tooltip.append("rect")
-                    .attr("x", mouseX + 30)
-                    .attr("y", mouseY + 30)
-                    .attr("width", 630)
-                    .attr("height", 80)
-                    .attr("fill", "white")
-                    .attr("stroke", "black")
-                    .attr("stroke-width", 1)
-                    .attr("rx", 5)
-                    .attr("ry", 5);
+            .attr("font-size", "50px")
+            .attr("font-family", "Arial, sans-serif")
+            .text("Click to learn more about legend");
 
-                // Add text inside the box
-                tooltip.append("text")
-                    .attr("x", mouseX + 40)
-                    .attr("y", mouseY + 60)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("Click this button to see low and high indicator");
 
-                tooltip.append("text")
-                    .attr("x", mouseX + 40)
-                    .attr("y", mouseY+90)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("organisms in the LEGEND and the REAL DATA.");
-            })
-            .on("mouseout", function() {
-                // Remove tooltip when not hovering
-                svg.selectAll(".tooltip-box").remove();
+        // Updated data for 5 donuts in first column
+        const circleData = [
+            { id: 1, radius: 80, 
+                label: "The first arc always starts at 6 'o' clock but may stop anywhere in the donut. In this example tutorial, it stops at 12 'o' clock but that might be different for other examples. Notice that the arc is going counter-clockwise from 6 to 12 'o' clock. The first arc always has the biggest size. The first arc contains the microorganism that is found most frequently in disease literature. Therefore, the first arc contains the most important organism.", 
+                startAngle: Math.PI, endAngle: 0}, 
+            { id: 2, radius: 80, label: "The second arc starts wherever the first arc ends. The second arc has the second biggest size. The second arc contains the second most important organism.", 
+                startAngle: 0, endAngle: 3*Math.PI/2, inverted: true}, // 3 to 12 o'clock (270°)
+            { id: 3, radius: 80, label: "As you can see, importance of organism decreases counter-clockwise. The third arc contains the third most important organism.", 
+                startAngle: 3*Math.PI/2, endAngle: 5*Math.PI/4 }, // 3 to 7:30 (225°)  
+            { id: 4, radius: 80, label: "The fourth arc contains the fourth most important organism.", 
+                startAngle: 5*Math.PI/4, endAngle: 9*Math.PI/8 }, // 3 to 6:45 (157.5°)
+            { id: 5, radius: 80, label: "The strip beneath the donut contains organisms that are not as important. In this example, 5 organisms from the donut are shown in the strip. The donut contains organisms that are the most important. In this tutorial, the donut contains 4 and the strip contains 5 organism. In other examples, the split may be different.", 
+                startAngle: 9*Math.PI/8, endAngle: Math.PI} // 3 to 1:30 (45°)
+        ];
+        
+        // Second row donuts data (separate from first column)
+        const secondRowDonuts = [
+            { id: 11, radius: 80, 
+                label: "Really dark red color indicates that this organism from this example matches the organism profile of a diseased sample.", 
+                startAngle: Math.PI, endAngle: 0, arcColor: "darkred", bgColor: "white"}, 
+            { id: 12, radius: 80, 
+                label: "Blue indicates that this organism from this example does not match the organism profile of a disease sample.", 
+                startAngle: 0, endAngle: 3*Math.PI/2, inverted: true, arcColor: "rgb(210, 215, 215)", bgColor: "white"}, 
+            { id: 13, radius: 80, 
+                label: "Light red color indicates that this organism from this sample somewhat matches the organism profile of a diseased sample.", 
+                startAngle: 3*Math.PI/2, endAngle: 5*Math.PI/4, arcColor: "rgb(225, 200, 200)", bgColor: "white"}
+        ];
+
+        let currentState = 1;
+        let currentSentenceIndex = 0;
+        let totalSentences = 0;
+        let secondColumnStep = 0; // Track second column progression
+        const totalStates = 4;
+
+        // Prepare sentence data for progressive disclosure
+        const sentenceData = [];
+        circleData.forEach((donut, donutIdx) => {
+            const sentences = donut.label.split(/[.!?]+/).filter(s => s.trim().length > 0);
+            sentences.forEach((sentence, sentenceIdx) => {
+                sentenceData.push({
+                    donutIndex: donutIdx,
+                    sentenceIndex: sentenceIdx,
+                    text: sentence.trim() + (sentenceIdx < sentences.length - 1 ? "." : ""),
+                    donutY: 25 + donutIdx * 80, // Y position for this donut's text
+                    isFirstSentenceOfDonut: sentenceIdx === 0
+                });
             });
-
-        // Simple hover effect for the button
-        buttonGroup
-            .on("mouseover", function() {
-                buttonRect.attr("fill", "#0056b3");
-            })
-            .on("mouseout", function() {
-                buttonRect.attr("fill", "#007bff");
-            });
-
-
-        const totalHeight = 1570;  // Updated height
-        const donutHeight = totalHeight * 0.6;
-        const barcodeHeight = totalHeight * 0.4;
-        const width = 760;  // Updated width
-
-        const radius = (donutHeight / 1.4) - 400;
-
-        donutArray.push({
-            CDFdifference: undefined,
-            color: "rgb(255, 255, 255)", // white
-            colorDifference: undefined,
-            interventionColor: undefined,
-            ncbi_taxon_id: undefined,
-            organism: undefined,
-            weight: "0.5"
         });
+        totalSentences = sentenceData.length;
 
-        const totalWeight = d3.sum(donutArray, d => Math.abs(d.weight));
-        const normalizedWeights = donutArray.map(d => Math.abs(d.weight) / totalWeight);
+        function updateStateIndicator() {
+            const indicators = [
+                "State 1: First Column of Circles",
+                `State 2: Explanations (Sentence ${currentSentenceIndex + 1}/${totalSentences})`, 
+                "State 3: + Second Column of Circles (Legend shown)",
+                `State 4: + Explanations for Second Column (Step ${secondColumnStep}/5) - Next: ${getNextStepDescription()}`
+            ];
+            console.log(indicators[currentState - 1]); // You can update a UI element here
+        }
 
-        
+        function getNextStepDescription() {
+            const descriptions = [
+                "Second Row Donut 1",
+                "Second Row Donut 2", 
+                "Second Row Donut 3",
+                "Third Row Donut+Strip 1",
+                "Third Row Donut+Strip 2",
+                "Complete - Reset to State 1"
+            ];
+            return descriptions[secondColumnStep] || "Unknown";
+        }
 
-        const pie = d3.pie()
-        .value((d, i) => normalizedWeights[i])
-        .sort(null)
-        .startAngle(Math.PI)        // Start at 6 o'clock
-        .endAngle(Math.PI / 2 - 2 * Math.PI);  // Go counter-clockwise (-3π/2)
+        function nextState() {
+            if (currentState === 2) {
+                // We're in explanation mode, advance sentence by sentence
+                currentSentenceIndex++;
+                if (currentSentenceIndex >= totalSentences) {
+                    // All sentences shown, move to next state
+                    currentState = 3;
+                    currentSentenceIndex = 0;
+                    secondColumnStep = 0; // Reset second column step
+                }
+            } else if (currentState === 4) {
+                // We're in second column explanation mode
+                // Check if we've completed all steps after the explanation runs
+                if (secondColumnStep >= 5) {
+                    // All second column steps shown, cycle back to state 1
+                    currentState = 1;
+                    secondColumnStep = 0;
+                }
+            } else {
+                // Normal state progression
+                currentState = currentState % totalStates + 1;
+                if (currentState === 2) {
+                    currentSentenceIndex = 0; // Reset when entering explanation mode
+                } else if (currentState === 3) {
+                    secondColumnStep = 0; // Reset when entering second column
+                }
+            }
+            updateStateIndicator();
+            renderCurrentState();
+        }
 
-        const arc = d3.arc()
-        .innerRadius(radius * 0.6)
-        .outerRadius(radius);
+        function renderCurrentState() {
+            switch(currentState) {
+                case 1:
+                    // Only clear OUR elements, not everything
+                    svg.selectAll(".progressive-disclosure").remove();
+                    secondColumnStep = 0;
+                    renderFirstColumn();
+                    break;
+                case 2:
+                    addFirstColumnExplanations();
+                    break;
+                case 3:
+                    addSecondColumn();
+                    break;
+                case 4:
+                    addSecondColumnExplanations();
+                    break;
+            }
+        }
 
-        const innerArc = d3.arc()
-        .innerRadius(radius * 0.57)
-        .outerRadius(radius * 0.57)
-        .cornerRadius(0);
-
-        const innerArc2 = d3.arc()
-        .innerRadius(radius * 0.54)
-        .outerRadius(radius * 0.54)
-        .cornerRadius(0);
-
-        const outerArc = d3.arc()
-        .innerRadius(radius * 1.03)
-        .outerRadius(radius * 1.03)
-        .cornerRadius(0);
-
-        const outerArc2 = d3.arc()
-        .innerRadius(radius * 1.06)
-        .outerRadius(radius * 1.06)
-        .cornerRadius(0);
-
-        const donutGroup = svg.append("g")
-        .attr("transform", `translate(${380}, ${565})`);
-
-        const arcData = pie(donutArray);
-        console.log(donutArray)
-
-        donutGroup.selectAll("path.main")
-            .data(arcData)
-            .enter().append("path")
-            .attr("class", "main")
-            .attr("d", arc)
-            .attr("fill", d => {
-                return d.data.color
-            })
-            .attr("stroke", "black")
-            .style("stroke-width", "2px");
-
-
-        donutGroup.selectAll("path.inner-stroke")
-        .data(pie(donutArray))
-        .enter().append("path")
-        .attr("class", "inner-stroke")
-        .attr("id", "LIOHIO") 
-        .attr("d", innerArc2)
-        .attr("fill", "none")
-        .attr("stroke", d => d.data.weight < 0 ? "black" : "white")
-        .style("stroke-width", "10px")
-        .style("opacity", 0)
-    
-        // Add the lifted outer strokes for positive weights
-        donutGroup.selectAll("path.outer-stroke")
-            .data(pie(donutArray))
-            .enter().append("path")
-            .attr("class", "outer-stroke")
-            .attr("id", "LIOHIO") 
-            .attr("d", outerArc2)
-            .attr("fill", "none")
-            .attr("stroke", d => d.data.weight > 0 && d.data.color != 'rgb(255, 255, 255)' ? "black" : "white")
-            .style("stroke-width", "10px")
-            .style("opacity", 0)
-
-        // svg.append("line")
-        // .attr("class", "label-line")
-        // .attr("x1", 360)
-        // .attr("y1", 820)
-        // .attr("x2", 360)
-        // .attr("y2", 945)
-        // .attr("stroke", "black")
-        // .attr("stroke-width", 3)
-        // .attr("marker-end", "url(#barcode-arrowhead)")
-
-        const barWidth = (width / barcodeArray.length) - 31;
-        let barcodechartwidth = barWidth * barcodeArray.length
-
-        
-        const barcodeGroup = svg.append("g")
-        .attr("transform", `translate(${5}, ${980})`);
-        
-        // Create bars
-        barcodeGroup.selectAll("rect")
-        .data(barcodeArray)
-        .enter().append("rect")
-        .attr("x", (d, i) => i * barWidth)
-        .attr("y", 0)
-        .attr("width", barWidth - 1) // -1 for spacing between bars
-        .attr("height", barcodeHeight/10)
-        .attr("fill", d => {
-            // if (d.CDFdifference == undefined){
-            //     return "grey"
-            // }
-            return d.color
-        })
-        .attr("stroke", "black")
-        .style("stroke-width", "1px");
-
-        barcodeGroup.selectAll("line")
-        .data(barcodeArray)
-        .enter().append("line")
-        .attr("id", "LIOHIO") 
-        .attr("x1", (d, i) => i * barWidth)  // Center of each bar
-        .attr("x2", (d, i) => i * barWidth + barWidth - 2)
-        .attr("y1", d => d.weight > 0 ? -10 : barcodeHeight/10 + 10)  // Lift 10px from top or bottom
-        .attr("y2", d => d.weight > 0 ? -10 : barcodeHeight/10 + 10)
-        .attr("stroke", "black")
-        .attr("stroke-width", "4px")
-        .attr("stroke-linecap", "round")
-        .style("opacity", 0)
-
-
-        
-
-
-        donutGroup.append("defs").append("marker")
-            .attr("id", "arrowhead")
-            .attr("viewBox", "0 -5 10 10")
-            .attr("refX", 8)
-            .attr("refY", 0)
-            .attr("markerWidth", 10)
-            .attr("markerHeight", 10)
-            .attr("orient", "auto-start-reverse")
-            .append("path")
-            .attr("d", "M0,-5L10,0L0,5")
-            .attr("fill", "black");
-
-        barcodeGroup.append("defs").append("marker")
-            .attr("id", "barcode-arrowhead")
-            .attr("viewBox", "0 -5 10 10")
-            .attr("refX", 8)
-            .attr("refY", 0)
-            .attr("markerWidth", 10)
-            .attr("markerHeight", 10)
-            .attr("orient", "auto-start-reverse")
-            .append("path")
-            .attr("d", "M0,-5L10,0L0,5")
-            .attr("fill", "black");
-
-        const firstBlackInnerStroke = donutGroup.selectAll("path.inner-stroke")
-            .filter(function() {
-                return d3.select(this).attr("stroke") === "white";
-            })
-            .nodes()[0];    
-        
-        const firstData = d3.select(firstBlackInnerStroke).datum();
-        const angle = (firstData.startAngle + firstData.endAngle) / 2;
-        const radius2 = innerArc.innerRadius()();
-
-        svg.append("text")
-        .attr("x", 250)
-        .attr("y", 85)
-        .attr("font-size", "30")
-        .attr("fill", "Green")
-        .style("font-weight", "bold")
-        .style("text-decoration", "underline")
-        .text("LEGEND (with fake data)")
-
-        svg.append("circle")
-            .attr("cx", 625)
-            .attr("cy", 75)
-            .attr("r", 18)
-            .attr("fill", "black");
-
-        svg.append("text")
-        .attr("x", 617)
-        .attr("y", 83)
-        .attr("font-size", "25")
-        .attr("fill", "white")
-        .style("font-weight", "bold")
-        .text("?")
-        .on("mouseover", function(event) {
-            // Get mouse position
-            const [mouseX, mouseY] = d3.pointer(event);
+        // Helper function to wrap text within constraints
+        function wrapText(text, maxWidth) {
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = '';
             
-            // Create tooltip box
-            const tooltip = svg.append("g")
-              .attr("class", "tooltip-box");
-              
-            // Add rectangle background
-            tooltip.append("rect")
-                .attr("x", mouseX - 550)
-                .attr("y", mouseY + 30)
-                .attr("width", 480)  // Increased width from 220 to 550
-                .attr("height", 80)  // Increased height from 50 to 70 to accommodate larger text
+            for (let word of words) {
+                const testLine = currentLine + (currentLine ? ' ' : '') + word;
+                if (testLine.length * 8 < maxWidth) { // Rough character width estimation
+                    currentLine = testLine;
+                } else {
+                    if (currentLine) lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            if (currentLine) lines.push(currentLine);
+            return lines.slice(0, 4); // Limit to 4 lines
+        }
+
+        function renderFirstColumn() {
+            // Create arc generator for donuts
+            const arc = d3.arc()
+                .innerRadius(d => d.radius * 0.6)
+                .outerRadius(d => d.radius)
+                .startAngle(d => d.startAngle)
+                .endAngle(d => d.endAngle);
+
+            // Create FULL donut backgrounds using arc generator
+            const fullDonutArc = d3.arc()
+                .innerRadius(d => d.radius * 0.6)
+                .outerRadius(d => d.radius)
+                .startAngle(0)               // Full circle
+                .endAngle(2 * Math.PI);      // Full circle
+
+            // Create donut backgrounds (full donuts)
+            const donutBgs = svg.selectAll(".donut-bg-col1")
+                .data(circleData)
+                .enter()
+                .append("path")
+                .attr("class", "donut-bg donut-bg-col1 progressive-disclosure")
+                .attr("transform", (d, i) => `translate(${80}, ${80 + i * 250})`)
+                .attr("d", fullDonutArc)
+                .attr("fill", d => d.inverted ? "black" : "white")       // Changed to white
+                .attr("stroke", "black")     // Added black stroke
+                .attr("stroke-width", 2)     // Added stroke width
+                .attr("opacity", 0);
+
+            // Create black arcs (same as before)
+            const arcs = svg.selectAll(".arc-col1")
+                .data(circleData)
+                .enter()
+                .append("path")
+                .attr("class", "arc arc-col1 progressive-disclosure")
+                .attr("transform", (d, i) => `translate(${80}, ${80 + i * 250})`)
+                .attr("d", arc)
+                .attr("fill", d => d.inverted ? "white" : "black")
+                .attr("opacity", 1);  // Set to 1 immediately, no animation
+
+            // Animate donut backgrounds
+            donutBgs.transition()
+                .duration(800)
+                .delay((d, i) => i * 200)
+                .attr("opacity", 1)          // Changed from attr("r") to attr("opacity")
+                .ease(d3.easeBounceOut);
+
+            // Special treatment for the bottom donut (index 4) - add barcode
+            addBarcodeToBottomDonut();
+        }
+
+        function addBarcodeToBottomDonut() {
+            const bottomDonutIndex = 4; // 5th donut (index 4)
+            const donutY = 80 + bottomDonutIndex * 250; // Match your 250px spacing
+            const donutX = 80; // Updated X position (200 - 120)
+            const donutRadius = circleData[bottomDonutIndex].radius;
+            
+            // Barcode positioning
+            const barcodeY = donutY + donutRadius + 40; // 40px below the donut
+            const barcodeWidth = 150; // Wider for barcode strip
+            const barcodeHeight = 30;
+            const barcodeX = donutX - barcodeWidth / 2; // Center under donut
+            
+            // Create 5 equal-width rectangles
+            const numRects = 5;
+            const rectWidth = (barcodeWidth - 4) / numRects; // Subtract 4px for padding (2px each side)
+            const barcodeData = Array.from({length: numRects}, (_, i) => ({id: i}));
+            
+            const barcodeRects = svg.selectAll(".barcode-rect")
+                .data(barcodeData)
+                .enter()
+                .append("rect")
+                .attr("class", "barcode-rect progressive-disclosure")
+                .attr("x", (d, i) => barcodeX + 2 + (i * rectWidth)) // 2px padding + index * width
+                .attr("y", barcodeY + 2) // Small padding from top
+                .attr("width", rectWidth)
+                .attr("height", barcodeHeight - 4) // Full height minus padding
+                .attr("fill", "white")        // White background
+                .attr("stroke", "black")      // Black stroke
+                .attr("stroke-width", 1)      // Stroke width
+                .attr("opacity", 0);
+            
+
+            // Create connecting lines to the LEFT and RIGHT edges of the barcode
+            const connectingLines = svg.selectAll(".connecting-line")
+                .data([
+                    {x1: 50, y1: 1155, x2: barcodeX + 1, y2: barcodeY + barcodeHeight/2 - 14},           // Left line - moved 120px left
+                    {x1: 80, y1: 1160, x2: barcodeX + barcodeWidth - 1, y2: barcodeY + barcodeHeight/2 - 14}  // Right line - moved 120px left
+                ])
+                .enter()
+                .append("line")
+                .attr("class", "connecting-line progressive-disclosure")
+                .attr("x1", d => d.x1)
+                .attr("y1", d => d.y1)
+                .attr("x2", d => d.x1) // Start at same position for animation
+                .attr("y2", d => d.y1)
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .attr("stroke-dasharray", "3,3")
+                .attr("opacity", 0);
+            
+            // Animate everything appearing
+            setTimeout(() => {
+                // Remove this line: barcodeBackground.transition().duration(400).attr("opacity", 1);
+                barcodeRects.transition().duration(600).delay((d, i) => i * 100).attr("opacity", 1);
+                connectingLines.transition()
+                    .duration(800)
+                    .delay(300)
+                    .attr("x2", d => d.x2)
+                    .attr("y2", d => d.y2)
+                    .attr("opacity", 1);
+            }, 1000);
+        }
+
+        function addFirstColumnExplanations() {
+            // Remove any existing explanation text
+            svg.selectAll(".explanation-text-col1").remove();
+            
+            // Get sentences up to current index
+            const sentencesToShow = sentenceData.slice(0, currentSentenceIndex + 1);
+            
+            // Group sentences by donut
+            const sentencesByDonut = {};
+            sentencesToShow.forEach(sentence => {
+                if (!sentencesByDonut[sentence.donutIndex]) {
+                    sentencesByDonut[sentence.donutIndex] = [];
+                }
+                sentencesByDonut[sentence.donutIndex].push(sentence);
+            });
+            
+            // Create text groups for each donut that has sentences to show
+            Object.keys(sentencesByDonut).forEach(donutIndex => {
+                const donutSentences = sentencesByDonut[donutIndex];
+                const donutIdx = parseInt(donutIndex);
+                
+                const textGroup = svg.append("text")
+                    .attr("class", "explanation-text explanation-text-col1 progressive-disclosure")
+                    .attr("x", 170)
+                    .attr("y", 25 + donutIdx * 250)
+                    .attr("text-anchor", "start")
+                    .attr("fill", "#2c3e50")
+                    .attr("font-size", "20px")
+                    .attr("font-weight", "bold");
+                
+                // Add each sentence as a tspan
+                donutSentences.forEach((sentence, i) => {
+                    const tspan = textGroup.append("tspan")
+                        .attr("x", 170)
+                        .attr("dy", i === 0 ? 0 : "1.2em")
+                        .text(sentence.text);
+                    
+                    // Animate the latest sentence if it's the current one being added
+                    if (sentencesToShow.length > 0 && 
+                        sentence === sentencesToShow[sentencesToShow.length - 1]) {
+                        tspan.attr("opacity", 0)
+                            .transition()
+                            .duration(600)
+                            .attr("opacity", 1);
+                    } else {
+                        tspan.attr("opacity", 1);
+                    }
+                });
+            });
+        }
+
+        function addSecondColumn() {
+            // Show the legend (step 0) when entering state 3
+            showSecondColumnStep(0);
+        }
+
+        function addSecondColumnExplanations() {
+            // Advance to next step when button is clicked in state 4
+            secondColumnStep++;
+            
+            // Show the next step (steps 1-5, since step 0 is legend shown in state 3)
+            if (secondColumnStep <= 5) {
+                showSecondColumnStep(secondColumnStep);
+            }
+            
+            // Debug logging
+            console.log(`Second column step: ${secondColumnStep}`);
+        }
+
+        function showSecondColumnStep(step) {
+            switch(step) {
+                case 0:
+                    // Step 1: Legend with text
+                    showLegend();
+                    break;
+                case 1:
+                    // Step 2: First donut of second row
+                    showSecondRowDonut(0);
+                    break;
+                case 2:
+                    // Step 3: Second donut of second row
+                    showSecondRowDonut(1);
+                    break;
+                case 3:
+                    // Step 4: Third donut of second row
+                    showSecondRowDonut(2);
+                    break;
+                case 4:
+                    // Step 5: First donut+strip of third row
+                    showThirdRowDonut(0);
+                    break;
+                case 5:
+                    // Step 6: Second donut+strip of third row
+                    showThirdRowDonut(1);
+                    break;
+            }
+        }
+
+        function showLegend() {
+            const baseX = 1050;
+            const firstRowY = 330; // Parallel with second donut from first column (80 + 1 * 250)
+            const gradientWidth = 300;
+            const gradientHeight = 30;
+            
+            // Create gradient definition
+            const defs = svg.select("defs").empty() ? svg.append("defs") : svg.select("defs");
+            const gradient = defs.append("linearGradient")
+                .attr("id", "colorGradient")
+                .attr("class", "progressive-disclosure");
+            
+            gradient.append("stop")
+                .attr("offset", "0%")
+                .attr("stop-color", "rgb(210, 215, 255)");
+            gradient.append("stop")
+                .attr("offset", "50%")
+                .attr("stop-color", "rgb(210, 215, 255)");
+            gradient.append("stop")
+                .attr("offset", "51%")
+                .attr("stop-color", "rgb(255, 200, 200)");
+            gradient.append("stop")
+                .attr("offset", "100%")
+                .attr("stop-color", "darkred");
+
+            // Create gradient rectangle
+            const gradientRect = svg.append("rect")
+                .attr("class", "gradient-legend progressive-disclosure")
+                .attr("x", baseX - gradientWidth/2)
+                .attr("y", firstRowY)
+                .attr("width", gradientWidth)
+                .attr("height", gradientHeight)
+                .attr("fill", "url(#colorGradient)")
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .attr("opacity", 0);
+
+            // Add legend text
+            const legendText = svg.append("text")
+                .attr("class", "legend-text progressive-disclosure")
+                .attr("x", baseX)
+                .attr("y", firstRowY + gradientHeight + 25)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#2c3e50")
+                .attr("font-size", "20px")
+                .attr("font-weight", "bold")
+                .attr("opacity", 0)
+                .text("Color intensity represents organism prevalence");
+            
+            const legendText2 = svg.append("text")
+                .attr("class", "legend-text2 progressive-disclosure")
+                .attr("x", baseX)
+                .attr("y", firstRowY + gradientHeight + 50)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#2c3e50")
+                .attr("font-size", "20px")
+                .attr("font-weight", "bold")
+                .attr("opacity", 0)
+                .text("Legend relevant for both donut and strip.");
+
+            // Animate both appearing together
+            gradientRect.transition().duration(800).attr("opacity", 1);
+            legendText.transition().duration(800).attr("opacity", 1);
+            legendText2.transition().duration(800).attr("opacity", 1);
+        }
+
+        function showSecondRowDonut(index) {
+            const baseX = 1600;
+            const secondRowY = 500;
+            const donutSpacing = 200;
+            const startX = baseX - donutSpacing; // Center the three donuts
+            const maxTextWidth = 180;
+            const lineHeight = 18;
+            
+            // Get the specific donut data from secondRowDonuts array
+            const donutData = secondRowDonuts[index];
+            const donutX = startX + index * donutSpacing;
+            
+            // Create arc generators
+            const arc = d3.arc()
+                .innerRadius(donutData.radius * 0.6)
+                .outerRadius(donutData.radius)
+                .startAngle(donutData.startAngle)
+                .endAngle(donutData.endAngle);
+
+            const fullDonutArc = d3.arc()
+                .innerRadius(donutData.radius * 0.6)
+                .outerRadius(donutData.radius)
+                .startAngle(0)
+                .endAngle(2 * Math.PI);
+
+            // Create donut background
+            const donutBg = svg.append("path")
+                .attr("class", `donut-bg-row2-${index} progressive-disclosure`)
+                .attr("transform", `translate(${donutX}, ${secondRowY})`)
+                .attr("d", fullDonutArc)
+                .attr("fill", donutData.bgColor || (donutData.inverted ? "black" : "white"))
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .attr("opacity", 0);
+
+            // Create arc
+            const arcPath = svg.append("path")
+                .attr("class", `arc-row2-${index} progressive-disclosure`)
+                .attr("transform", `translate(${donutX}, ${secondRowY})`)
+                .attr("d", arc)
+                .attr("fill", donutData.arcColor || (donutData.inverted ? "white" : "black"))
+                .attr("opacity", 1);
+
+            // Animate donut appearing
+            donutBg.transition()
+                .duration(600)
+                .attr("opacity", 1)
+                .ease(d3.easeBounceOut);
+
+            // Add text below donut
+            const textGroup = svg.append("g")
+                .attr("class", `text-group-row2-${index} progressive-disclosure`)
+                .attr("transform", `translate(${donutX}, ${secondRowY + 120})`);
+
+            const wrappedLines = wrapText(donutData.label, maxTextWidth);
+            
+            // Add text lines with staggered animation
+            wrappedLines.forEach((line, lineIndex) => {
+                textGroup.append("text")
+                    .attr("x", 0)
+                    .attr("y", lineIndex * lineHeight)
+                    .attr("text-anchor", "middle")
+                    .attr("fill", "#2c3e50")
+                    .attr("font-size", "14px")
+                    .attr("opacity", 0)
+                    .text(line)
+                    .transition()
+                    .duration(400)
+                    .delay(600 + lineIndex * 100) // Start after donut animation
+                    .attr("opacity", 1);
+            });
+        }
+
+        function showThirdRowDonut(index) {
+            const baseX = 1600;
+            const thirdRowY = 750;
+            const thirdRowSpacing = 350;
+            const thirdRowStartX = baseX - thirdRowSpacing/2;
+            const maxTextWidth = 180;
+            const lineHeight = 18;
+            
+            // Define third row donut data
+            const thirdRowDonuts = [
+                { id: 6, radius: 80, label: "Sixth organism with detailed strip analysis showing multiple components and relationships.", 
+                startAngle: Math.PI, endAngle: Math.PI/2},
+                { id: 7, radius: 80, label: "Seventh organism demonstrating complex interactions with environmental factors.", 
+                startAngle: 0, endAngle: Math.PI}
+            ];
+            
+            const donutData = thirdRowDonuts[index];
+            const donutX = thirdRowStartX + index * thirdRowSpacing;
+            
+            // Create arc generators
+            const arc = d3.arc()
+                .innerRadius(donutData.radius * 0.6)
+                .outerRadius(donutData.radius)
+                .startAngle(donutData.startAngle)
+                .endAngle(donutData.endAngle);
+
+            const fullDonutArc = d3.arc()
+                .innerRadius(donutData.radius * 0.6)
+                .outerRadius(donutData.radius)
+                .startAngle(0)
+                .endAngle(2 * Math.PI);
+
+            // Create donut background
+            const donutBg = svg.append("path")
+                .attr("class", `donut-bg-row3-${index} progressive-disclosure`)
+                .attr("transform", `translate(${donutX}, ${thirdRowY})`)
+                .attr("d", fullDonutArc)
                 .attr("fill", "white")
                 .attr("stroke", "black")
-                .attr("stroke-width", 1)
-                .attr("rx", 5)
-                .attr("ry", 5);
+                .attr("stroke-width", 2)
+                .attr("opacity", 0);
 
-                // Add text inside the box
-            tooltip.append("text")
-                .attr("x", mouseX - 540)
-                .attr("y", mouseY + 60)
-                .attr("font-size", "29")
+            // Create arc
+            const arcPath = svg.append("path")
+                .attr("class", `arc-row3-${index} progressive-disclosure`)
+                .attr("transform", `translate(${donutX}, ${thirdRowY})`)
+                .attr("d", arc)
                 .attr("fill", "black")
-                .text("Legend is here to help you interpret");
+                .attr("opacity", 1);
 
-            tooltip.append("text")
-                .attr("x", mouseX - 540)
-                .attr("y", mouseY+90)
-                .attr("font-size", "29")
-                .attr("fill", "black")
-                .text("the REAL DATA on the right.");
-
-          })
-          .on("mouseout", function() {
-            // Remove tooltip when not hovering
-            svg.selectAll(".tooltip-box").remove();
-          });
-
-        svg.append("circle")
-          .attr("cx", 362)
-          .attr("cy", 115)
-          .attr("r", 14)
-          .attr("fill", "black");
-
-        const textElement = svg.append("text")
-            .attr("x", 200)
-            .attr("y", 125)
-            .attr("font-size", "28")
-            .attr("fill", "green")
-            .style("font-weight", "bold");
-      
-        textElement.append("tspan").text("Hover over     ");
-        textElement.append("tspan").attr("fill", "white").text("?");
-        textElement.append("tspan").text("     to find more information");
-
-        svg.append("text")
-        .attr("x", 0)
-        .attr("y", 165)
-        .attr("font-size", "23")
-        .attr("fill", "Green")
-        .style("font-weight", "bold")
-        .text("Donut (2 arcs) + Strip (8 rectangles) show organisms (10) in fake data")
-
-        svg.append("circle")
-            .attr("cx", 738)
-            .attr("cy", 205)
-            .attr("r", 18)
-            .attr("fill", "black");
-
-
-        svg.append("text")
-        .attr("x", 0)
-        .attr("y", 215)
-        .attr("font-size", "23.5")
-        .attr("fill", "Green")
-        .style("font-weight", "bold")
-        .style("text-decoration", "underline")
-        .text("Organisms in donut appear more frequently in disease literature")
-
-        svg.append("text")
-          .attr("x", 731)
-          .attr("y", 212)
-          .attr("font-size", "25")
-          .attr("fill", "White")
-          .style("font-weight", "bold")
-        //   .style("text-decoration", "underline")
-          .text("?")
-          .on("mouseover", function(event) {
-              // Get mouse position
-              const [mouseX, mouseY] = d3.pointer(event);
-              
-              // Create tooltip box
-              const tooltip = svg.append("g")
-                .attr("class", "tooltip-box");
-                
-              // Add rectangle background
-              tooltip.append("rect")
-                  .attr("x", mouseX - 550)
-                  .attr("y", mouseY + 30)
-                  .attr("width", 530)  // Increased width from 220 to 550
-                  .attr("height", 130)  // Increased height from 50 to 70 to accommodate larger text
-                  .attr("fill", "white")
-                  .attr("stroke", "black")
-                  .attr("stroke-width", 1)
-                  .attr("rx", 5)
-                  .attr("ry", 5);
-  
-                  // Add text inside the box
-              tooltip.append("text")
-                  .attr("x", mouseX - 540)
-                  .attr("y", mouseY + 60)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("Organisms ordered by arc size in donut,");
-  
-              tooltip.append("text")
-                  .attr("x", mouseX - 540)
-                  .attr("y", mouseY+90)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("starting and ending at 6'o'clock, going");
-  
-              tooltip.append("text")
-                  .attr("x", mouseX - 540)
-                  .attr("y", mouseY+120)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("counter-clockwise. Top two frequent");
-  
-              tooltip.append("text")
-                  .attr("x", mouseX - 540)
-                  .attr("y", mouseY+150)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("organisms in literature shown here.");
-            })
-            .on("mouseout", function() {
-              // Remove tooltip when not hovering
-              svg.selectAll(".tooltip-box").remove();
-            });
-        
-        // Calculate line start point (on the inner edge of the inner stroke)
-        const lineStartX = Math.sin(angle) * radius2;
-        const lineStartY = -Math.cos(angle) * radius2;
-        
-        // Calculate line end point (offset inward and to side)
-        const lineEndX = -300
-        const lineEndY = lineStartY
-
-        donutGroup.append("line")
-                .attr("class", "label-line")
-                .attr("id", "LIOHIO") 
-                .attr("x1", lineStartX + 300)
-                .attr("y1", lineStartY)
-                .attr("x2", lineEndX + 570)
-                .attr("y2", lineEndY + 190)
-                .attr("stroke", "black")
-                .attr("stroke-width", 3)
-                .style("opacity", 0)
-
-        svg.append("text")
-        .attr("id", "LIOHIO")
-        .attr("x", 590)
-        .attr("y", 760)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        .attr("text-anchor", "start")
-        .style("font-weight", "bold")
-        .style("opacity", 0)
-        .text("Less of this")
-
-        svg.append("text")
-        .attr("id", "LIOHIO")
-        .attr("x", 590)
-        .attr("y", 790)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        .attr("text-anchor", "start")
-        .style("font-weight", "bold")
-        .style("opacity", 0)
-        .text("organism = ")
-
-        svg.append("text")
-        .attr("id", "LIOHIO")
-        .attr("x", 590)
-        .attr("y", 820)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        .attr("text-anchor", "start")
-        .style("font-weight", "bold")
-        .style("opacity", 0)
-        .text("closer to")
-
-        svg.append("text")
-        .attr("id", "LIOHIO")
-        .attr("x", 590)
-        .attr("y", 850)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        .attr("text-anchor", "start")
-        .style("font-weight", "bold")
-        .style("opacity", 0)
-        .text("disease")
-
-        svg.append("circle")
-            .attr("id", "LIOHIO")
-            .attr("cx", 718)
-            .attr("cy", 845)
-            .attr("r", 18)
-            .style("opacity", 0)
-            .attr("fill", "black");
-
-        svg.append("text")
-          .attr("id", "LIOHIO")
-          .attr("x", 708)
-          .attr("y", 855)
-          .attr("font-size", "29")
-          .attr("fill", "white")
-          .attr("text-anchor", "start")
-          .style("font-weight", "bold")
-          .style("opacity", 0)
-          .text("?")
-          .on("mouseover", function(event) {
-              // Get mouse position
-              const [mouseX, mouseY] = d3.pointer(event);
-              
-              // Create tooltip box
-              const tooltip = svg.append("g")
-                .attr("class", "tooltip-box");
-                
-              // Add rectangle background
-              tooltip.append("rect")
-                  .attr("x", mouseX - 500)
-                  .attr("y", mouseY + 30)
-                  .attr("width", 450)  // Increased width from 220 to 550
-                  .attr("height", 110)  // Increased height from 50 to 70 to accommodate larger text
-                  .attr("fill", "white")
-                  .attr("stroke", "black")
-                  .attr("stroke-width", 1)
-                  .attr("rx", 5)
-                  .attr("ry", 5);
-  
-                  // Add text inside the box
-              tooltip.append("text")
-                  .attr("x", mouseX-490)
-                  .attr("y", mouseY+60)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("Inner line means low presence of");
-  
-              tooltip.append("text")
-                  .attr("x", mouseX-490)
-                  .attr("y", mouseY+90)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("organism found in disease");
-  
-              tooltip.append("text")
-                  .attr("x", mouseX-490)
-                  .attr("y", mouseY+120)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("(Low Indicator Organism = LIO)");
-            })
-            .on("mouseout", function() {
-              // Remove tooltip when not hovering
-              svg.selectAll(".tooltip-box").remove();
-            });
-
-
-        const firstBlackOuterStroke = donutGroup.selectAll("path.outer-stroke")
-            .filter(function() {
-                return d3.select(this).attr("stroke") === "white";
-            })
-            .nodes()[0];
-
-        const firstData2 = d3.select(firstBlackOuterStroke).datum();
-        const angle2 = (firstData2.startAngle + firstData2.endAngle) / 2;
-        const radius3 = outerArc.outerRadius()();
-
-        
-        // Calculate line start point (on the inner edge of the inner stroke)
-        const lineStartX2 = Math.sin(angle2) * radius3;
-        const lineStartY2 = -Math.cos(angle2) * radius3;
-
-        const lineEndX2 = lineStartX2
-        const lineEndY2 = 150
-
-        donutGroup.append("line")
-                .attr("id", "LIOHIO")
-                .attr("class", "label-line")
-                .attr("x1", lineStartX2-570)
-                .attr("y1", lineStartY2)
-                .attr("x2", lineEndX2-570)
-                .attr("y2", lineEndY2+70)
-                .attr("stroke", "black")
-                .attr("stroke-width", 3)
-                .style("opacity", 0)
-
-        svg.append("text")
-        .attr("id", "LIOHIO")
-        .attr("x", 0)
-        .attr("y", 810)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        .attr("text-anchor", "start")
-        .style("font-weight", "bold")
-        .style("opacity", 0)
-        .text("More of this")
-
-        svg.append("text")
-        .attr("id", "LIOHIO")
-        .attr("x", 0)
-        .attr("y", 840)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        .attr("text-anchor", "start")
-        .style("font-weight", "bold")
-        .style("opacity", 0)
-        .text("organism =")
-
-        svg.append("text")
-        .attr("id", "LIOHIO")
-        .attr("x", 0)
-        .attr("y", 870)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        .attr("text-anchor", "start")
-        .style("font-weight", "bold")
-        .style("opacity", 0)
-        .text("closer to")
-
-        svg.append("text")
-        .attr("id", "LIOHIO")
-        .attr("x", 0)
-        .attr("y", 900)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        .attr("text-anchor", "start")
-        .style("font-weight", "bold")
-        .style("opacity", 0)
-        .text("disease")
-
-        svg.append("circle")
-            .attr("id", "LIOHIO")
-            .attr("cx", 130)
-            .attr("cy", 890)
-            .attr("r", 18)
-            .style("opacity", 0)
-            .attr("fill", "black");
-
-        svg.append("text")
-          .attr("id", "LIOHIO")
-          .attr("x", 120)
-          .attr("y", 900)
-          .attr("font-size", "29")
-          .attr("fill", "white")
-          .attr("text-anchor", "start")
-          .style("font-weight", "bold")
-          .style("opacity", 0)
-          .text("?")
-          .on("mouseover", function(event) {
-              // Get mouse position
-              const [mouseX, mouseY] = d3.pointer(event);
-              
-              // Create tooltip box
-              const tooltip = svg.append("g")
-                .attr("class", "tooltip-box");
-                
-              // Add rectangle background
-              tooltip.append("rect")
-                  .attr("x", mouseX + 50)
-                  .attr("y", mouseY + 30)
-                  .attr("width", 460)  // Increased width from 220 to 550
-                  .attr("height", 110)  // Increased height from 50 to 70 to accommodate larger text
-                  .attr("fill", "white")
-                  .attr("stroke", "black")
-                  .attr("stroke-width", 1)
-                  .attr("rx", 5)
-                  .attr("ry", 5);
-  
-                  // Add text inside the box
-              tooltip.append("text")
-                  .attr("x", mouseX + 60)
-                  .attr("y", mouseY + 60)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("Outer line means high presence of");
-  
-              tooltip.append("text")
-                  .attr("x", mouseX + 60)
-                  .attr("y", mouseY+90)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("organism found in disease");
-  
-              tooltip.append("text")
-                  .attr("x", mouseX + 60)
-                  .attr("y", mouseY+120)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("(High Indicator Organism = HIO)");
-            })
-            .on("mouseout", function() {
-              // Remove tooltip when not hovering
-              svg.selectAll(".tooltip-box").remove();
-            });
-
-        svg.append("line")
-            .attr("class", "label-line")
-            .attr("x1", 322)
-            .attr("y1", 829)
-            .attr("x2", 5)
-            .attr("y2", 980)
-            .attr("stroke", "black")
-            .attr("stroke-width", 3)
-            .attr("stroke-dasharray", "5,5")
-
-        svg.append("line")
-            .attr("class", "label-line")
-            .attr("x1", 378)
-            .attr("y1", 836)
-            .attr("x2", 515)
-            .attr("y2", 980)
-            .attr("stroke", "black")
-            .attr("stroke-width", 3)
-            .attr("stroke-dasharray", "5,5")
-
-
-        svg.append("line")
-        .attr("class", "label-line")
-        .attr("x1", 500)
-        .attr("y1", 740)
-        .attr("x2", 600)
-        .attr("y2", 880)
-        .attr("stroke", "black")
-        .attr("stroke-width", 3)
-
-        svg.append("text")
-        .attr("x", 515)
-        .attr("y", 905)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        .attr("text-anchor", "start")
-        .style("font-weight", "bold")
-        .text("Arc size indicates")
-
-        svg.append("text")
-        .attr("x", 515)
-        .attr("y", 935)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        .attr("text-anchor", "start")
-        .style("font-weight", "bold")
-        .text("frequency in")
-
-        svg.append("circle")
-            .attr("cx", 543)
-            .attr("cy", 985)
-            .attr("r", 16)
-            .attr("fill", "black");
-
-        svg.append("text")
-        .attr("x", 515)
-        .attr("y", 965)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        .attr("text-anchor", "start")
-        .style("font-weight", "bold")
-        .html("disease literature")
-
-            svg.append("text")
-            .attr("x", 535)
-            .attr("y", 995)
-            .attr("font-size", "29")
-            .attr("fill", "Black")
-            .attr("text-anchor", "start")
-            .style("font-weight", "bold")
-            .html("<tspan fill='white'>?</tspan>")
-            .on("mouseover", function(event) {
-                // Get mouse position
-                const [mouseX, mouseY] = d3.pointer(event);
-                
-                // Create tooltip box
-                const tooltip = svg.append("g")
-                    .attr("class", "tooltip-box");
-                    
-                // Add rectangle background
-                tooltip.append("rect")
-                    .attr("x", mouseX - 350)
-                    .attr("y", mouseY + 30)
-                    .attr("width", 550)  // Increased width from 220 to 550
-                    .attr("height",260)  // Increased height from 50 to 70 to accommodate larger text
-                    .attr("fill", "white")
-                    .attr("stroke", "black")
-                    .attr("stroke-width", 1)
-                    .attr("rx", 5)
-                    .attr("ry", 5);
-        
-                    // Add text inside the box
-                tooltip.append("text")
-                    .attr("x", mouseX - 340)
-                    .attr("y", mouseY + 60)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("This organism appears most frequently in");
-        
-                tooltip.append("text")
-                    .attr("x", mouseX - 340)
-                    .attr("y", mouseY+90)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("disease literature. Therefore, this is the");
-        
-                    tooltip.append("text")
-                    .attr("x", mouseX - 340)
-                    .attr("y", mouseY+120)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("biggest arc. The blue arc contains an");
-        
-                    tooltip.append("text")
-                    .attr("x", mouseX - 340)
-                    .attr("y", mouseY+150)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("organism that appears 2nd most");
-        
-                    tooltip.append("text")
-                    .attr("x", mouseX - 340)
-                    .attr("y", mouseY+180)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("frequently in disease literature. Therefore,");
-        
-                    tooltip.append("text")
-                    .attr("x", mouseX - 340)
-                    .attr("y", mouseY+210)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("that is the 2nd biggest arc. And so on...");
-        
-                    tooltip.append("text")
-                    .attr("x", mouseX - 340)
-                    .attr("y", mouseY+240)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("Less frequent organisms are pushed to");
-        
-                    tooltip.append("text")
-                    .attr("x", mouseX - 340)
-                    .attr("y", mouseY+270)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("strip.");
-                })
-                .on("mouseout", function() {
-                // Remove tooltip when not hovering
-                svg.selectAll(".tooltip-box").remove();
-                });
-
-        svg.append("text")
-        .attr("x", 0)
-        .attr("y", 1085)
-        .attr("font-size", "24.5")
-        .attr("fill", "Green")
-        .style("font-weight", "bold")
-        .style("text-decoration", "underline")
-        .text("Organisms in strip appear less frequently in disease literature")
-
-        svg.append("circle")
-            .attr("cx", 738)
-            .attr("cy", 1075)
-            .attr("r", 16)
-            .attr("fill", "black");
-
-        svg.append("text")
-          .attr("x", 730)
-          .attr("y", 1085)
-          .attr("font-size", "24")
-          .attr("fill", "white")
-          .style("font-weight", "bold")
-          .text("?")
-          .on("mouseover", function(event) {
-              // Get mouse position
-              const [mouseX, mouseY] = d3.pointer(event);
-              
-              // Create tooltip box
-              const tooltip = svg.append("g")
-                .attr("class", "tooltip-box");
-                
-              // Add rectangle background
-              tooltip.append("rect")
-                  .attr("x", mouseX - 600)
-                  .attr("y", mouseY + 30)
-                  .attr("width", 610)  // Increased width from 220 to 550
-                  .attr("height", 80)  // Increased height from 50 to 70 to accommodate larger text
-                  .attr("fill", "white")
-                  .attr("stroke", "black")
-                  .attr("stroke-width", 1)
-                  .attr("rx", 5)
-                  .attr("ry", 5);
-  
-                  // Add text inside the box
-              tooltip.append("text")
-                  .attr("x", mouseX - 590)
-                  .attr("y", mouseY + 60)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("Organisms ordered left to right in strip. Bottom");
-  
-              tooltip.append("text")
-                  .attr("x", mouseX - 590)
-                  .attr("y", mouseY + 90)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("8 frequent organisms in literature shown here.");
-  
-            })
-            .on("mouseout", function() {
-              // Remove tooltip when not hovering
-              svg.selectAll(".tooltip-box").remove();
-            });
-
-
-
-        svg.append("line")
-        .attr("class", "label-line")
-        .attr("x1", 590)
-        .attr("y1", 330)
-        .attr("x2", 590)
-        .attr("y2", 420)
-        .attr("stroke", "black")
-        .attr("stroke-width", 3)
-        // .attr("marker-end", "url(#barcode-arrowhead)")
-
-        svg.append("text")
-        .attr("x", 565)
-        .attr("y", 285)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        .attr("text-anchor", "start")
-        .style("font-weight", "bold")
-        .text("Similar to")
-
-        svg.append("text")
-        .attr("x", 565)
-        .attr("y", 315)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        .attr("text-anchor", "start")
-        .style("font-weight", "bold")
-        .text("Disease")
-
-        svg.append("circle")
-            .attr("cx", 695)
-            .attr("cy", 305)
-            .attr("r", 18)
-            .attr("fill", "black");
-
-        svg.append("text")
-          .attr("x", 687)
-          .attr("y", 315)
-          .attr("font-size", "29")
-          .attr("fill", "white")
-          .attr("text-anchor", "start")
-          .style("font-weight", "bold")
-          .text("?")
-          .on("mouseover", function(event) {
-              // Get mouse position
-              const [mouseX, mouseY] = d3.pointer(event);
-              
-              // Create tooltip box
-              const tooltip = svg.append("g")
-                .attr("class", "tooltip-box");
-                
-              // Add rectangle background
-              tooltip.append("rect")
-                  .attr("x", mouseX - 520)
-                  .attr("y", mouseY + 30)
-                  .attr("width", 500)  // Increased width from 220 to 550
-                  .attr("height", 80)  // Increased height from 50 to 70 to accommodate larger text
-                  .attr("fill", "white")
-                  .attr("stroke", "black")
-                  .attr("stroke-width", 1)
-                  .attr("rx", 5)
-                  .attr("ry", 5);
-  
-                  // Add text inside the box
-              tooltip.append("text")
-                  .attr("x", mouseX - 510)
-                  .attr("y", mouseY +60)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("Red means organism presence in");
-  
-              tooltip.append("text")
-                  .attr("x", mouseX - 510)
-                  .attr("y", mouseY+90)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("sample consistent with disease");
-            })
-            .on("mouseout", function() {
-              // Remove tooltip when not hovering
-              svg.selectAll(".tooltip-box").remove();
-            });
-
-
-        svg.append("line")
-        .attr("class", "label-line")
-        .attr("x1", 240)
-        .attr("y1", 370)
-        .attr("x2", 240)
-        .attr("y2", 270)
-        .attr("stroke", "black")
-        .attr("stroke-width", 3)
-        // .attr("marker-end", "url(#barcode-arrowhead)")
-
-        svg.append("circle")
-            .attr("cx", 320)
-            .attr("cy", 255)
-            .attr("r", 18)
-            .attr("fill", "black");
-
-        svg.append("text")
-        .attr("x", 0)
-        .attr("y", 265)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        // .attr("text-anchor", "end")
-        .style("font-weight", "bold")
-        .text("Similar to No-Disease")
-
-          svg.append("text")
-          .attr("x", 310)
-          .attr("y", 265)
-          .attr("font-size", "29")
-          .attr("fill", "white")
-          // .attr("text-anchor", "end")
-          .style("font-weight", "bold")
-          .text("?")
-          .on("mouseover", function(event) {
-              // Get mouse position
-              const [mouseX, mouseY] = d3.pointer(event);
-              
-              // Create tooltip box
-              const tooltip = svg.append("g")
-                .attr("class", "tooltip-box");
-                
-              // Add rectangle background
-              tooltip.append("rect")
-                  .attr("x", mouseX - 80)
-                  .attr("y", mouseY + 30)
-                  .attr("width", 490)  // Increased width from 220 to 550
-                  .attr("height", 80)  // Increased height from 50 to 70 to accommodate larger text
-                  .attr("fill", "white")
-                  .attr("stroke", "black")
-                  .attr("stroke-width", 1)
-                  .attr("rx", 5)
-                  .attr("ry", 5);
-  
-                  // Add text inside the box
-              tooltip.append("text")
-                  .attr("x", mouseX - 70)
-                  .attr("y", mouseY +60)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("Blue means organism presence in");
-  
-              tooltip.append("text")
-                  .attr("x", mouseX - 70)
-                  .attr("y", mouseY+90)
-                  .attr("font-size", "29")
-                  .attr("fill", "black")
-                  .text("sample smaller compared to disease");
-            })
-            .on("mouseout", function() {
-              // Remove tooltip when not hovering
-              svg.selectAll(".tooltip-box").remove();
-            });
-
-        svg.append("line")
-        .attr("class", "label-line")
-        .attr("id", "LIOHIO")
-        .attr("x1", 42)
-        .attr("y1", 1055)
-        .attr("x2", 42)
-        .attr("y2", 1160)
-        .attr("stroke", "black")
-        .attr("stroke-width", 3)
-        .style("opacity", 0)
-
-        
-
-        svg.append("text")
-        .attr("id", "LIOHIO")
-        .attr("x", 20)
-        .attr("y", 1185)
-        .attr("font-size", "29")
-        .attr("fill", "Black")
-        // .attr("text-anchor", "end")
-        .style("font-weight", "bold")
-        .text("Less of this organism = closer to disease")
-        .style("opacity", 0)
-
-        svg.append("circle")
-            .attr("id", "LIOHIO")
-            .attr("cx", 610)
-            .attr("cy", 1175)
-            .attr("r", 18)
-            .style("opacity", 0)
-            .attr("fill", "black");
-
-
-        svg.append("text")
-            .attr("id", "LIOHIO")
-            .attr("x", 600)
-            .attr("y", 1185)
-            .attr("font-size", "29")
-            .attr("fill", "white")
-            // .attr("text-anchor", "end")
-            .style("font-weight", "bold")
-            .style("opacity", 0)
-            .text("?")
-            .on("mouseover", function(event) {
-                // Get mouse position
-                const [mouseX, mouseY] = d3.pointer(event);
-                
-                // Create tooltip box
-                const tooltip = svg.append("g")
-                  .attr("class", "tooltip-box");
-                  
-                // Add rectangle background
-                tooltip.append("rect")
-                    .attr("x", mouseX - 400)
-                    .attr("y", mouseY + 10)
-                    .attr("width", 470)  // Increased width from 220 to 550
-                    .attr("height", 200)  // Increased height from 50 to 70 to accommodate larger text
-                    .attr("fill", "white")
-                    .attr("stroke", "black")
-                    .attr("stroke-width", 1)
-                    .attr("rx", 5)
-                    .attr("ry", 5);
-    
-                    // Add text inside the box
-                tooltip.append("text")
-                    .attr("x", mouseX - 390)
-                    .attr("y", mouseY + 40)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("Lower line means low presence of");
-    
-                tooltip.append("text")
-                    .attr("x", mouseX - 390)
-                    .attr("y", mouseY+70)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("organism found in disease");
-    
-                tooltip.append("text")
-                    .attr("x", mouseX - 390)
-                    .attr("y", mouseY+100)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("(Low Indicator Organism = LIO)");
-    
-                tooltip.append("text")
-                    .attr("x", mouseX - 390)
-                    .attr("y", mouseY+130)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("Upper line means high presence of");
-    
-                tooltip.append("text")
-                    .attr("x", mouseX - 390)
-                    .attr("y", mouseY+160)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("organism found in disease");
-    
-                tooltip.append("text")
-                    .attr("x", mouseX - 390)
-                    .attr("y", mouseY+190)
-                    .attr("font-size", "29")
-                    .attr("fill", "black")
-                    .text("(High Indicator Organism = HIO)");
-              })
-              .on("mouseout", function() {
-                // Remove tooltip when not hovering
-                svg.selectAll(".tooltip-box").remove();
-              });
-    
-              d3.selectAll(".toggleable")
-                .style("display", function() {
-                    return d3.select(this).style("display") === "block" ? "none" : "block";
-                });
-
-
-        
-
-        // svg.append("text")
-        // .attr("x", 445)
-        // .attr("y", 1085)
-        // .attr("font-size", "29")
-        // .attr("fill", "Black")
-        // // .attr("text-anchor", "end")
-        // .style("font-weight", "bold")
-        // .text("Upper line(?)")
-        // .on("mouseover", function(event) {
-        //     // Get mouse position
-        //     const [mouseX, mouseY] = d3.pointer(event);
+            // Create strip below donut
+            const stripY = thirdRowY + donutData.radius + 40;
+            const stripWidth = 120;
+            const stripHeight = 25;
+            const stripX = donutX - stripWidth / 2;
             
-        //     // Create tooltip box
-        //     const tooltip = svg.append("g")
-        //       .attr("class", "tooltip-box");
-              
-        //     // Add rectangle background
-        //     tooltip.append("rect")
-        //         .attr("x", mouseX - 250)
-        //         .attr("y", mouseY + 30)
-        //         .attr("width", 470)  // Increased width from 220 to 550
-        //         .attr("height", 110)  // Increased height from 50 to 70 to accommodate larger text
-        //         .attr("fill", "white")
-        //         .attr("stroke", "black")
-        //         .attr("stroke-width", 1)
-        //         .attr("rx", 5)
-        //         .attr("ry", 5);
-
-        //         // Add text inside the box
-        //     tooltip.append("text")
-        //         .attr("x", mouseX - 240)
-        //         .attr("y", mouseY + 60)
-        //         .attr("font-size", "29")
-        //         .attr("fill", "black")
-        //         .text("Upper line means high presence of");
-
-        //     tooltip.append("text")
-        //         .attr("x", mouseX - 240)
-        //         .attr("y", mouseY+90)
-        //         .attr("font-size", "29")
-        //         .attr("fill", "black")
-        //         .text("organism found in disease");
-
-        //     tooltip.append("text")
-        //         .attr("x", mouseX - 240)
-        //         .attr("y", mouseY+120)
-        //         .attr("font-size", "29")
-        //         .attr("fill", "black")
-        //         .text("(High Indicator Organism = HIO)");
-        //   })
-        //   .on("mouseout", function() {
-        //     // Remove tooltip when not hovering
-        //     svg.selectAll(".tooltip-box").remove();
-        //   });
-
-        svg.append("text")
-        .attr("x", 445)
-        .attr("y", 900)
-        .attr("font-size", "19")
-        .attr("fill", "Black")
-        // .attr("text-anchor", "end")
-        .style("font-weight", "bold")
-        .text("")
-
-        svg.append("text")
-        .attr("x", 445)
-        .attr("y", 920)
-        .attr("font-size", "19")
-        .attr("fill", "Black")
-        // .attr("text-anchor", "end")
-        .style("font-weight", "bold")
-        .text("")
-        
-        
-
-        const gradient5 = svg.append("defs")
-            .append("linearGradient")
-            .attr("id", "gradient7")
-            .attr("x1", "0%")
-            .attr("y1", "0%")
-            .attr("x2", "100%")
-            .attr("y2", "0%");
-        
-        gradient5.append("stop")
-            .attr("offset", "0%")
-            .attr("stop-color", "rgb(210, 215, 255)");
-
-        gradient5.append("stop")
-            .attr("offset", "30%")
-            .attr("stop-color", "rgb(210, 215, 255)");
-        
-
-        gradient5.append("stop")
-            .attr("offset", "30%")
-            .attr("stop-color", "rgb(255, 200, 200)")
-        
-        gradient5.append("stop")
-            .attr("offset", "100%")
-            .attr("stop-color", "darkred");
-        
-        // Append the rectangle with the gradient fill
-        svg.append("rect")
-            .attr("x", 0)
-            .attr("y", 1220)
-            .attr("width", 760)
-            .attr("height", 30)
-            .style("fill", "url(#gradient7)");
-
-        svg.append("text")
-            .attr("x", 0)
-            .attr("y", 1290)
-            .attr("font-size", "25")
-            .attr("fill", "Black")
-            .attr("text-anchor", "start")
-            .style("font-weight", "bold")
-            .text("0%")
-
-        svg.append("text")
-            .attr("x", 210)
-            .attr("y", 1290)
-            .attr("font-size", "25")
-            .attr("fill", "Black")
-            .attr("text-anchor", "start")
-            .style("font-weight", "bold")
-            .text("50%")
-
-        svg.append("text")
-            .attr("x", 50)
-            .attr("y", 1350)
-            .attr("font-size", "29")
-            .attr("fill", "Black")
-            .attr("text-anchor", "start")
-            .style("font-weight", "bold")
-            .text("Organism prevalence relative to disease state")
-
-        svg.append("text")
-            .attr("x", 760)
-            .attr("y", 1290)
-            .attr("font-size", "25")
-            .attr("fill", "Black")
-            .attr("text-anchor", "end")
-            .style("font-weight", "bold")
-            .text("100%")
-        
-        let strokesVisible = false;
-        
-        function toggleStrokes() {
-            if (strokesVisible) {
-              // Hide strokes using IDs
-              d3.selectAll("#LIOHIO")
-                .transition()
-                .duration(300)
-                .style("opacity", 0);
-              
-              strokesVisible = false;
-            } else {
-              // Show strokes using IDs
-              d3.selectAll("#LIOHIO")
-                .transition()
-                .duration(300)
-                .style("opacity", 1);
-              
-              strokesVisible = true;
+            // Create 4 rectangles for strip
+            const numRects = 4;
+            const rectWidth = (stripWidth - 4) / numRects;
+            
+            for (let i = 0; i < numRects; i++) {
+                svg.append("rect")
+                    .attr("class", `strip-rect-row3-${index}-${i} progressive-disclosure`)
+                    .attr("x", stripX + 2 + (i * rectWidth))
+                    .attr("y", stripY + 2)
+                    .attr("width", rectWidth)
+                    .attr("height", stripHeight - 4)
+                    .attr("fill", "white")
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 1)
+                    .attr("opacity", 0)
+                    .transition()
+                    .duration(400)
+                    .delay(400 + i * 100) // Stagger strip rectangles
+                    .attr("opacity", 1);
             }
-          }
 
-        buttonGroup.on("click", toggleStrokes);
+            // Create connecting lines from donut to strip (similar to first column barcode)
+            const connectingLines = svg.selectAll(`.connecting-line-row3-${index}`)
+                .data([
+                    {x1: donutX - 30, y1: thirdRowY + 50, x2: stripX + 1, y2: stripY + stripHeight/2},           // Left line
+                    {x1: donutX + 30, y1: thirdRowY + 50, x2: stripX + stripWidth - 1, y2: stripY + stripHeight/2}  // Right line
+                ])
+                .enter()
+                .append("line")
+                .attr("class", `connecting-line connecting-line-row3-${index} progressive-disclosure`)
+                .attr("x1", d => d.x1)
+                .attr("y1", d => d.y1)
+                .attr("x2", d => d.x1) // Start at same position for animation
+                .attr("y2", d => d.y1)
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .attr("stroke-dasharray", "3,3")
+                .attr("opacity", 0);
 
-        // svg.append("text")
-        //     .attr("x", 0)
-        //     .attr("y", 1230)
-        //     .attr("font-size", "35")
-        //     .attr("fill", "red")
-        //     .attr("text-anchor", "start")
-        //     .text("Sample = ERR719231")
+            // Animate connecting lines
+            connectingLines.transition()
+                .duration(600)
+                .delay(600)
+                .attr("x2", d => d.x2)
+                .attr("y2", d => d.y2)
+                .attr("opacity", 1);
 
-        
+            // Animate donut appearing
+            donutBg.transition()
+                .duration(600)
+                .attr("opacity", 1)
+                .ease(d3.easeBounceOut);
 
+            // Add text below strip
+            const textGroup = svg.append("g")
+                .attr("class", `text-group-row3-${index} progressive-disclosure`)
+                .attr("transform", `translate(${donutX}, ${thirdRowY + 130})`);
 
-        // const gradient6 = svg.append("defs")
-        //     .append("linearGradient")
-        //     .attr("id", "gradient8")
-        //     .attr("x1", "0%")
-        //     .attr("y1", "0%")
-        //     .attr("x2", "100%")
-        //     .attr("y2", "0%");
-        
-        // gradient6.append("stop")
-        //     .attr("offset", "0%")
-        //     .attr("stop-color", "rgb(139, 128, 0)");
+            const wrappedLines = wrapText(donutData.label, maxTextWidth);
+            
+            // Add text lines with staggered animation
+            wrappedLines.forEach((line, lineIndex) => {
+                textGroup.append("text")
+                    .attr("x", 0)
+                    .attr("y", lineIndex * lineHeight)
+                    .attr("text-anchor", "middle")
+                    .attr("fill", "#2c3e50")
+                    .attr("font-size", "14px")
+                    .attr("opacity", 0)
+                    .text(line)
+                    .transition()
+                    .duration(400)
+                    .delay(800 + lineIndex * 100) // Start after donut and strip animations
+                    .attr("opacity", 1);
+            });
+        }
 
-        // gradient6.append("stop")
-        //     .attr("offset", "49%")
-        //     .attr("stop-color", "rgb(255, 255, 224)");
-        
-        // gradient6.append("stop")
-        //     .attr("offset", "50%")
-        //     .attr("stop-color", "white");
-
-        // gradient6.append("stop")
-        //     .attr("offset", "51%")
-        //     .attr("stop-color", "rgb(144, 238, 144)")
-        
-        // gradient6.append("stop")
-        //     .attr("offset", "100%")
-        //     .attr("stop-color", "rgb(18, 93, 13)");
-        
-        // // Append the rectangle with the gradient fill
-        // svg.append("rect")
-        //     .attr("x", 0)
-        //     .attr("y", 1200)
-        //     .attr("width", 760)
-        //     .attr("height", 30)
-        //     .style("fill", "url(#gradient8)");
-        
-
-        // svg.append("text")
-        //     .attr("x", 0)
-        //     .attr("y", 1260)
-        //     .attr("font-size", "25")
-        //     .attr("fill", "Black")
-        //     .attr("text-anchor", "start")
-        //     .text("Bad CDF Change w/ Action(s)")
-
-        // svg.append("text")
-        //     .attr("x", 760)
-        //     .attr("y", 1260)
-        //     .attr("font-size", "25")
-        //     .attr("fill", "Black")
-        //     .attr("text-anchor", "end")
-        //     .text("Good CDF Change w/ Action(s)")
-
-        
+        renderCurrentState();
     }
 
     // renders legend

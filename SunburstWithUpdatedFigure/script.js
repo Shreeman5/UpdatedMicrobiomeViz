@@ -372,8 +372,8 @@ function renderLegendDivs(){
     newDiv3.classList.add('dynamic-div-x3');
     newDiv3.style.left = '0px';
     newDiv3.style.top = '0px';
-    newDiv3.style.width = '800px';
-    newDiv3.style.height = '1600px';
+    newDiv3.style.width = '2400px';
+    newDiv3.style.height = '1300px';
     container3.appendChild(newDiv3);
 
     let container4 = document.getElementById('legendDiv4');
