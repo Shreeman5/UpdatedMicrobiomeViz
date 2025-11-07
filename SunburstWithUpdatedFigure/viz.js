@@ -318,983 +318,1237 @@ class Tab2Viz{
             .attr("stroke-width", "1")
     }
 
-    renderLegendofSecondRow(donutArray, barcodeArray){
-        let width = 2400
-        let height = 1300
-        let svg = d3.select(".dynamic-div-x3" ).append("svg")
-        .attr("width", width)
-        .attr("height", height)
+    // renderLegendofSecondRow(donutArray, barcodeArray){
+    //     let width = 2400
+    //     let height = 1300
+    //     let svg = d3.select(".dynamic-div-x3" ).append("svg")
+    //     .attr("width", width)
+    //     .attr("height", height)
 
-        const buttonGroup = svg.append("g")
-            .attr("class", "control-button")  // Different class, won't get cleared
-            .attr("transform", "translate(900, 1180)")
-            .style("cursor", "pointer")
-            .on("click", nextState);
+    //     const buttonGroup = svg.append("g")
+    //         .attr("class", "control-button")  // Different class, won't get cleared
+    //         .attr("transform", "translate(900, 1180)")
+    //         .style("cursor", "pointer")
+    //         .on("click", nextState);
 
-        // Button background rectangle
-        buttonGroup.append("rect")
-            .attr("width", 600)
-            .attr("height", 80)
-            .attr("rx", 6)  // Rounded corners
-            .attr("fill", "#3498db")
-            .attr("stroke", "#2980b9")
-            .attr("stroke-width", 1);
+    //     // Button background rectangle
+    //     buttonGroup.append("rect")
+    //         .attr("width", 600)
+    //         .attr("height", 80)
+    //         .attr("rx", 6)  // Rounded corners
+    //         .attr("fill", "#3498db")
+    //         .attr("stroke", "#2980b9")
+    //         .attr("stroke-width", 1);
 
-        // Button text
-        buttonGroup.append("text")
-            .attr("x", 10)  // Center horizontally
-            .attr("y", 50)  // Center vertically
-            .attr("text-anchor", "start")
-            .attr("fill", "white")
-            .attr("font-size", "40px")
-            .attr("font-family", "Arial, sans-serif")
-            .text("Click to learn more about legend");
+    //     // Button text
+    //     buttonGroup.append("text")
+    //         .attr("x", 10)  // Center horizontally
+    //         .attr("y", 50)  // Center vertically
+    //         .attr("text-anchor", "start")
+    //         .attr("fill", "white")
+    //         .attr("font-size", "40px")
+    //         .attr("font-family", "Arial, sans-serif")
+    //         .text("Click to learn more about legend");
 
 
-        // Updated data for 5 donuts in first column
-        const circleData = [
-            { id: 1, radius: 80, 
-                label: "The first arc always starts at 6 'o' clock but may stop anywhere in the donut. In this example tutorial, it stops at 12 'o' clock but that might be different for other examples. Notice that the arc is going counter-clockwise from 6 to 12 'o' clock. The first arc always has the biggest size. The first arc contains the microorganism that is found most frequently in disease literature. Therefore, the first arc contains the most important organism.", 
-                startAngle: Math.PI, endAngle: 0}, 
-            { id: 2, radius: 80, label: "The second arc starts wherever the first arc ends. The second arc has the second biggest size. The second arc contains the second most important organism.", 
-                startAngle: 0, endAngle: 3*Math.PI/2, inverted: true}, // 3 to 12 o'clock (270°)
-            { id: 3, radius: 80, label: "As you can see, importance of organism decreases counter-clockwise. The third arc contains the third most important organism.", 
-                startAngle: 3*Math.PI/2, endAngle: 5*Math.PI/4 }, // 3 to 7:30 (225°)  
-            { id: 4, radius: 80, label: "The fourth arc contains the fourth most important organism.", 
-                startAngle: 5*Math.PI/4, endAngle: 9*Math.PI/8 }, // 3 to 6:45 (157.5°)
-            { id: 5, radius: 80, label: "The strip beneath the donut contains organisms that are not as important. In this example, 5 organisms from the donut are shown in the strip. Organisms in the strip are ordered left to right in terms of importance. The donut contains organisms that are the most important. In this tutorial, the donut contains 4 and the strip contains 5 organism. In other examples, the split may be different.", 
-                startAngle: 9*Math.PI/8, endAngle: Math.PI} // 3 to 1:30 (45°)
-        ];
+    //     // Updated data for 5 donuts in first column
+    //     const circleData = [
+    //         { id: 1, radius: 80, 
+    //             label: "The first arc always starts at 6 'o' clock but may stop anywhere in the donut. In this example tutorial, it stops at 12 'o' clock but that might be different for other examples. Notice that the arc is going counter-clockwise from 6 to 12 'o' clock. The first arc always has the biggest size. The first arc contains the microorganism that is found most frequently in disease literature. Therefore, the first arc contains the most important organism.", 
+    //             startAngle: Math.PI, endAngle: 0}, 
+    //         { id: 2, radius: 80, label: "The second arc starts wherever the first arc ends. The second arc has the second biggest size. The second arc contains the second most important organism.", 
+    //             startAngle: 0, endAngle: 3*Math.PI/2, inverted: true}, // 3 to 12 o'clock (270°)
+    //         { id: 3, radius: 80, label: "As you can see, importance of organism decreases counter-clockwise. The third arc contains the third most important organism.", 
+    //             startAngle: 3*Math.PI/2, endAngle: 5*Math.PI/4 }, // 3 to 7:30 (225°)  
+    //         { id: 4, radius: 80, label: "The fourth arc contains the fourth most important organism.", 
+    //             startAngle: 5*Math.PI/4, endAngle: 9*Math.PI/8 }, // 3 to 6:45 (157.5°)
+    //         { id: 5, radius: 80, label: "The strip beneath the donut contains organisms that are not as important. In this example, 5 organisms from the donut are shown in the strip. Organisms in the strip are ordered left to right in terms of importance. The donut contains organisms that are the most important. In this tutorial, the donut contains 4 and the strip contains 5 organism. In other examples, the split may be different.", 
+    //             startAngle: 9*Math.PI/8, endAngle: Math.PI} // 3 to 1:30 (45°)
+    //     ];
         
-        // Second row donuts data (separate from first column)
-        const secondRowDonuts = [
-            { id: 11, radius: 80, 
-                label: "Really dark red color indicates that this organism from this example matches the organism profile of a diseased sample.", 
-                startAngle: Math.PI, endAngle: 0, arcColor: "darkred", bgColor: "white"}, 
-            { id: 12, radius: 80, 
-                label: "Blue indicates that this organism from this example does not match the organism profile of a disease sample.", 
-                startAngle: 0, endAngle: 3*Math.PI/2, inverted: true, arcColor: "white", bgColor: "rgb(210, 215, 255)"}, 
-            { id: 13, radius: 80, 
-                label: "Light red color indicates that this organism from this sample somewhat matches the organism profile of a diseased sample.", 
-                startAngle: 3*Math.PI/2, endAngle: 5*Math.PI/4, arcColor: "rgb(225, 200, 200)", bgColor: "white"}
-        ];
+    //     // Second row donuts data (separate from first column)
+    //     const secondRowDonuts = [
+    //         { id: 11, radius: 80, 
+    //             label: "Really dark red color indicates that this organism from this example matches the organism profile of a diseased sample.", 
+    //             startAngle: Math.PI, endAngle: 0, arcColor: "darkred", bgColor: "white"}, 
+    //         { id: 12, radius: 80, 
+    //             label: "Blue indicates that this organism from this example does not match the organism profile of a disease sample.", 
+    //             startAngle: 0, endAngle: 3*Math.PI/2, inverted: true, arcColor: "white", bgColor: "rgb(210, 215, 255)"}, 
+    //         { id: 13, radius: 80, 
+    //             label: "Light red color indicates that this organism from this sample somewhat matches the organism profile of a diseased sample.", 
+    //             startAngle: 3*Math.PI/2, endAngle: 5*Math.PI/4, arcColor: "rgb(225, 200, 200)", bgColor: "white"}
+    //     ];
 
-        let currentState = 1;
-        let currentSentenceIndex = 0;
-        let totalSentences = 0;
-        let secondColumnStep = 0; // Track second column progression
-        let thirdColumnStep = 0; // Track third column progression
-        const totalStates = 5; // Updated to include third column
+    //     let currentState = 1;
+    //     let currentSentenceIndex = 0;
+    //     let totalSentences = 0;
+    //     let secondColumnStep = 0; // Track second column progression
+    //     let thirdColumnStep = 0; // Track third column progression
+    //     const totalStates = 5; // Updated to include third column
 
-        // Prepare sentence data for progressive disclosure
-        const sentenceData = [];
-        circleData.forEach((donut, donutIdx) => {
-            const sentences = donut.label.split(/[.!?]+/).filter(s => s.trim().length > 0);
-            sentences.forEach((sentence, sentenceIdx) => {
-                sentenceData.push({
-                    donutIndex: donutIdx,
-                    sentenceIndex: sentenceIdx,
-                    text: sentence.trim() + (sentenceIdx < sentences.length - 1 ? "." : ""),
-                    donutY: 25 + donutIdx * 80, // Y position for this donut's text
-                    isFirstSentenceOfDonut: sentenceIdx === 0
-                });
-            });
-        });
-        totalSentences = sentenceData.length;
+    //     // Prepare sentence data for progressive disclosure
+    //     const sentenceData = [];
+    //     circleData.forEach((donut, donutIdx) => {
+    //         const sentences = donut.label.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    //         sentences.forEach((sentence, sentenceIdx) => {
+    //             sentenceData.push({
+    //                 donutIndex: donutIdx,
+    //                 sentenceIndex: sentenceIdx,
+    //                 text: sentence.trim() + (sentenceIdx < sentences.length - 1 ? "." : ""),
+    //                 donutY: 25 + donutIdx * 80, // Y position for this donut's text
+    //                 isFirstSentenceOfDonut: sentenceIdx === 0
+    //             });
+    //         });
+    //     });
+    //     totalSentences = sentenceData.length;
 
-        function updateStateIndicator() {
-            const indicators = [
-                "State 1: First Column of Circles",
-                `State 2: Explanations (Sentence ${currentSentenceIndex + 1}/${totalSentences})`, 
-                "State 3: + Second Column of Circles (Legend shown)",
-                `State 4: + Explanations for Second Column (Step ${secondColumnStep + 1}/7) - Next: ${getNextStepDescription()}`,
-                `State 5: + Third Column (Step ${thirdColumnStep + 1}/4) - Next: ${getThirdColumnNextStepDescription()}`
-            ];
-            console.log(indicators[currentState - 1]); // You can update a UI element here
-        }
+    //     function updateStateIndicator() {
+    //         const indicators = [
+    //             "State 1: First Column of Circles",
+    //             `State 2: Explanations (Sentence ${currentSentenceIndex + 1}/${totalSentences})`, 
+    //             "State 3: + Second Column of Circles (Legend shown)",
+    //             `State 4: + Explanations for Second Column (Step ${secondColumnStep + 1}/7) - Next: ${getNextStepDescription()}`,
+    //             `State 5: + Third Column (Step ${thirdColumnStep + 1}/4) - Next: ${getThirdColumnNextStepDescription()}`
+    //         ];
+    //         console.log(indicators[currentState - 1]); // You can update a UI element here
+    //     }
 
-        function getNextStepDescription() {
-            const descriptions = [
-                "Second Row Donut 1",
-                "Second Row Donut 2", 
-                "Second Row Donut 3",
-                "Third Row Donut+Strip 1",
-                "Third Row Donut+Strip 2",
-                "Third Row Donut+Strip 3",
-                "Complete - Move to Third Column"
-            ];
-            return descriptions[secondColumnStep] || "Unknown";
-        }
+    //     function getNextStepDescription() {
+    //         const descriptions = [
+    //             "Second Row Donut 1",
+    //             "Second Row Donut 2", 
+    //             "Second Row Donut 3",
+    //             "Third Row Donut+Strip 1",
+    //             "Third Row Donut+Strip 2",
+    //             "Third Row Donut+Strip 3",
+    //             "Complete - Move to Third Column"
+    //         ];
+    //         return descriptions[secondColumnStep] || "Unknown";
+    //     }
 
-        function getThirdColumnNextStepDescription() {
-            const descriptions = [
-                "Third Column Text 1",
-                "Third Column Donut+Strip 2", 
-                "Third Column Text 2",
-                "Complete - Reset to State 1"
-            ];
-            return descriptions[thirdColumnStep] || "Unknown";
-        }
+    //     function getThirdColumnNextStepDescription() {
+    //         const descriptions = [
+    //             "Third Column Text 1",
+    //             "Third Column Donut+Strip 2", 
+    //             "Third Column Text 2",
+    //             "Complete - Reset to State 1"
+    //         ];
+    //         return descriptions[thirdColumnStep] || "Unknown";
+    //     }
 
-        function nextState() {
-            if (currentState === 2) {
-                // We're in explanation mode, advance sentence by sentence
-                currentSentenceIndex++;
-                if (currentSentenceIndex >= totalSentences) {
-                    // All sentences shown, move to next state
-                    currentState = 3;
-                    currentSentenceIndex = 0;
-                    secondColumnStep = 0; // Reset second column step
-                }
-            } else if (currentState === 4) {
-                // We're in second column explanation mode
-                // Check if we've completed all steps after the explanation runs
-                if (secondColumnStep >= 6) {
-                    // All second column steps shown, move to third column
-                    currentState = 5;
-                    thirdColumnStep = 0;
-                } else {
-                    secondColumnStep++;
-                }
-            } else if (currentState === 5) {
-                // We're in third column mode
-                if (thirdColumnStep >= 3) {
-                    // All third column steps shown, cycle back to state 1
-                    currentState = 1;
-                    thirdColumnStep = 0;
-                    secondColumnStep = 0;
-                } else {
-                    thirdColumnStep++;
-                }
-            } else {
-                // Normal state progression
-                currentState = currentState % totalStates + 1;
-                if (currentState === 2) {
-                    currentSentenceIndex = 0; // Reset when entering explanation mode
-                } else if (currentState === 3) {
-                    secondColumnStep = 0; // Reset when entering second column
-                } else if (currentState === 4) {
-                    secondColumnStep = 1;
-                } else if (currentState === 5) {
-                    thirdColumnStep = 0; // Reset when entering third column
-                }
-            }
-            updateStateIndicator();
-            renderCurrentState();
-        }
+    //     function nextState() {
+    //         if (currentState === 2) {
+    //             // We're in explanation mode, advance sentence by sentence
+    //             currentSentenceIndex++;
+    //             if (currentSentenceIndex >= totalSentences) {
+    //                 // All sentences shown, move to next state
+    //                 currentState = 3;
+    //                 currentSentenceIndex = 0;
+    //                 secondColumnStep = 0; // Reset second column step
+    //             }
+    //         } else if (currentState === 4) {
+    //             // We're in second column explanation mode
+    //             // Check if we've completed all steps after the explanation runs
+    //             if (secondColumnStep >= 6) {
+    //                 // All second column steps shown, move to third column
+    //                 currentState = 5;
+    //                 thirdColumnStep = 0;
+    //             } else {
+    //                 secondColumnStep++;
+    //             }
+    //         } else if (currentState === 5) {
+    //             // We're in third column mode
+    //             if (thirdColumnStep >= 3) {
+    //                 // All third column steps shown, cycle back to state 1
+    //                 currentState = 1;
+    //                 thirdColumnStep = 0;
+    //                 secondColumnStep = 0;
+    //             } else {
+    //                 thirdColumnStep++;
+    //             }
+    //         } else {
+    //             // Normal state progression
+    //             currentState = currentState % totalStates + 1;
+    //             if (currentState === 2) {
+    //                 currentSentenceIndex = 0; // Reset when entering explanation mode
+    //             } else if (currentState === 3) {
+    //                 secondColumnStep = 0; // Reset when entering second column
+    //             } else if (currentState === 4) {
+    //                 secondColumnStep = 1;
+    //             } else if (currentState === 5) {
+    //                 thirdColumnStep = 0; // Reset when entering third column
+    //             }
+    //         }
+    //         updateStateIndicator();
+    //         renderCurrentState();
+    //     }
 
-        function renderCurrentState() {
-            switch(currentState) {
-                case 1:
-                    // Only clear OUR elements, not everything
-                    svg.selectAll(".progressive-disclosure").remove();
-                    secondColumnStep = 0;
-                    thirdColumnStep = 0;
-                    renderFirstColumn();
-                    break;
-                case 2:
-                    addFirstColumnExplanations();
-                    break;
-                case 3:
-                    addSecondColumn();
-                    break;
-                case 4:
-                    addSecondColumnExplanations();
-                    break;
-                case 5:
-                    addThirdColumnExplanations();
-                    break;
-            }
-        }
+    //     function renderCurrentState() {
+    //         switch(currentState) {
+    //             case 1:
+    //                 // Only clear OUR elements, not everything
+    //                 svg.selectAll(".progressive-disclosure").remove();
+    //                 secondColumnStep = 0;
+    //                 thirdColumnStep = 0;
+    //                 renderFirstColumn();
+    //                 break;
+    //             case 2:
+    //                 addFirstColumnExplanations();
+    //                 break;
+    //             case 3:
+    //                 addSecondColumn();
+    //                 break;
+    //             case 4:
+    //                 addSecondColumnExplanations();
+    //                 break;
+    //             case 5:
+    //                 addThirdColumnExplanations();
+    //                 break;
+    //         }
+    //     }
 
-        // Helper function to wrap text within constraints
-        function wrapText(text, maxWidth) {
-            const words = text.split(' ');
-            const lines = [];
-            let currentLine = '';
+    //     // Helper function to wrap text within constraints
+    //     function wrapText(text, maxWidth) {
+    //         const words = text.split(' ');
+    //         const lines = [];
+    //         let currentLine = '';
             
-            for (let word of words) {
-                const testLine = currentLine + (currentLine ? ' ' : '') + word;
-                if (testLine.length * 8 < maxWidth) { // Rough character width estimation
-                    currentLine = testLine;
-                } else {
-                    if (currentLine) lines.push(currentLine);
-                    currentLine = word;
-                }
-            }
-            if (currentLine) lines.push(currentLine);
-            return lines.slice(0, 9); // Limit to 9 lines
-        }
+    //         for (let word of words) {
+    //             const testLine = currentLine + (currentLine ? ' ' : '') + word;
+    //             if (testLine.length * 8 < maxWidth) { // Rough character width estimation
+    //                 currentLine = testLine;
+    //             } else {
+    //                 if (currentLine) lines.push(currentLine);
+    //                 currentLine = word;
+    //             }
+    //         }
+    //         if (currentLine) lines.push(currentLine);
+    //         return lines.slice(0, 9); // Limit to 9 lines
+    //     }
 
-        function renderFirstColumn() {
-            // Create arc generator for donuts
-            const arc = d3.arc()
-                .innerRadius(d => d.radius * 0.6)
-                .outerRadius(d => d.radius)
-                .startAngle(d => d.startAngle)
-                .endAngle(d => d.endAngle);
+    //     function renderFirstColumn() {
+    //         // Create arc generator for donuts
+    //         const arc = d3.arc()
+    //             .innerRadius(d => d.radius * 0.6)
+    //             .outerRadius(d => d.radius)
+    //             .startAngle(d => d.startAngle)
+    //             .endAngle(d => d.endAngle);
 
-            // Create FULL donut backgrounds using arc generator
-            const fullDonutArc = d3.arc()
-                .innerRadius(d => d.radius * 0.6)
-                .outerRadius(d => d.radius)
-                .startAngle(0)               // Full circle
-                .endAngle(2 * Math.PI);      // Full circle
+    //         // Create FULL donut backgrounds using arc generator
+    //         const fullDonutArc = d3.arc()
+    //             .innerRadius(d => d.radius * 0.6)
+    //             .outerRadius(d => d.radius)
+    //             .startAngle(0)               // Full circle
+    //             .endAngle(2 * Math.PI);      // Full circle
 
-            // Create donut backgrounds (full donuts)
-            const donutBgs = svg.selectAll(".donut-bg-col1")
-                .data(circleData)
-                .enter()
-                .append("path")
-                .attr("class", "donut-bg donut-bg-col1 progressive-disclosure")
-                .attr("transform", (d, i) => `translate(${80}, ${80 + i * 250})`)
-                .attr("d", fullDonutArc)
-                .attr("fill", d => d.inverted ? "black" : "white")       // Changed to white
-                .attr("stroke", "black")     // Added black stroke
-                .attr("stroke-width", 2)     // Added stroke width
-                .attr("opacity", 0);
+    //         // Create donut backgrounds (full donuts)
+    //         const donutBgs = svg.selectAll(".donut-bg-col1")
+    //             .data(circleData)
+    //             .enter()
+    //             .append("path")
+    //             .attr("class", "donut-bg donut-bg-col1 progressive-disclosure")
+    //             .attr("transform", (d, i) => `translate(${80}, ${80 + i * 250})`)
+    //             .attr("d", fullDonutArc)
+    //             .attr("fill", d => d.inverted ? "black" : "white")       // Changed to white
+    //             .attr("stroke", "black")     // Added black stroke
+    //             .attr("stroke-width", 2)     // Added stroke width
+    //             .attr("opacity", 0);
 
-            // Create black arcs (same as before)
-            const arcs = svg.selectAll(".arc-col1")
-                .data(circleData)
-                .enter()
-                .append("path")
-                .attr("class", "arc arc-col1 progressive-disclosure")
-                .attr("transform", (d, i) => `translate(${80}, ${80 + i * 250})`)
-                .attr("d", arc)
-                .attr("fill", d => d.inverted ? "white" : "black")
-                .attr("opacity", 1);  // Set to 1 immediately, no animation
+    //         // Create black arcs (same as before)
+    //         const arcs = svg.selectAll(".arc-col1")
+    //             .data(circleData)
+    //             .enter()
+    //             .append("path")
+    //             .attr("class", "arc arc-col1 progressive-disclosure")
+    //             .attr("transform", (d, i) => `translate(${80}, ${80 + i * 250})`)
+    //             .attr("d", arc)
+    //             .attr("fill", d => d.inverted ? "white" : "black")
+    //             .attr("opacity", 1);  // Set to 1 immediately, no animation
 
-            // Animate donut backgrounds
-            donutBgs.transition()
-                .duration(800)
-                .delay((d, i) => i * 200)
-                .attr("opacity", 1)          // Changed from attr("r") to attr("opacity")
-                .ease(d3.easeBounceOut);
+    //         // Animate donut backgrounds
+    //         donutBgs.transition()
+    //             .duration(800)
+    //             .delay((d, i) => i * 200)
+    //             .attr("opacity", 1)          // Changed from attr("r") to attr("opacity")
+    //             .ease(d3.easeBounceOut);
 
-            // Special treatment for the bottom donut (index 4) - add barcode
-            addBarcodeToBottomDonut();
-        }
+    //         // Special treatment for the bottom donut (index 4) - add barcode
+    //         addBarcodeToBottomDonut();
+    //     }
 
-        function addBarcodeToBottomDonut() {
-            const bottomDonutIndex = 4; // 5th donut (index 4)
-            const donutY = 80 + bottomDonutIndex * 250; // Match your 250px spacing
-            const donutX = 80; // Updated X position (200 - 120)
-            const donutRadius = circleData[bottomDonutIndex].radius;
+    //     function addBarcodeToBottomDonut() {
+    //         const bottomDonutIndex = 4; // 5th donut (index 4)
+    //         const donutY = 80 + bottomDonutIndex * 250; // Match your 250px spacing
+    //         const donutX = 80; // Updated X position (200 - 120)
+    //         const donutRadius = circleData[bottomDonutIndex].radius;
             
-            // Barcode positioning
-            const barcodeY = donutY + donutRadius + 40; // 40px below the donut
-            const barcodeWidth = 150; // Wider for barcode strip
-            const barcodeHeight = 30;
-            const barcodeX = donutX - barcodeWidth / 2; // Center under donut
+    //         // Barcode positioning
+    //         const barcodeY = donutY + donutRadius + 40; // 40px below the donut
+    //         const barcodeWidth = 150; // Wider for barcode strip
+    //         const barcodeHeight = 30;
+    //         const barcodeX = donutX - barcodeWidth / 2; // Center under donut
             
-            // Create 5 equal-width rectangles
-            const numRects = 5;
-            const rectWidth = (barcodeWidth - 4) / numRects; // Subtract 4px for padding (2px each side)
-            const barcodeData = Array.from({length: numRects}, (_, i) => ({id: i}));
+    //         // Create 5 equal-width rectangles
+    //         const numRects = 5;
+    //         const rectWidth = (barcodeWidth - 4) / numRects; // Subtract 4px for padding (2px each side)
+    //         const barcodeData = Array.from({length: numRects}, (_, i) => ({id: i}));
             
-            const barcodeRects = svg.selectAll(".barcode-rect")
-                .data(barcodeData)
-                .enter()
-                .append("rect")
-                .attr("class", "barcode-rect progressive-disclosure")
-                .attr("x", (d, i) => barcodeX + 2 + (i * rectWidth)) // 2px padding + index * width
-                .attr("y", barcodeY + 2) // Small padding from top
-                .attr("width", rectWidth)
-                .attr("height", barcodeHeight - 4) // Full height minus padding
-                .attr("fill", "white")        // White background
-                .attr("stroke", "black")      // Black stroke
-                .attr("stroke-width", 1)      // Stroke width
-                .attr("opacity", 0);
+    //         const barcodeRects = svg.selectAll(".barcode-rect")
+    //             .data(barcodeData)
+    //             .enter()
+    //             .append("rect")
+    //             .attr("class", "barcode-rect progressive-disclosure")
+    //             .attr("x", (d, i) => barcodeX + 2 + (i * rectWidth)) // 2px padding + index * width
+    //             .attr("y", barcodeY + 2) // Small padding from top
+    //             .attr("width", rectWidth)
+    //             .attr("height", barcodeHeight - 4) // Full height minus padding
+    //             .attr("fill", "white")        // White background
+    //             .attr("stroke", "black")      // Black stroke
+    //             .attr("stroke-width", 1)      // Stroke width
+    //             .attr("opacity", 0);
             
 
-            // Create connecting lines to the LEFT and RIGHT edges of the barcode
-            const connectingLines = svg.selectAll(".connecting-line")
-                .data([
-                    {x1: 50, y1: 1155, x2: barcodeX + 1, y2: barcodeY + barcodeHeight/2 - 14},           // Left line - moved 120px left
-                    {x1: 80, y1: 1160, x2: barcodeX + barcodeWidth - 1, y2: barcodeY + barcodeHeight/2 - 14}  // Right line - moved 120px left
-                ])
-                .enter()
-                .append("line")
-                .attr("class", "connecting-line progressive-disclosure")
-                .attr("x1", d => d.x1)
-                .attr("y1", d => d.y1)
-                .attr("x2", d => d.x1) // Start at same position for animation
-                .attr("y2", d => d.y1)
-                .attr("stroke", "black")
-                .attr("stroke-width", 2)
-                .attr("stroke-dasharray", "3,3")
-                .attr("opacity", 0);
+    //         // Create connecting lines to the LEFT and RIGHT edges of the barcode
+    //         const connectingLines = svg.selectAll(".connecting-line")
+    //             .data([
+    //                 {x1: 50, y1: 1155, x2: barcodeX + 1, y2: barcodeY + barcodeHeight/2 - 14},           // Left line - moved 120px left
+    //                 {x1: 80, y1: 1160, x2: barcodeX + barcodeWidth - 1, y2: barcodeY + barcodeHeight/2 - 14}  // Right line - moved 120px left
+    //             ])
+    //             .enter()
+    //             .append("line")
+    //             .attr("class", "connecting-line progressive-disclosure")
+    //             .attr("x1", d => d.x1)
+    //             .attr("y1", d => d.y1)
+    //             .attr("x2", d => d.x1) // Start at same position for animation
+    //             .attr("y2", d => d.y1)
+    //             .attr("stroke", "black")
+    //             .attr("stroke-width", 2)
+    //             .attr("stroke-dasharray", "3,3")
+    //             .attr("opacity", 0);
             
-            // Animate everything appearing
-            setTimeout(() => {
-                // Remove this line: barcodeBackground.transition().duration(400).attr("opacity", 1);
-                barcodeRects.transition().duration(600).delay((d, i) => i * 100).attr("opacity", 1);
-                connectingLines.transition()
-                    .duration(800)
-                    .delay(300)
-                    .attr("x2", d => d.x2)
-                    .attr("y2", d => d.y2)
-                    .attr("opacity", 1);
-            }, 1000);
-        }
+    //         // Animate everything appearing
+    //         setTimeout(() => {
+    //             // Remove this line: barcodeBackground.transition().duration(400).attr("opacity", 1);
+    //             barcodeRects.transition().duration(600).delay((d, i) => i * 100).attr("opacity", 1);
+    //             connectingLines.transition()
+    //                 .duration(800)
+    //                 .delay(300)
+    //                 .attr("x2", d => d.x2)
+    //                 .attr("y2", d => d.y2)
+    //                 .attr("opacity", 1);
+    //         }, 1000);
+    //     }
 
-        function addFirstColumnExplanations() {
-            // Remove any existing explanation text
-            svg.selectAll(".explanation-text-col1").remove();
+    //     function addFirstColumnExplanations() {
+    //         // Remove any existing explanation text
+    //         svg.selectAll(".explanation-text-col1").remove();
             
-            // Get sentences up to current index
-            const sentencesToShow = sentenceData.slice(0, currentSentenceIndex + 1);
+    //         // Get sentences up to current index
+    //         const sentencesToShow = sentenceData.slice(0, currentSentenceIndex + 1);
             
-            // Group sentences by donut
-            const sentencesByDonut = {};
-            sentencesToShow.forEach(sentence => {
-                if (!sentencesByDonut[sentence.donutIndex]) {
-                    sentencesByDonut[sentence.donutIndex] = [];
-                }
-                sentencesByDonut[sentence.donutIndex].push(sentence);
-            });
+    //         // Group sentences by donut
+    //         const sentencesByDonut = {};
+    //         sentencesToShow.forEach(sentence => {
+    //             if (!sentencesByDonut[sentence.donutIndex]) {
+    //                 sentencesByDonut[sentence.donutIndex] = [];
+    //             }
+    //             sentencesByDonut[sentence.donutIndex].push(sentence);
+    //         });
             
-            // Create text groups for each donut that has sentences to show
-            Object.keys(sentencesByDonut).forEach(donutIndex => {
-                const donutSentences = sentencesByDonut[donutIndex];
-                const donutIdx = parseInt(donutIndex);
+    //         // Create text groups for each donut that has sentences to show
+    //         Object.keys(sentencesByDonut).forEach(donutIndex => {
+    //             const donutSentences = sentencesByDonut[donutIndex];
+    //             const donutIdx = parseInt(donutIndex);
                 
-                const textGroup = svg.append("text")
-                    .attr("class", "explanation-text explanation-text-col1 progressive-disclosure")
-                    .attr("x", 170)
-                    .attr("y", 25 + donutIdx * 250)
-                    .attr("text-anchor", "start")
-                    .attr("fill", "#2c3e50")
-                    .attr("font-size", "20px")
-                    .attr("font-weight", "bold");
+    //             const textGroup = svg.append("text")
+    //                 .attr("class", "explanation-text explanation-text-col1 progressive-disclosure")
+    //                 .attr("x", 170)
+    //                 .attr("y", 25 + donutIdx * 250)
+    //                 .attr("text-anchor", "start")
+    //                 .attr("fill", "#2c3e50")
+    //                 .attr("font-size", "20px")
+    //                 .attr("font-weight", "bold");
                 
-                // Add each sentence as a tspan
-                donutSentences.forEach((sentence, i) => {
-                    const tspan = textGroup.append("tspan")
-                        .attr("x", 170)
-                        .attr("dy", i === 0 ? 0 : "1.2em")
-                        .text(sentence.text);
+    //             // Add each sentence as a tspan
+    //             donutSentences.forEach((sentence, i) => {
+    //                 const tspan = textGroup.append("tspan")
+    //                     .attr("x", 170)
+    //                     .attr("dy", i === 0 ? 0 : "1.2em")
+    //                     .text(sentence.text);
                     
-                    // Animate the latest sentence if it's the current one being added
-                    if (sentencesToShow.length > 0 && 
-                        sentence === sentencesToShow[sentencesToShow.length - 1]) {
-                        tspan.attr("opacity", 0)
-                            .transition()
-                            .duration(600)
-                            .attr("opacity", 1);
-                    } else {
-                        tspan.attr("opacity", 1);
-                    }
-                });
-            });
-        }
+    //                 // Animate the latest sentence if it's the current one being added
+    //                 if (sentencesToShow.length > 0 && 
+    //                     sentence === sentencesToShow[sentencesToShow.length - 1]) {
+    //                     tspan.attr("opacity", 0)
+    //                         .transition()
+    //                         .duration(600)
+    //                         .attr("opacity", 1);
+    //                 } else {
+    //                     tspan.attr("opacity", 1);
+    //                 }
+    //             });
+    //         });
+    //     }
 
-        function addSecondColumn() {
-            // Show the legend (step 0) when entering state 3
-            showSecondColumnStep(0);
-        }
+    //     function addSecondColumn() {
+    //         // Show the legend (step 0) when entering state 3
+    //         showSecondColumnStep(0);
+    //     }
 
-        function addSecondColumnExplanations() {
-            // Show the current step (steps 1-6)
-            if (secondColumnStep <= 6) {
-                showSecondColumnStep(secondColumnStep);
-            }
+    //     function addSecondColumnExplanations() {
+    //         // Show the current step (steps 1-6)
+    //         if (secondColumnStep <= 6) {
+    //             showSecondColumnStep(secondColumnStep);
+    //         }
             
-            // Debug logging
-            console.log(`Second column step: ${secondColumnStep}`);
-        }
+    //         // Debug logging
+    //         console.log(`Second column step: ${secondColumnStep}`);
+    //     }
 
-        function addThirdColumn() {
-            // Show the first step when entering state 5
-            showThirdColumnStep(0);
-        }
+    //     function addThirdColumn() {
+    //         // Show the first step when entering state 5
+    //         showThirdColumnStep(0);
+    //     }
 
-        function addThirdColumnExplanations() {
-            // Show the current step (steps 0-3)
-            if (thirdColumnStep <= 3) {
-                showThirdColumnStep(thirdColumnStep);
-            }
+    //     function addThirdColumnExplanations() {
+    //         // Show the current step (steps 0-3)
+    //         if (thirdColumnStep <= 3) {
+    //             showThirdColumnStep(thirdColumnStep);
+    //         }
             
-            // Debug logging
-            console.log(`Third column step: ${thirdColumnStep}`);
-        }
+    //         // Debug logging
+    //         console.log(`Third column step: ${thirdColumnStep}`);
+    //     }
 
-        function showSecondColumnStep(step) {
-            switch(step) {
-                case 0:
-                    // Step 1: Legend with text
-                    showLegend();
-                    break;
-                case 1:
-                    // Step 2: First donut of second row
-                    showSecondRowDonut(0);
-                    break;
-                case 2:
-                    // Step 3: Second donut of second row
-                    showSecondRowDonut(1);
-                    break;
-                case 3:
-                    // Step 4: Third donut of second row
-                    showSecondRowDonut(2);
-                    break;
-                case 4:
-                    // Step 5: First donut+strip of third row
-                    showThirdRowDonut(0);
-                    break;
-                case 5:
-                    // Step 6: Second donut+strip of third row
-                    showThirdRowDonut(1);
-                    break;
-                case 6:
-                    // Step 6: Second donut+strip of third row
-                    showThirdRowDonut(2);
-                    break;
-            }
-        }
+    //     function showSecondColumnStep(step) {
+    //         switch(step) {
+    //             case 0:
+    //                 // Step 1: Legend with text
+    //                 showLegend();
+    //                 break;
+    //             case 1:
+    //                 // Step 2: First donut of second row
+    //                 showSecondRowDonut(0);
+    //                 break;
+    //             case 2:
+    //                 // Step 3: Second donut of second row
+    //                 showSecondRowDonut(1);
+    //                 break;
+    //             case 3:
+    //                 // Step 4: Third donut of second row
+    //                 showSecondRowDonut(2);
+    //                 break;
+    //             case 4:
+    //                 // Step 5: First donut+strip of third row
+    //                 showThirdRowDonut(0);
+    //                 break;
+    //             case 5:
+    //                 // Step 6: Second donut+strip of third row
+    //                 showThirdRowDonut(1);
+    //                 break;
+    //             case 6:
+    //                 // Step 6: Second donut+strip of third row
+    //                 showThirdRowDonut(2);
+    //                 break;
+    //         }
+    //     }
 
-        function showThirdColumnStep(step) {
-            switch(step) {
-                case 0:
-                    // Show first donut+strip without text
-                    showThirdColumnDonut(0, false);
-                    break;
-                case 1:
-                    // Show text for first donut+strip
-                    showThirdColumnDonut(0, true);
-                    break;
-                case 2:
-                    // Show second donut+strip without text
-                    showThirdColumnDonut(1, false);
-                    break;
-                case 3:
-                    // Show text for second donut+strip
-                    showThirdColumnDonut(1, true);
-                    break;
-            }
-        }
+    //     function showThirdColumnStep(step) {
+    //         switch(step) {
+    //             case 0:
+    //                 // Show first donut+strip without text
+    //                 showThirdColumnDonut(0, false);
+    //                 break;
+    //             case 1:
+    //                 // Show text for first donut+strip
+    //                 showThirdColumnDonut(0, true);
+    //                 break;
+    //             case 2:
+    //                 // Show second donut+strip without text
+    //                 showThirdColumnDonut(1, false);
+    //                 break;
+    //             case 3:
+    //                 // Show text for second donut+strip
+    //                 showThirdColumnDonut(1, true);
+    //                 break;
+    //         }
+    //     }
 
-        function showLegend() {
-            const baseX = 1100;
-            const firstRowY = 230; // Parallel with second donut from first column (80 + 1 * 250)
-            const gradientWidth = 300;
-            const gradientHeight = 30;
+    //     function showLegend() {
+    //         const baseX = 1100;
+    //         const firstRowY = 230; // Parallel with second donut from first column (80 + 1 * 250)
+    //         const gradientWidth = 300;
+    //         const gradientHeight = 30;
             
-            // Create gradient definition
-            const defs = svg.select("defs").empty() ? svg.append("defs") : svg.select("defs");
-            const gradient = defs.append("linearGradient")
-                .attr("id", "colorGradient")
-                .attr("class", "progressive-disclosure");
+    //         // Create gradient definition
+    //         const defs = svg.select("defs").empty() ? svg.append("defs") : svg.select("defs");
+    //         const gradient = defs.append("linearGradient")
+    //             .attr("id", "colorGradient")
+    //             .attr("class", "progressive-disclosure");
             
-            gradient.append("stop")
-                .attr("offset", "0%")
-                .attr("stop-color", "rgb(210, 215, 255)");
-            gradient.append("stop")
-                .attr("offset", "50%")
-                .attr("stop-color", "rgb(210, 215, 255)");
-            gradient.append("stop")
-                .attr("offset", "51%")
-                .attr("stop-color", "rgb(255, 200, 200)");
-            gradient.append("stop")
-                .attr("offset", "100%")
-                .attr("stop-color", "darkred");
+    //         gradient.append("stop")
+    //             .attr("offset", "0%")
+    //             .attr("stop-color", "rgb(210, 215, 255)");
+    //         gradient.append("stop")
+    //             .attr("offset", "50%")
+    //             .attr("stop-color", "rgb(210, 215, 255)");
+    //         gradient.append("stop")
+    //             .attr("offset", "51%")
+    //             .attr("stop-color", "rgb(255, 200, 200)");
+    //         gradient.append("stop")
+    //             .attr("offset", "100%")
+    //             .attr("stop-color", "darkred");
 
-            // Create gradient rectangle
-            const gradientRect = svg.append("rect")
-                .attr("class", "gradient-legend progressive-disclosure")
-                .attr("x", baseX - gradientWidth/2)
-                .attr("y", firstRowY)
-                .attr("width", gradientWidth)
-                .attr("height", gradientHeight)
-                .attr("fill", "url(#colorGradient)")
-                .attr("stroke", "black")
-                .attr("stroke-width", 2)
-                .attr("opacity", 0);
+    //         // Create gradient rectangle
+    //         const gradientRect = svg.append("rect")
+    //             .attr("class", "gradient-legend progressive-disclosure")
+    //             .attr("x", baseX - gradientWidth/2)
+    //             .attr("y", firstRowY)
+    //             .attr("width", gradientWidth)
+    //             .attr("height", gradientHeight)
+    //             .attr("fill", "url(#colorGradient)")
+    //             .attr("stroke", "black")
+    //             .attr("stroke-width", 2)
+    //             .attr("opacity", 0);
 
-            // Add legend text
-            const legendText = svg.append("text")
-                .attr("class", "legend-text progressive-disclosure")
-                .attr("x", baseX)
-                .attr("y", firstRowY + gradientHeight + 25)
-                .attr("text-anchor", "middle")
-                .attr("fill", "#2c3e50")
-                .attr("font-size", "20px")
-                .attr("font-weight", "bold")
-                .attr("opacity", 0)
-                .text("Color intensity represents organism prevalence in a sample.");
+    //         // Add legend text
+    //         const legendText = svg.append("text")
+    //             .attr("class", "legend-text progressive-disclosure")
+    //             .attr("x", baseX)
+    //             .attr("y", firstRowY + gradientHeight + 25)
+    //             .attr("text-anchor", "middle")
+    //             .attr("fill", "#2c3e50")
+    //             .attr("font-size", "20px")
+    //             .attr("font-weight", "bold")
+    //             .attr("opacity", 0)
+    //             .text("Color intensity represents organism prevalence in a sample.");
             
-            const legendText2 = svg.append("text")
-                .attr("class", "legend-text2 progressive-disclosure")
-                .attr("x", baseX)
-                .attr("y", firstRowY + gradientHeight + 50)
-                .attr("text-anchor", "middle")
-                .attr("fill", "#2c3e50")
-                .attr("font-size", "20px")
-                .attr("font-weight", "bold")
-                .attr("opacity", 0)
-                .text("Legend relevant for both donut and strip.");
+    //         const legendText2 = svg.append("text")
+    //             .attr("class", "legend-text2 progressive-disclosure")
+    //             .attr("x", baseX)
+    //             .attr("y", firstRowY + gradientHeight + 50)
+    //             .attr("text-anchor", "middle")
+    //             .attr("fill", "#2c3e50")
+    //             .attr("font-size", "20px")
+    //             .attr("font-weight", "bold")
+    //             .attr("opacity", 0)
+    //             .text("Legend relevant for both donut and strip.");
 
-            // Animate both appearing together
-            gradientRect.transition().duration(800).attr("opacity", 1);
-            legendText.transition().duration(800).attr("opacity", 1);
-            legendText2.transition().duration(800).attr("opacity", 1);
-        }
+    //         // Animate both appearing together
+    //         gradientRect.transition().duration(800).attr("opacity", 1);
+    //         legendText.transition().duration(800).attr("opacity", 1);
+    //         legendText2.transition().duration(800).attr("opacity", 1);
+    //     }
 
-        function showSecondRowDonut(index) {
-            const baseX = 1350;
-            const secondRowY = 500;
-            const donutSpacing = 350;
-            const startX = baseX - donutSpacing; // Center the three donuts
-            const maxTextWidth = 280;
-            const lineHeight = 22;
+    //     function showSecondRowDonut(index) {
+    //         const baseX = 1350;
+    //         const secondRowY = 500;
+    //         const donutSpacing = 350;
+    //         const startX = baseX - donutSpacing; // Center the three donuts
+    //         const maxTextWidth = 280;
+    //         const lineHeight = 22;
             
-            // Get the specific donut data from secondRowDonuts array
-            const donutData = secondRowDonuts[index];
-            const donutX = startX + index * donutSpacing;
+    //         // Get the specific donut data from secondRowDonuts array
+    //         const donutData = secondRowDonuts[index];
+    //         const donutX = startX + index * donutSpacing;
             
-            // Create arc generators
-            const arc = d3.arc()
-                .innerRadius(donutData.radius * 0.6)
-                .outerRadius(donutData.radius)
-                .startAngle(donutData.startAngle)
-                .endAngle(donutData.endAngle);
+    //         // Create arc generators
+    //         const arc = d3.arc()
+    //             .innerRadius(donutData.radius * 0.6)
+    //             .outerRadius(donutData.radius)
+    //             .startAngle(donutData.startAngle)
+    //             .endAngle(donutData.endAngle);
 
-            const fullDonutArc = d3.arc()
-                .innerRadius(donutData.radius * 0.6)
-                .outerRadius(donutData.radius)
-                .startAngle(0)
-                .endAngle(2 * Math.PI);
+    //         const fullDonutArc = d3.arc()
+    //             .innerRadius(donutData.radius * 0.6)
+    //             .outerRadius(donutData.radius)
+    //             .startAngle(0)
+    //             .endAngle(2 * Math.PI);
 
-            // Create donut background
-            const donutBg = svg.append("path")
-                .attr("class", `donut-bg-row2-${index} progressive-disclosure`)
-                .attr("transform", `translate(${donutX}, ${secondRowY})`)
-                .attr("d", fullDonutArc)
-                .attr("fill", donutData.bgColor || (donutData.inverted ? "black" : "white"))
-                .attr("stroke", "black")
-                .attr("stroke-width", 2)
-                .attr("opacity", 0);
+    //         // Create donut background
+    //         const donutBg = svg.append("path")
+    //             .attr("class", `donut-bg-row2-${index} progressive-disclosure`)
+    //             .attr("transform", `translate(${donutX}, ${secondRowY})`)
+    //             .attr("d", fullDonutArc)
+    //             .attr("fill", donutData.bgColor || (donutData.inverted ? "black" : "white"))
+    //             .attr("stroke", "black")
+    //             .attr("stroke-width", 2)
+    //             .attr("opacity", 0);
 
-            // Create arc
-            const arcPath = svg.append("path")
-                .attr("class", `arc-row2-${index} progressive-disclosure`)
-                .attr("transform", `translate(${donutX}, ${secondRowY})`)
-                .attr("d", arc)
-                .attr("fill", donutData.arcColor || (donutData.inverted ? "white" : "black"))
-                .attr("opacity", 1);
+    //         // Create arc
+    //         const arcPath = svg.append("path")
+    //             .attr("class", `arc-row2-${index} progressive-disclosure`)
+    //             .attr("transform", `translate(${donutX}, ${secondRowY})`)
+    //             .attr("d", arc)
+    //             .attr("fill", donutData.arcColor || (donutData.inverted ? "white" : "black"))
+    //             .attr("opacity", 1);
 
-            // Animate donut appearing
-            donutBg.transition()
-                .duration(600)
-                .attr("opacity", 1)
-                .ease(d3.easeBounceOut);
+    //         // Animate donut appearing
+    //         donutBg.transition()
+    //             .duration(600)
+    //             .attr("opacity", 1)
+    //             .ease(d3.easeBounceOut);
 
-            // Add text below donut
-            const textGroup = svg.append("g")
-                .attr("class", `text-group-row2-${index} progressive-disclosure`)
-                .attr("transform", `translate(${donutX}, ${secondRowY + 120})`);
+    //         // Add text below donut
+    //         const textGroup = svg.append("g")
+    //             .attr("class", `text-group-row2-${index} progressive-disclosure`)
+    //             .attr("transform", `translate(${donutX}, ${secondRowY + 120})`);
 
-            const wrappedLines = wrapText(donutData.label, maxTextWidth);
+    //         const wrappedLines = wrapText(donutData.label, maxTextWidth);
             
-            // Add text lines with staggered animation
-            wrappedLines.forEach((line, lineIndex) => {
-                textGroup.append("text")
-                    .attr("x", 0)
-                    .attr("y", lineIndex * lineHeight)
-                    .attr("text-anchor", "middle")
-                    .attr("fill", "#2c3e50")
-                    .attr("font-size", "20px")
-                    .attr("font-weight", "bold")
-                    .attr("opacity", 0)
-                    .text(line)
-                    .transition()
-                    .duration(400)
-                    .delay(600 + lineIndex * 100) // Start after donut animation
-                    .attr("opacity", 1);
-            });
-        }
+    //         // Add text lines with staggered animation
+    //         wrappedLines.forEach((line, lineIndex) => {
+    //             textGroup.append("text")
+    //                 .attr("x", 0)
+    //                 .attr("y", lineIndex * lineHeight)
+    //                 .attr("text-anchor", "middle")
+    //                 .attr("fill", "#2c3e50")
+    //                 .attr("font-size", "20px")
+    //                 .attr("font-weight", "bold")
+    //                 .attr("opacity", 0)
+    //                 .text(line)
+    //                 .transition()
+    //                 .duration(400)
+    //                 .delay(600 + lineIndex * 100) // Start after donut animation
+    //                 .attr("opacity", 1);
+    //         });
+    //     }
 
-        function showThirdRowDonut(index) {
-            const baseX = 1400;
-            const thirdRowY = 800;
-            const thirdRowSpacing = 450;
-            const thirdRowStartX = baseX - thirdRowSpacing/2;
-            const maxTextWidth = 350; // Increased like second row
-            const lineHeight = 22; // Increased like second row
+    //     function showThirdRowDonut(index) {
+    //         const baseX = 1400;
+    //         const thirdRowY = 800;
+    //         const thirdRowSpacing = 450;
+    //         const thirdRowStartX = baseX - thirdRowSpacing/2;
+    //         const maxTextWidth = 350; // Increased like second row
+    //         const lineHeight = 22; // Increased like second row
             
-            // Define third row donut data with multiple arcs
-            const thirdRowDonuts = [
-                { 
-                    id: 6, 
-                    radius: 80, 
-                    label: "Imagine that this donut and this strip contain organisms from an actual person. If the organisms in aggregate appear more red, this person is close to matching that disease profile. The person in this example has a matching profile to a given disease.", 
-                    arcs: [
-                        { startAngle: Math.PI, endAngle: 0, color: "darkred" }, // Red
-                        { startAngle: 2*Math.PI, endAngle: Math.PI * 1.5, color: "rgb(210,215,255)" }, // Blue  
-                        { startAngle: Math.PI * 1.5, endAngle: Math.PI * 1.25, color: "rgb(255,200,200)" }, // Green
-                        { startAngle: Math.PI * 1.25, endAngle: Math.PI * 1.125, color: "rgb(174,60,60)" }, // Orange
-                        { startAngle: Math.PI * 1.125, endAngle: Math.PI, color: "white" }  // Purple
-                    ],
-                    stripColors: ["rgb(192,92,92)", "rgb(176,64,64)", "rgb(192,92,92)", "rgb(210,215,255)", "rgb(210,215,255)"] // 4 rectangles
-                },
-                { 
-                    id: 7, 
-                    radius: 80, 
-                    label: "In this example, the person does not have a matching profile to a given disease. That is because the organisms appear more blue in aggregate.", 
-                    arcs: [
-                        { startAngle: Math.PI, endAngle: 0, color: "rgb(210,215,255)" }, // Red
-                        { startAngle: 2*Math.PI, endAngle: Math.PI * 1.5, color: "rgb(210,215,255)" }, // Blue  
-                        { startAngle: Math.PI * 1.5, endAngle: Math.PI * 1.25, color: "rgb(176,64,64)" }, // Green
-                        { startAngle: Math.PI * 1.25, endAngle: Math.PI * 1.125, color: "rgb(210,215,255)" }, // Orange
-                        { startAngle: Math.PI * 1.125, endAngle: Math.PI, color: "white" }  // Purple
-                    ],
-                    stripColors: ["rgb(210,215,255)", "darkred", "rgb(210,215,255)", "rgb(192,92,92)", "rgb(210,215,255)"] // 4 rectangles
-                },
-                { 
-                    id: 8, 
-                    radius: 80, 
-                    label: "In this example, we would say that the person does not have a matching profile to a given disease. Even though the organisms in the strip are colored dark red, we have to understand that the organisms in the donut are more important than the organisms in the strip. Since the donut organisms are blue, this example does not match a disease profile.", 
-                    arcs: [
-                        { startAngle: Math.PI, endAngle: 0, color: "rgb(210,215,255)" }, // Red
-                        { startAngle: 2*Math.PI, endAngle: Math.PI * 1.5, color: "rgb(210,215,255)" }, // Blue  
-                        { startAngle: Math.PI * 1.5, endAngle: Math.PI * 1.25, color: "rgb(210,215,255)" }, // Green
-                        { startAngle: Math.PI * 1.25, endAngle: Math.PI * 1.125, color: "rgb(210,215,255)" }, // Orange
-                        { startAngle: Math.PI * 1.125, endAngle: Math.PI, color: "white" }  // Purple
-                    ],
-                    stripColors: ["darkred", "darkred", "darkred", "darkred", "darkred"] // 4 rectangles
-                }
-            ];
+    //         // Define third row donut data with multiple arcs
+    //         const thirdRowDonuts = [
+    //             { 
+    //                 id: 6, 
+    //                 radius: 80, 
+    //                 label: "Imagine that this donut and this strip contain organisms from an actual person. If the organisms in aggregate appear more red, this person is close to matching that disease profile. The person in this example has a matching profile to a given disease.", 
+    //                 arcs: [
+    //                     { startAngle: Math.PI, endAngle: 0, color: "darkred" }, // Red
+    //                     { startAngle: 2*Math.PI, endAngle: Math.PI * 1.5, color: "rgb(210,215,255)" }, // Blue  
+    //                     { startAngle: Math.PI * 1.5, endAngle: Math.PI * 1.25, color: "rgb(255,200,200)" }, // Green
+    //                     { startAngle: Math.PI * 1.25, endAngle: Math.PI * 1.125, color: "rgb(174,60,60)" }, // Orange
+    //                     { startAngle: Math.PI * 1.125, endAngle: Math.PI, color: "white" }  // Purple
+    //                 ],
+    //                 stripColors: ["rgb(192,92,92)", "rgb(176,64,64)", "rgb(192,92,92)", "rgb(210,215,255)", "rgb(210,215,255)"] // 4 rectangles
+    //             },
+    //             { 
+    //                 id: 7, 
+    //                 radius: 80, 
+    //                 label: "In this example, the person does not have a matching profile to a given disease. That is because the organisms appear more blue in aggregate.", 
+    //                 arcs: [
+    //                     { startAngle: Math.PI, endAngle: 0, color: "rgb(210,215,255)" }, // Red
+    //                     { startAngle: 2*Math.PI, endAngle: Math.PI * 1.5, color: "rgb(210,215,255)" }, // Blue  
+    //                     { startAngle: Math.PI * 1.5, endAngle: Math.PI * 1.25, color: "rgb(176,64,64)" }, // Green
+    //                     { startAngle: Math.PI * 1.25, endAngle: Math.PI * 1.125, color: "rgb(210,215,255)" }, // Orange
+    //                     { startAngle: Math.PI * 1.125, endAngle: Math.PI, color: "white" }  // Purple
+    //                 ],
+    //                 stripColors: ["rgb(210,215,255)", "darkred", "rgb(210,215,255)", "rgb(192,92,92)", "rgb(210,215,255)"] // 4 rectangles
+    //             },
+    //             { 
+    //                 id: 8, 
+    //                 radius: 80, 
+    //                 label: "In this example, we would say that the person does not have a matching profile to a given disease. Even though the organisms in the strip are colored dark red, we have to understand that the organisms in the donut are more important than the organisms in the strip. Since the donut organisms are blue, this example does not match a disease profile.", 
+    //                 arcs: [
+    //                     { startAngle: Math.PI, endAngle: 0, color: "rgb(210,215,255)" }, // Red
+    //                     { startAngle: 2*Math.PI, endAngle: Math.PI * 1.5, color: "rgb(210,215,255)" }, // Blue  
+    //                     { startAngle: Math.PI * 1.5, endAngle: Math.PI * 1.25, color: "rgb(210,215,255)" }, // Green
+    //                     { startAngle: Math.PI * 1.25, endAngle: Math.PI * 1.125, color: "rgb(210,215,255)" }, // Orange
+    //                     { startAngle: Math.PI * 1.125, endAngle: Math.PI, color: "white" }  // Purple
+    //                 ],
+    //                 stripColors: ["darkred", "darkred", "darkred", "darkred", "darkred"] // 4 rectangles
+    //             }
+    //         ];
             
-            const donutData = thirdRowDonuts[index];
-            const donutX = thirdRowStartX + index * thirdRowSpacing;
+    //         const donutData = thirdRowDonuts[index];
+    //         const donutX = thirdRowStartX + index * thirdRowSpacing;
             
-            // Create full donut background
-            const fullDonutArc = d3.arc()
-                .innerRadius(donutData.radius * 0.6)
-                .outerRadius(donutData.radius)
-                .startAngle(0)
-                .endAngle(2 * Math.PI);
+    //         // Create full donut background
+    //         const fullDonutArc = d3.arc()
+    //             .innerRadius(donutData.radius * 0.6)
+    //             .outerRadius(donutData.radius)
+    //             .startAngle(0)
+    //             .endAngle(2 * Math.PI);
 
-            // Create donut background
-            const donutBg = svg.append("path")
-                .attr("class", `donut-bg-row3-${index} progressive-disclosure`)
-                .attr("transform", `translate(${donutX}, ${thirdRowY})`)
-                .attr("d", fullDonutArc)
-                .attr("fill", "white")
-                .attr("stroke", "black")
-                .attr("stroke-width", 2)
-                .attr("opacity", 0);
+    //         // Create donut background
+    //         const donutBg = svg.append("path")
+    //             .attr("class", `donut-bg-row3-${index} progressive-disclosure`)
+    //             .attr("transform", `translate(${donutX}, ${thirdRowY})`)
+    //             .attr("d", fullDonutArc)
+    //             .attr("fill", "white")
+    //             .attr("stroke", "black")
+    //             .attr("stroke-width", 2)
+    //             .attr("opacity", 0);
 
-            // Create multiple colored arcs
-            donutData.arcs.forEach((arcData, arcIndex) => {
-                const arc = d3.arc()
-                    .innerRadius(donutData.radius * 0.6)
-                    .outerRadius(donutData.radius)
-                    .startAngle(arcData.startAngle)
-                    .endAngle(arcData.endAngle);
+    //         // Create multiple colored arcs
+    //         donutData.arcs.forEach((arcData, arcIndex) => {
+    //             const arc = d3.arc()
+    //                 .innerRadius(donutData.radius * 0.6)
+    //                 .outerRadius(donutData.radius)
+    //                 .startAngle(arcData.startAngle)
+    //                 .endAngle(arcData.endAngle);
 
-                svg.append("path")
-                    .attr("class", `arc-row3-${index}-${arcIndex} progressive-disclosure`)
-                    .attr("transform", `translate(${donutX}, ${thirdRowY})`)
-                    .attr("d", arc)
-                    .attr("fill", arcData.color) // Individual color for each arc
-                    .attr("stroke", "black")
-                    .attr("stroke-width", 1)
-                    .attr("opacity", 1);
-            });
+    //             svg.append("path")
+    //                 .attr("class", `arc-row3-${index}-${arcIndex} progressive-disclosure`)
+    //                 .attr("transform", `translate(${donutX}, ${thirdRowY})`)
+    //                 .attr("d", arc)
+    //                 .attr("fill", arcData.color) // Individual color for each arc
+    //                 .attr("stroke", "black")
+    //                 .attr("stroke-width", 1)
+    //                 .attr("opacity", 1);
+    //         });
 
-            // Create strip below donut with individual colors
-            const stripY = thirdRowY + donutData.radius + 40;
-            const stripWidth = 120;
-            const stripHeight = 25;
-            const stripX = donutX - stripWidth / 2;
+    //         // Create strip below donut with individual colors
+    //         const stripY = thirdRowY + donutData.radius + 40;
+    //         const stripWidth = 120;
+    //         const stripHeight = 25;
+    //         const stripX = donutX - stripWidth / 2;
             
-            // Create 4 rectangles for strip with individual colors
-            const numRects = 5;
-            const rectWidth = (stripWidth - 4) / numRects;
+    //         // Create 4 rectangles for strip with individual colors
+    //         const numRects = 5;
+    //         const rectWidth = (stripWidth - 4) / numRects;
             
-            for (let i = 0; i < numRects; i++) {
-                svg.append("rect")
-                    .attr("class", `strip-rect-row3-${index}-${i} progressive-disclosure`)
-                    .attr("x", stripX + 2 + (i * rectWidth))
-                    .attr("y", stripY + 2)
-                    .attr("width", rectWidth)
-                    .attr("height", stripHeight - 4)
-                    .attr("fill", donutData.stripColors[i]) // Individual color for each rectangle
-                    .attr("stroke", "black")
-                    .attr("stroke-width", 1)
-                    .attr("opacity", 0)
-                    .transition()
-                    .duration(400)
-                    .delay(400 + i * 100) // Stagger strip rectangles
-                    .attr("opacity", 1);
-            }
+    //         for (let i = 0; i < numRects; i++) {
+    //             svg.append("rect")
+    //                 .attr("class", `strip-rect-row3-${index}-${i} progressive-disclosure`)
+    //                 .attr("x", stripX + 2 + (i * rectWidth))
+    //                 .attr("y", stripY + 2)
+    //                 .attr("width", rectWidth)
+    //                 .attr("height", stripHeight - 4)
+    //                 .attr("fill", donutData.stripColors[i]) // Individual color for each rectangle
+    //                 .attr("stroke", "black")
+    //                 .attr("stroke-width", 1)
+    //                 .attr("opacity", 0)
+    //                 .transition()
+    //                 .duration(400)
+    //                 .delay(400 + i * 100) // Stagger strip rectangles
+    //                 .attr("opacity", 1);
+    //         }
 
-            // Create connecting lines from donut to strip (similar to first column barcode)
-            const connectingLines = svg.selectAll(`.connecting-line-row3-${index}`)
-                .data([
-                    {x1: donutX - 30, y1: thirdRowY + 72, x2: stripX + 2, y2: stripY + stripHeight/2 - 8},           // Left line
-                    {x1: donutX + 0, y1: thirdRowY + 80, x2: stripX + stripWidth - 1, y2: stripY + stripHeight/2 - 9}  // Right line
-                ])
-                .enter()
-                .append("line")
-                .attr("class", `connecting-line connecting-line-row3-${index} progressive-disclosure`)
-                .attr("x1", d => d.x1)
-                .attr("y1", d => d.y1)
-                .attr("x2", d => d.x1) // Start at same position for animation
-                .attr("y2", d => d.y1)
-                .attr("stroke", "black")
-                .attr("stroke-width", 2)
-                .attr("stroke-dasharray", "3,3")
-                .attr("opacity", 0);
+    //         // Create connecting lines from donut to strip (similar to first column barcode)
+    //         const connectingLines = svg.selectAll(`.connecting-line-row3-${index}`)
+    //             .data([
+    //                 {x1: donutX - 30, y1: thirdRowY + 72, x2: stripX + 2, y2: stripY + stripHeight/2 - 8},           // Left line
+    //                 {x1: donutX + 0, y1: thirdRowY + 80, x2: stripX + stripWidth - 1, y2: stripY + stripHeight/2 - 9}  // Right line
+    //             ])
+    //             .enter()
+    //             .append("line")
+    //             .attr("class", `connecting-line connecting-line-row3-${index} progressive-disclosure`)
+    //             .attr("x1", d => d.x1)
+    //             .attr("y1", d => d.y1)
+    //             .attr("x2", d => d.x1) // Start at same position for animation
+    //             .attr("y2", d => d.y1)
+    //             .attr("stroke", "black")
+    //             .attr("stroke-width", 2)
+    //             .attr("stroke-dasharray", "3,3")
+    //             .attr("opacity", 0);
 
-            // Animate connecting lines
-            connectingLines.transition()
-                .duration(600)
-                .delay(600)
-                .attr("x2", d => d.x2)
-                .attr("y2", d => d.y2)
-                .attr("opacity", 1);
+    //         // Animate connecting lines
+    //         connectingLines.transition()
+    //             .duration(600)
+    //             .delay(600)
+    //             .attr("x2", d => d.x2)
+    //             .attr("y2", d => d.y2)
+    //             .attr("opacity", 1);
 
-            // Animate donut appearing
-            donutBg.transition()
-                .duration(600)
-                .attr("opacity", 1)
-                .ease(d3.easeBounceOut);
+    //         // Animate donut appearing
+    //         donutBg.transition()
+    //             .duration(600)
+    //             .attr("opacity", 1)
+    //             .ease(d3.easeBounceOut);
 
-            // Add text below strip
-            const textGroup = svg.append("g")
-                .attr("class", `text-group-row3-${index} progressive-disclosure`)
-                .attr("transform", `translate(${donutX}, ${thirdRowY + 170})`);
+    //         // Add text below strip
+    //         const textGroup = svg.append("g")
+    //             .attr("class", `text-group-row3-${index} progressive-disclosure`)
+    //             .attr("transform", `translate(${donutX}, ${thirdRowY + 170})`);
 
-            const wrappedLines = wrapText(donutData.label, maxTextWidth);
+    //         const wrappedLines = wrapText(donutData.label, maxTextWidth);
             
-            // Add text lines with staggered animation
-            wrappedLines.forEach((line, lineIndex) => {
-                textGroup.append("text")
-                    .attr("x", 0)
-                    .attr("y", lineIndex * lineHeight)
-                    .attr("text-anchor", "middle")
-                    .attr("fill", "#2c3e50")
-                    .attr("font-size", "20px") // Increased to match second row
-                    .attr("font-weight", "bold")
-                    .attr("opacity", 0)
-                    .text(line)
-                    .transition()
-                    .duration(400)
-                    .delay(800 + lineIndex * 100) // Start after donut and strip animations
-                    .attr("opacity", 1);
-            });
-        }
+    //         // Add text lines with staggered animation
+    //         wrappedLines.forEach((line, lineIndex) => {
+    //             textGroup.append("text")
+    //                 .attr("x", 0)
+    //                 .attr("y", lineIndex * lineHeight)
+    //                 .attr("text-anchor", "middle")
+    //                 .attr("fill", "#2c3e50")
+    //                 .attr("font-size", "20px") // Increased to match second row
+    //                 .attr("font-weight", "bold")
+    //                 .attr("opacity", 0)
+    //                 .text(line)
+    //                 .transition()
+    //                 .duration(400)
+    //                 .delay(800 + lineIndex * 100) // Start after donut and strip animations
+    //                 .attr("opacity", 1);
+    //         });
+    //     }
 
-        function showThirdColumnDonut(index, showText) {
-            // Only take the first 2 donuts from thirdRowDonuts
-            const thirdColumnDonuts = [
-                { 
-                    id: 9, 
-                    radius: 50, 
-                    label: "Here, we introduce High Indicator Organisms (HIOs). HIOs in the donut have a black outer arc. HIOs in the strip have an upper black line. In this visual, there are 4 HIOs, 2 red and 2 blue. As indicated by the name, HIOs exist in high abundance in disease samples. Therefore, if a sample has a high abundance of an HIO, that HIO will be colored some shade of red, otherwise it is colored blue.", 
-                    arcs: [
-                        { startAngle: Math.PI, endAngle: 0, color: "darkred" }, // Red
-                        { startAngle: 2*Math.PI, endAngle: Math.PI * 1.5, color: "white" }, // Blue  
-                        { startAngle: Math.PI * 1.5, endAngle: Math.PI * 1.25, color: "rgb(210,215,255)" }, // Green
-                        { startAngle: Math.PI * 1.25, endAngle: Math.PI * 1.125, color: "white" }, // Orange
-                        { startAngle: Math.PI * 1.125, endAngle: Math.PI, color: "white" }  // Purple
-                    ],
-                    stripColors: ["rgb(192,92,92)", "white", "rgb(210,215,255)", "white", "white"]
-                },
-                { 
-                    id: 10, 
-                    radius: 50, 
-                    label: "We see Low Indicator Organisms (LIOs) here. LIOs have a black inner arc in the donut and a lower black line in the strip. In this visual, there are 2 LIOs, 2 red and 2 blue. As indicated by the name, LIOs exist in low abundance in disease samples. Therefore, if a sample has a low abundance of an LIO, that LIO will be colored some shade of red, otherwise it is colored blue. HIOs and LIOs are important because they help researchers figure out which HIOs to decrease abundance of and which LIOs to increase abundance of in a given sample.", 
-                    arcs: [
-                        { startAngle: Math.PI, endAngle: 0, color: "white" }, // Red
-                        { startAngle: 2*Math.PI, endAngle: Math.PI * 1.5, color: "rgb(176,64,64)" }, // Blue  
-                        { startAngle: Math.PI * 1.5, endAngle: Math.PI * 1.25, color: "white" }, // Green
-                        { startAngle: Math.PI * 1.25, endAngle: Math.PI * 1.125, color: "rgb(210,215,255)" }, // Orange
-                        { startAngle: Math.PI * 1.125, endAngle: Math.PI, color: "white" }  // Purple
-                    ],
-                    stripColors: ["white", "darkred", "white", "rgb(210,215,255)", "white"]
-                }
-            ];
+    //     function showThirdColumnDonut(index, showText) {
+    //         // Only take the first 2 donuts from thirdRowDonuts
+    //         const thirdColumnDonuts = [
+    //             { 
+    //                 id: 9, 
+    //                 radius: 50, 
+    //                 label: "Here, we introduce High Indicator Organisms (HIOs). HIOs in the donut have a black outer arc. HIOs in the strip have an upper black line. In this visual, there are 4 HIOs, 2 red and 2 blue. As indicated by the name, HIOs exist in high abundance in disease samples. Therefore, if a sample has a high abundance of an HIO, that HIO will be colored some shade of red, otherwise it is colored blue. HIOs and LIOs (discussed with the next number) have no effect on how close a sample is to a disease.", 
+    //                 arcs: [
+    //                     { startAngle: Math.PI, endAngle: 0, color: "darkred" }, // Red
+    //                     { startAngle: 2*Math.PI, endAngle: Math.PI * 1.5, color: "white" }, // Blue  
+    //                     { startAngle: Math.PI * 1.5, endAngle: Math.PI * 1.25, color: "rgb(210,215,255)" }, // Green
+    //                     { startAngle: Math.PI * 1.25, endAngle: Math.PI * 1.125, color: "white" }, // Orange
+    //                     { startAngle: Math.PI * 1.125, endAngle: Math.PI, color: "white" }  // Purple
+    //                 ],
+    //                 stripColors: ["rgb(192,92,92)", "white", "rgb(210,215,255)", "white", "white"]
+    //             },
+    //             { 
+    //                 id: 10, 
+    //                 radius: 50, 
+    //                 label: "We see Low Indicator Organisms (LIOs) here. LIOs have a black inner arc in the donut and a lower black line in the strip. In this visual, there are 2 LIOs, 2 red and 2 blue. As indicated by the name, LIOs exist in low abundance in disease samples. Therefore, if a sample has a low abundance of an LIO, that LIO will be colored some shade of red, otherwise it is colored blue. HIOs and LIOs are important because they help researchers figure out which HIOs to decrease abundance of and which LIOs to increase abundance of in a given sample.", 
+    //                 arcs: [
+    //                     { startAngle: Math.PI, endAngle: 0, color: "white" }, // Red
+    //                     { startAngle: 2*Math.PI, endAngle: Math.PI * 1.5, color: "rgb(176,64,64)" }, // Blue  
+    //                     { startAngle: Math.PI * 1.5, endAngle: Math.PI * 1.25, color: "white" }, // Green
+    //                     { startAngle: Math.PI * 1.25, endAngle: Math.PI * 1.125, color: "rgb(210,215,255)" }, // Orange
+    //                     { startAngle: Math.PI * 1.125, endAngle: Math.PI, color: "white" }  // Purple
+    //                 ],
+    //                 stripColors: ["white", "darkred", "white", "rgb(210,215,255)", "white"]
+    //             }
+    //         ];
 
-            if (index >= thirdColumnDonuts.length) return; // Safety check
+    //         if (index >= thirdColumnDonuts.length) return; // Safety check
             
-            const baseX = 1500; // Position third column further right
-            const thirdColumnY = 60; // Centered vertically
-            const thirdColumnSpacing = 200; // Vertical spacing between donuts
-            const maxTextWidth = 660;
-            const lineHeight = 22;
+    //         const baseX = 1500; // Position third column further right
+    //         const thirdColumnY = 60; // Centered vertically
+    //         const thirdColumnSpacing = 200; // Vertical spacing between donuts
+    //         const maxTextWidth = 660;
+    //         const lineHeight = 22;
             
-            const donutData = thirdColumnDonuts[index];
-            const donutX = baseX;
-            const donutY = thirdColumnY + index * thirdColumnSpacing;
+    //         const donutData = thirdColumnDonuts[index];
+    //         const donutX = baseX;
+    //         const donutY = thirdColumnY + index * thirdColumnSpacing;
             
-            // Only create donut if it doesn't exist yet
-            if (svg.select(`.donut-bg-col3-${index}`).empty()) {
-                // Create full donut background
-                const fullDonutArc = d3.arc()
-                    .innerRadius(donutData.radius * 0.6)
-                    .outerRadius(donutData.radius)
-                    .startAngle(0)
-                    .endAngle(2 * Math.PI);
+    //         // Only create donut if it doesn't exist yet
+    //         if (svg.select(`.donut-bg-col3-${index}`).empty()) {
+    //             // Create full donut background
+    //             const fullDonutArc = d3.arc()
+    //                 .innerRadius(donutData.radius * 0.6)
+    //                 .outerRadius(donutData.radius)
+    //                 .startAngle(0)
+    //                 .endAngle(2 * Math.PI);
 
-                // Create donut background
-                const donutBg = svg.append("path")
-                    .attr("class", `donut-bg-col3-${index} progressive-disclosure`)
-                    .attr("transform", `translate(${donutX}, ${donutY})`)
-                    .attr("d", fullDonutArc)
-                    .attr("fill", "white")
-                    .attr("stroke", "black")
-                    .attr("stroke-width", 2)
-                    .attr("opacity", 0);
+    //             // Create donut background
+    //             const donutBg = svg.append("path")
+    //                 .attr("class", `donut-bg-col3-${index} progressive-disclosure`)
+    //                 .attr("transform", `translate(${donutX}, ${donutY})`)
+    //                 .attr("d", fullDonutArc)
+    //                 .attr("fill", "white")
+    //                 .attr("stroke", "black")
+    //                 .attr("stroke-width", 2)
+    //                 .attr("opacity", 0);
 
-                // Create multiple colored arcs
-                donutData.arcs.forEach((arcData, arcIndex) => {
-                    const arc = d3.arc()
-                        .innerRadius(donutData.radius * 0.6)
-                        .outerRadius(donutData.radius)
-                        .startAngle(arcData.startAngle)
-                        .endAngle(arcData.endAngle);
+    //             // Create multiple colored arcs
+    //             donutData.arcs.forEach((arcData, arcIndex) => {
+    //                 const arc = d3.arc()
+    //                     .innerRadius(donutData.radius * 0.6)
+    //                     .outerRadius(donutData.radius)
+    //                     .startAngle(arcData.startAngle)
+    //                     .endAngle(arcData.endAngle);
 
-                    svg.append("path")
-                        .attr("class", `arc-col3-${index}-${arcIndex} progressive-disclosure`)
-                        .attr("transform", `translate(${donutX}, ${donutY})`)
-                        .attr("d", arc)
-                        .attr("fill", arcData.color)
-                        .attr("stroke", "black")
-                        .attr("stroke-width", 1)
-                        .attr("opacity", 1);
-                });
+    //                 svg.append("path")
+    //                     .attr("class", `arc-col3-${index}-${arcIndex} progressive-disclosure`)
+    //                     .attr("transform", `translate(${donutX}, ${donutY})`)
+    //                     .attr("d", arc)
+    //                     .attr("fill", arcData.color)
+    //                     .attr("stroke", "black")
+    //                     .attr("stroke-width", 1)
+    //                     .attr("opacity", 1);
+    //             });
 
-                // Add HIO/LIO indicator arcs
-                donutData.arcs.forEach((arcData, arcIndex) => {
-                    if (arcData.color !== "white") {
-                        const indicatorArc = d3.arc()
-                            .innerRadius(index === 0 ? donutData.radius * 1.05 : donutData.radius * 0.45) // Outer for HIO, inner for LIO
-                            .outerRadius(index === 0 ? donutData.radius * 1.15 : donutData.radius * 0.55) // Outer for HIO, inner for LIO
-                            .startAngle(arcData.startAngle)
-                            .endAngle(arcData.endAngle);
+    //             // Add HIO/LIO indicator arcs
+    //             donutData.arcs.forEach((arcData, arcIndex) => {
+    //                 if (arcData.color !== "white") {
+    //                     const indicatorArc = d3.arc()
+    //                         .innerRadius(index === 0 ? donutData.radius * 1.05 : donutData.radius * 0.45) // Outer for HIO, inner for LIO
+    //                         .outerRadius(index === 0 ? donutData.radius * 1.15 : donutData.radius * 0.55) // Outer for HIO, inner for LIO
+    //                         .startAngle(arcData.startAngle)
+    //                         .endAngle(arcData.endAngle);
 
-                        svg.append("path")
-                            .attr("class", `indicator-arc-col3-${index}-${arcIndex} progressive-disclosure`)
-                            .attr("transform", `translate(${donutX}, ${donutY})`)
-                            .attr("d", indicatorArc)
-                            .attr("fill", "black")
-                            .attr("opacity", 1);
-                    }
-                });
+    //                     svg.append("path")
+    //                         .attr("class", `indicator-arc-col3-${index}-${arcIndex} progressive-disclosure`)
+    //                         .attr("transform", `translate(${donutX}, ${donutY})`)
+    //                         .attr("d", indicatorArc)
+    //                         .attr("fill", "black")
+    //                         .attr("opacity", 1);
+    //                 }
+    //             });
 
-                // Create strip below donut with individual colors
-                const stripY = donutY + donutData.radius + 40;
-                const stripWidth = 120;
-                const stripHeight = 25;
-                const stripX = donutX - stripWidth / 2;
+    //             // Create strip below donut with individual colors
+    //             const stripY = donutY + donutData.radius + 40;
+    //             const stripWidth = 120;
+    //             const stripHeight = 25;
+    //             const stripX = donutX - stripWidth / 2;
                 
-                // Create 5 rectangles for strip with individual colors
-                const numRects = 5;
-                const rectWidth = (stripWidth - 4) / numRects;
+    //             // Create 5 rectangles for strip with individual colors
+    //             const numRects = 5;
+    //             const rectWidth = (stripWidth - 4) / numRects;
                 
-                for (let i = 0; i < numRects; i++) {
-                    svg.append("rect")
-                        .attr("class", `strip-rect-col3-${index}-${i} progressive-disclosure`)
-                        .attr("x", stripX + 2 + (i * rectWidth))
-                        .attr("y", stripY + 2)
-                        .attr("width", rectWidth)
-                        .attr("height", stripHeight - 4)
-                        .attr("fill", donutData.stripColors[i])
-                        .attr("stroke", "black")
-                        .attr("stroke-width", 1)
-                        .attr("opacity", 0)
-                        .transition()
-                        .duration(400)
-                        .delay(400 + i * 100)
-                        .attr("opacity", 1);
-                }
+    //             for (let i = 0; i < numRects; i++) {
+    //                 svg.append("rect")
+    //                     .attr("class", `strip-rect-col3-${index}-${i} progressive-disclosure`)
+    //                     .attr("x", stripX + 2 + (i * rectWidth))
+    //                     .attr("y", stripY + 2)
+    //                     .attr("width", rectWidth)
+    //                     .attr("height", stripHeight - 4)
+    //                     .attr("fill", donutData.stripColors[i])
+    //                     .attr("stroke", "black")
+    //                     .attr("stroke-width", 1)
+    //                     .attr("opacity", 0)
+    //                     .transition()
+    //                     .duration(400)
+    //                     .delay(400 + i * 100)
+    //                     .attr("opacity", 1);
+    //             }
 
-                // Create connecting lines from donut to strip
-                const connectingLines = svg.selectAll(`.connecting-line-col3-${index}`)
-                    .data([
-                        {x1: donutX - 19, y1: donutY + 44, x2: stripX + 2, y2: stripY + stripHeight/2 - 8},
-                        {x1: donutX + 0, y1: donutY + 50, x2: stripX + stripWidth - 1, y2: stripY + stripHeight/2 - 9}
-                    ])
-                    .enter()
-                    .append("line")
-                    .attr("class", `connecting-line connecting-line-col3-${index} progressive-disclosure`)
-                    .attr("x1", d => d.x1)
-                    .attr("y1", d => d.y1)
-                    .attr("x2", d => d.x1)
-                    .attr("y2", d => d.y1)
-                    .attr("stroke", "black")
-                    .attr("stroke-width", 2)
-                    .attr("stroke-dasharray", "3,3")
-                    .attr("opacity", 0);
+    //             // Create connecting lines from donut to strip
+    //             const connectingLines = svg.selectAll(`.connecting-line-col3-${index}`)
+    //                 .data([
+    //                     {x1: donutX - 19, y1: donutY + 44, x2: stripX + 2, y2: stripY + stripHeight/2 - 8},
+    //                     {x1: donutX + 0, y1: donutY + 50, x2: stripX + stripWidth - 1, y2: stripY + stripHeight/2 - 9}
+    //                 ])
+    //                 .enter()
+    //                 .append("line")
+    //                 .attr("class", `connecting-line connecting-line-col3-${index} progressive-disclosure`)
+    //                 .attr("x1", d => d.x1)
+    //                 .attr("y1", d => d.y1)
+    //                 .attr("x2", d => d.x1)
+    //                 .attr("y2", d => d.y1)
+    //                 .attr("stroke", "black")
+    //                 .attr("stroke-width", 2)
+    //                 .attr("stroke-dasharray", "3,3")
+    //                 .attr("opacity", 0);
 
-                // Add HIO/LIO indicator lines for non-white rectangles
-                for (let i = 0; i < numRects; i++) {
-                    if (donutData.stripColors[i] !== "white") {
-                        const lineY = index === 0 ? stripY - 2 : stripY + stripHeight + 2; // Upper for HIO, lower for LIO
+    //             // Add HIO/LIO indicator lines for non-white rectangles
+    //             for (let i = 0; i < numRects; i++) {
+    //                 if (donutData.stripColors[i] !== "white") {
+    //                     const lineY = index === 0 ? stripY - 2 : stripY + stripHeight + 2; // Upper for HIO, lower for LIO
                         
-                        svg.append("line")
-                            .attr("class", `indicator-line-col3-${index}-${i} progressive-disclosure`)
-                            .attr("x1", stripX + 2 + (i * rectWidth))
-                            .attr("y1", lineY)
-                            .attr("x2", stripX + 2 + ((i + 1) * rectWidth))
-                            .attr("y2", lineY)
-                            .attr("stroke", "black")
-                            .attr("stroke-width", 3)
-                            .attr("opacity", 0)
-                            .transition()
-                            .duration(400)
-                            .delay(400 + i * 100)
-                            .attr("opacity", 1);
-                    }
-                }
+    //                     svg.append("line")
+    //                         .attr("class", `indicator-line-col3-${index}-${i} progressive-disclosure`)
+    //                         .attr("x1", stripX + 2 + (i * rectWidth))
+    //                         .attr("y1", lineY)
+    //                         .attr("x2", stripX + 2 + ((i + 1) * rectWidth))
+    //                         .attr("y2", lineY)
+    //                         .attr("stroke", "black")
+    //                         .attr("stroke-width", 3)
+    //                         .attr("opacity", 0)
+    //                         .transition()
+    //                         .duration(400)
+    //                         .delay(400 + i * 100)
+    //                         .attr("opacity", 1);
+    //                 }
+    //             }
 
-                // Animate connecting lines
-                connectingLines.transition()
-                    .duration(600)
-                    .delay(600)
-                    .attr("x2", d => d.x2)
-                    .attr("y2", d => d.y2)
-                    .attr("opacity", 1);
+    //             // Animate connecting lines
+    //             connectingLines.transition()
+    //                 .duration(600)
+    //                 .delay(600)
+    //                 .attr("x2", d => d.x2)
+    //                 .attr("y2", d => d.y2)
+    //                 .attr("opacity", 1);
 
-                // Animate donut appearing
-                donutBg.transition()
-                    .duration(600)
-                    .attr("opacity", 1)
-                    .ease(d3.easeBounceOut);
-            }
+    //             // Animate donut appearing
+    //             donutBg.transition()
+    //                 .duration(600)
+    //                 .attr("opacity", 1)
+    //                 .ease(d3.easeBounceOut);
+    //         }
 
-            // Add text if requested and doesn't exist yet
-            if (showText && svg.select(`.text-group-col3-${index}`).empty()) {
-                const textGroup = svg.append("g")
-                    .attr("class", `text-group-col3-${index} progressive-disclosure`)
-                    .attr("transform", `translate(${donutX + 75}, ${donutY - 30})`);
+    //         // Add text if requested and doesn't exist yet
+    //         if (showText && svg.select(`.text-group-col3-${index}`).empty()) {
+    //             const textGroup = svg.append("g")
+    //                 .attr("class", `text-group-col3-${index} progressive-disclosure`)
+    //                 .attr("transform", `translate(${donutX + 75}, ${donutY - 30})`);
 
-                const wrappedLines = wrapText(donutData.label, maxTextWidth);
+    //             const wrappedLines = wrapText(donutData.label, maxTextWidth);
                 
-                // Add text lines with staggered animation
-                wrappedLines.forEach((line, lineIndex) => {
-                    textGroup.append("text")
-                        .attr("x", 0)
-                        .attr("y", lineIndex * lineHeight)
-                        .attr("text-anchor", "start")
-                        .attr("fill", "#2c3e50")
-                        .attr("font-size", "20px")
-                        .attr("font-weight", "bold")
-                        .attr("opacity", 0)
-                        .text(line)
-                        .transition()
-                        .duration(400)
-                        .delay(lineIndex * 100)
-                        .attr("opacity", 1);
-                });
-            }
-        }
+    //             // Add text lines with staggered animation
+    //             wrappedLines.forEach((line, lineIndex) => {
+    //                 textGroup.append("text")
+    //                     .attr("x", 0)
+    //                     .attr("y", lineIndex * lineHeight)
+    //                     .attr("text-anchor", "start")
+    //                     .attr("fill", "#2c3e50")
+    //                     .attr("font-size", "20px")
+    //                     .attr("font-weight", "bold")
+    //                     .attr("opacity", 0)
+    //                     .text(line)
+    //                     .transition()
+    //                     .duration(400)
+    //                     .delay(lineIndex * 100)
+    //                     .attr("opacity", 1);
+    //             });
+    //         }
+    //     }
 
-        renderCurrentState();
+    //     renderCurrentState();
+    // }
+
+
+    renderLegendofSecondRow(donutArray, barcodeArray){
+
+   
+
+    let width = 600;
+    let height = 600;
+    let svg = d3.select(".dynamic-div-x3").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    // Add clickable link to another page
+    const linkGroup = svg.append("g")
+        .style("cursor", "pointer")
+        .on("click", function() {
+            window.location.href = "page2.html"; // Change this to your target HTML file
+        });
+
+    // Add background rectangle for the link (optional, for better visibility)
+    linkGroup.append("rect")
+        .attr("x", width - 210)
+        .attr("y", 20)
+        .attr("width", 200)
+        .attr("height", 40)
+        .attr("fill", "#4CAF50")
+        .attr("stroke", "#333")
+        .attr("stroke-width", 2)
+        .attr("rx", 5);
+
+    // Add link text
+    linkGroup.append("text")
+        .attr("x", width - 110)
+        .attr("y", 48)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "35px")
+        .attr("font-weight", "bold")
+        .attr("fill", "white")
+        .text("See Tutorial");
+
+    // Define colors for x-axis categories
+    const colors = ["rgb(210, 215, 255)", "rgb(255, 200, 200)", "darkred"]; // light blue, light red, dark red
+    const colorLabels = ["Light Blue", "Light Red", "Dark Red"];
+
+    // Define arc sizes for y-axis categories (reversed: big to small)
+    // CHANGE ARC LENGTH HERE: Modify the angle values (in radians, where Math.PI = 180 degrees)
+    const arcSizes = [
+        { inner: 57, outer: 103, angle: Math.PI * 0.15, label: "Big Arc" },      // 216 degrees
+        { inner: 57, outer: 103, angle: Math.PI * 0.3, label: "Medium Arc" },   // 144 degrees
+        { inner: 57, outer: 103, angle: Math.PI * 0.4, label: "Small Arc" }     // 72 degrees
+    ];
+
+    // Grid layout settings
+    const gridCols = 3;
+    const gridRows = 3;
+    const marginLeft = 40;
+    const marginBottom = 120;
+    const gridWidth = width - marginLeft - 80;
+    const gridHeight = height - marginBottom - 80;
+    const cellWidth = gridWidth / gridCols;
+    const cellHeight = gridHeight / gridRows;
+
+    // Draw axes
+    svg.append("line")
+        .attr("x1", marginLeft)
+        .attr("y1", 100)
+        .attr("x2", marginLeft)
+        .attr("y2", 100 + gridHeight)
+        .attr("stroke", "#333")
+        .attr("stroke-width", 3);
+
+    svg.append("line")
+        .attr("x1", marginLeft)
+        .attr("y1", 100 + gridHeight)
+        .attr("x2", marginLeft + gridWidth)
+        .attr("y2", 100 + gridHeight)
+        .attr("stroke", "#333")
+        .attr("stroke-width", 3);
+
+    // Create arcs in grid
+    for (let row = 0; row < gridRows; row++) {
+        for (let col = 0; col < gridCols; col++) {
+            const x = marginLeft + cellWidth * (col + 0.5) - 60;
+            const y = 100 + cellHeight * (row + 0.5) - 60;
+            const key = `${row}-${col}`;
+            
+            // Create arc generator
+            const arc = d3.arc()
+                .innerRadius(arcSizes[row].inner)
+                .outerRadius(arcSizes[row].outer)
+                .startAngle(Math.PI)  // Start at 6 o'clock
+                .endAngle(Math.PI / 2 + arcSizes[row].angle);  // Go counter-clockwise
+            
+            // Add arc
+            svg.append("path")
+                .attr("d", arc)
+                .attr("transform", `translate(${x}, ${y})`)
+                .attr("fill", colors[col])
+                .attr("stroke", "#333")
+                .attr("stroke-width", 2);
+
+        }
     }
+
+
+
+
+
+
+
+
+
+
+    // Add x-axis label (color gradient rectangle)
+    // Two-Rectangle Gradient System
+const blueRectWidth = 100;  // Blue rectangle width
+const redRectWidth = 200;   // Red rectangle width (2x blue)
+const rectHeight = 40;
+const spacing = 10;
+const startX = marginLeft + 15;
+const startY = 100 + gridHeight + 38;
+
+// Blue "Healthy" rectangle
+svg.append("rect")
+    .attr("x", startX)
+    .attr("y", startY)
+    .attr("width", blueRectWidth)
+    .attr("height", rectHeight)
+    .attr("fill", "rgb(210, 215, 255)")
+    .attr("stroke", "#333")
+    .attr("stroke-width", 2);
+
+svg.append("text")
+    .attr("x", startX + blueRectWidth / 2)
+    .attr("y", startY + rectHeight / 2 + 7)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "30px")
+    .attr("font-weight", "600")
+    .attr("fill", "#2c3e50")
+    .text("None");
+
+// Gradient definition for red rectangle
+const redGradient = svg.append("defs")
+    .append("linearGradient")
+    .attr("id", "redGradient")
+    .attr("x1", "0%")
+    .attr("x2", "100%");
+
+redGradient.append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", "rgb(255, 200, 200)");
+
+redGradient.append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "darkred");
+
+// Red gradient rectangle
+svg.append("rect")
+    .attr("x", startX + blueRectWidth + spacing + 50)
+    .attr("y", startY)
+    .attr("width", redRectWidth + 60)
+    .attr("height", rectHeight)
+    .attr("fill", "url(#redGradient)")
+    .attr("stroke", "#333")
+    .attr("stroke-width", 2);
+
+// "Low" label on left side of red rectangle
+svg.append("text")
+    .attr("x", startX + blueRectWidth + spacing + 53)
+    .attr("y", startY + rectHeight / 2 + 7)
+    .attr("font-size", "30px")
+    .attr("font-weight", "600")
+    .attr("fill", "#2c3e50")
+    .text("Low");
+
+// "High" label on right side of red rectangle
+svg.append("text")
+    .attr("x", startX + blueRectWidth + spacing + redRectWidth - 20 + 130)
+    .attr("y", startY + rectHeight / 2 + 7)
+    .attr("text-anchor", "end")
+    .attr("font-size", "30px")
+    .attr("font-weight", "600")
+    .attr("fill", "white")
+    .text("High");
+
+
+
+
+
+
+
+
+
+    // Add x-axis arrow
+    svg.append("defs").append("marker")
+        .attr("id", "arrowX")
+        .attr("markerWidth", 10)
+        .attr("markerHeight", 10)
+        .attr("refX", 9)
+        .attr("refY", 3)
+        .attr("orient", "auto")
+        .append("polygon")
+        .attr("points", "0 0, 10 3, 0 6")
+        .attr("fill", "#333");
+
+    svg.append("line")
+        .attr("x1", marginLeft + gridWidth)
+        .attr("y1", 100 + gridHeight)
+        .attr("x2", marginLeft + gridWidth + 40)
+        .attr("y2", 100 + gridHeight)
+        .attr("stroke", "#333")
+        .attr("stroke-width", 3)
+        .attr("marker-end", "url(#arrowX)");
+
+    svg.append("text")
+        .attr("x", (marginLeft + gridWidth)/4)
+        .attr("y", 125 + gridHeight + 5)
+        .attr("text-anchor", "start")
+        .attr("font-size", "30px")  // AXIS LABEL SIZE
+        .attr("font-weight", "bold")
+        .text("Disease Similarity");
+
+    // CHANGE Y-AXIS ARROW HERE: Modify the polygon points and refX/refY values
+    // Add y-axis arrow
+    svg.append("defs").append("marker")
+        .attr("id", "arrowY")
+        .attr("markerWidth", 10)
+        .attr("markerHeight", 10)
+        .attr("refX", 5)       
+        .attr("refY", 5)       
+        .attr("orient", "0")  // Point upward (270 degrees)
+        .append("polygon")
+        .attr("points", "5 0, 10 10, 0 10")  // Triangle pointing right (will be rotated)
+        .attr("fill", "#333");
+
+    svg.append("line")
+        .attr("x1", marginLeft)
+        .attr("y1", 100)
+        .attr("x2", marginLeft)
+        .attr("y2", 60)
+        .attr("stroke", "#333")
+        .attr("stroke-width", 3)
+        .attr("marker-end", "url(#arrowY)");
+
+    svg.append("text")
+        .attr("x", -(height / 2))  // Position at middle of height (will become y after rotation)
+        .attr("y", 30)  // Distance from left edge
+        .attr("text-anchor", "middle")
+        .attr("font-size", "30px")  // AXIS LABEL SIZE
+        .attr("font-weight", "bold")
+        .attr("transform", "rotate(-90)")  // Rotate 90 degrees counterclockwise
+        .text("More Literature Evidence");
+}
+
 
     // renders legend
     renderLegend(){
@@ -1966,12 +2220,12 @@ class Tab2Viz{
                 // .attr("x", -450)
                 .attr("y", -580)
                 .attr("x", -540)
-                .attr("font-size", "30")
+                .attr("font-size", "35")
                 .attr("fill", "green")
                 .attr("text-anchor", "middle") 
                 .style("font-weight", "bold")
                 .style("text-decoration", "underline")
-                .text('Sample Proximity to Crohns Disease (with REAL DATA from sample = ERR719231)')
+                .text('ERR719231 (Sample) Proximity to Crohns Disease')
 
                 svg.append("text")
                 // .attr("x", -450)

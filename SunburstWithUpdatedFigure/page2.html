@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page 2 - D3 Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 2200px;
+            height:1740px;
+            margin: 0 auto;
+        }
+        .content-wrapper {
+            display: flex;
+            gap: 50px;
+            margin-top: 0px;
+            align-items: flex-start;
+        }
+        .visualization-area {
+            flex-shrink: 0;
+        }
+        .nav-panel {
+            flex-shrink: 0;
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-top: 75px;
+        }
+        .nav-box {
+            width: 70px;
+            height: 70px;
+            background: white;
+            border: 3px solid #333;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .nav-box:hover {
+            background: #4CAF50;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .tooltip-area {
+            flex-grow: 1;
+            max-width: 950px;
+            position: relative;
+            padding-top: 35px;
+        }
+        .tooltip-panel {
+            background: #f9f9f9;
+            border: 3px solid #333;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: none;
+            min-height: 150px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+        .tooltip-panel.active {
+            display: block;
+        }
+        .tooltip-panel p {
+            margin: 14px 0;
+            font-size: 35px;
+            line-height: 1.6;
+            color: #333;
+        }
+        .back-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            transition: background-color 0.3s;
+            cursor: pointer;
+            font-size: 45px;
+        }
+        .back-button:hover {
+            background-color: #45a049;
+        }
+        .dynamic-div-x3 {
+            margin-top: 0;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 0px;
+            font-size: 48px;
+        }
+        .highlight {
+            filter: drop-shadow(0 0 10px gold) drop-shadow(0 0 20px gold);
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { filter: drop-shadow(0 0 10px gold) drop-shadow(0 0 20px gold); }
+            50% { filter: drop-shadow(0 0 15px gold) drop-shadow(0 0 30px gold); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="javascript:history.back()" class="back-button">← Go Back</a>
+        <h1>TUTORIAL (with fake example) -- Please hover over the numbers in order</h1>
+        
+        <div class="content-wrapper">
+            <div class="visualization-area">
+                <div class="dynamic-div-x3"></div>
+            </div>
+            <div class="nav-panel" id="navPanel"></div>
+            <div class="tooltip-area">
+                <div class="tooltip-panel" id="tooltipPanel"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tooltipData = {
+            1: [
+                "Donut (3 arcs) + Strip (8 rectangles) show 11",
+                "organisms (3+8) in this example."
+            ],
+            2: [
+                "The first arc always starts at 6 'o' clock but may stop",
+                "anywhere in the donut. In this example, it stops at",
+                "12 'o' clock but that might be different for other",
+                "examples. Notice that the arc is going",
+                "counter-clockwise. The first arc always has the",
+                "biggest size. The first arc contains the microorganism",
+                "that is found most frequently in disease literature.",
+                "Therefore, the first arc contains the most important",
+                "organism. Blue indicates that this organism does not",
+                "match the organism profile of a diseased sample."
+            ],
+            3: [
+                "The second arc starts wherever the first arc ends. The",
+                "second arc has the second biggest size. The second",
+                "arc contains the second most important organism.",
+                "Light red color indicates that this organism somewhat",
+                "matches the organism profile of a diseased sample."
+            ],
+            4: [
+                "As you can see, importance of organism decreases",
+                "counter-clockwise. The third arc contains the third",
+                "most important organism. Really dark red color",
+                "indicates that this organism matches the organism",
+                "profile of a diseased sample."
+            ],
+            5: [
+                "The strip beneath the donut contains organisms that",
+                "are not as important. In this example, 8 organisms",
+                "from the donut are shown in the strip. Organisms in",
+                "the strip are ordered left to right in terms of",
+                "importance. The donut contains organisms that are",
+                "the most important. In other examples, the split",
+                "may be different. Organisms from the strip can be",
+                "classified as noise."
+            ],
+            6: [
+                "In this example, we would say that the person may",
+                "have a matching profile to a given disease. Even",
+                "though the organisms in the strip are more red, we",
+                "have to understand that the organisms in the donut",
+                "are more important than the organisms in the strip.",
+                "Since the most important organism is blue and the",
+                "second most important organism is light red, it is",
+                "hard to tell whether this example matches a disease",
+                "profile. To illustrate further, If all the donut",
+                "arcs were red, we would say that the example matches",
+                "a disease profile and if all the donut arcs were blue,",
+                "we would say that the example does not match a",
+                "disease profile."
+            ],
+            7: [
+                "Here, we introduce High Indicator Organisms (HIOs).",
+                "HIOs in the donut have a black outer arc. HIOs in",
+                "the strip have an upper black line. In this visual,",
+                "there are 7 HIOs, 4 red and 3 blue. As indicated by",
+                "the name, HIOs exist in high abundance in disease",
+                "samples. Therefore, if an example has a high",
+                "abundance of an HIO, that HIO will be colored some",
+                "shade of red, otherwise it is colored blue. HIOs",
+                "and LIOs (discussed in number 8) have no effect on",
+                "how close an example/sample is to a disease."
+            ],
+            8: [
+                "We see Low Indicator Organisms (LIOs) here. LIOs",
+                "have a black inner arc in the donut and a lower",
+                "black line in the strip. In this visual, there are 4 LIOs,",
+                "all red. As indicated by the name, LIOs exist in low",
+                "abundance in disease samples. Therefore, if an",
+                "example has a low abundance of an LIO, that LIO will",
+                "be colored some shade of red, otherwise it is colored",
+                "blue. HIOs and LIOs are important because they help",
+                "researchers figure out which HIOs to decrease",
+                "abundance of and which LIOs to increase abundance",
+                "of in a given sample."
+            ]
+        };
+
+        // Create navigation boxes
+        const navPanel = d3.select("#navPanel");
+        for (let i = 1; i <= 8; i++) {
+            navPanel.append("div")
+                .attr("class", "nav-box")
+                .attr("data-number", i)
+                .text(i)
+                .on("mouseover", function() {
+                    showTooltip(i);
+                    highlightElements(i);
+                })
+                .on("mouseout", function() {
+                    hideTooltip();
+                    removeHighlights();
+                });
+        }
+
+        function showTooltip(num) {
+            const panel = document.getElementById("tooltipPanel");
+            panel.innerHTML = "";
+            tooltipData[num].forEach(line => {
+                const p = document.createElement("p");
+                p.textContent = line;
+                panel.appendChild(p);
+            });
+            panel.classList.add("active");
+            
+            // Align tooltip top with the corresponding nav box
+            const navBox = document.querySelector(`.nav-box[data-number="${num}"]`);
+            const tooltipArea = panel.parentElement;
+            if (navBox && tooltipArea) {
+                const navBoxRect = navBox.getBoundingClientRect();
+                const tooltipAreaRect = tooltipArea.getBoundingClientRect();
+                const offset = navBoxRect.top - tooltipAreaRect.top;
+                panel.style.top = `${offset}px`;
+            }
+        }
+
+        function hideTooltip() {
+            const panel = document.getElementById("tooltipPanel");
+            panel.classList.remove("active");
+            panel.style.top = "0";
+        }
+
+        function highlightElements(num) {
+            const svg = d3.select(".dynamic-div-x3 svg");
+            
+            // Remove any existing highlights
+            svg.selectAll(".highlight").classed("highlight", false);
+            
+            switch(num) {
+                case 1:
+                    // Highlight entire donut and strip
+                    svg.selectAll("path.main").classed("highlight", true);
+                    // Highlight strip rectangles
+                    svg.selectAll("rect").filter(function() {
+                        const y = d3.select(this).attr("y");
+                        return y === "0" && d3.select(this).attr("height") !== "30" && d3.select(this).attr("height") !== "50" && d3.select(this).attr("height") !== "60" && d3.select(this).attr("height") !== "70" && d3.select(this).attr("height") !== "80";
+                    }).classed("highlight", true);
+                    // Also highlight dotted lines
+                    svg.selectAll("line").filter(function() {
+                        return d3.select(this).attr("stroke-dasharray") === "5,5";
+                    }).classed("highlight", true);
+                    break;
+                case 2:
+                    // Highlight first (blue) arc
+                    svg.select("path.main").classed("highlight", true);
+                    break;
+                case 3:
+                    // Highlight second (light red) arc
+                    svg.selectAll("path.main").filter(function(d, i) {
+                        return i === 1;
+                    }).classed("highlight", true);
+                    break;
+                case 4:
+                    // Highlight third (dark red) arc
+                    svg.selectAll("path.main").filter(function(d, i) {
+                        return i === 2;
+                    }).classed("highlight", true);
+                    break;
+                case 5:
+                    // Highlight white arc and strip
+                    svg.selectAll("path.main").filter(function(d, i) {
+                        return i === 3;
+                    }).classed("highlight", true);
+                    // Highlight strip rectangles
+                    svg.selectAll("rect").filter(function() {
+                        const y = d3.select(this).attr("y");
+                        return y === "0" && d3.select(this).attr("height") !== "30" && d3.select(this).attr("height") !== "50" && d3.select(this).attr("height") !== "60" && d3.select(this).attr("height") !== "70" && d3.select(this).attr("height") !== "80";
+                    }).classed("highlight", true);
+                    // Also highlight dotted lines
+                    svg.selectAll("line").filter(function() {
+                        return d3.select(this).attr("stroke-dasharray") === "5,5";
+                    }).classed("highlight", true);
+                    break;
+                case 6:
+                    // Highlight entire donut and strip (same as case 1)
+                    svg.selectAll("path.main").classed("highlight", true);
+                    // Highlight strip rectangles
+                    svg.selectAll("rect").filter(function() {
+                        const y = d3.select(this).attr("y");
+                        return y === "0" && d3.select(this).attr("height") !== "30" && d3.select(this).attr("height") !== "50" && d3.select(this).attr("height") !== "60" && d3.select(this).attr("height") !== "70" && d3.select(this).attr("height") !== "80";
+                    }).classed("highlight", true);
+                    // Also highlight dotted lines
+                    svg.selectAll("line").filter(function() {
+                        return d3.select(this).attr("stroke-dasharray") === "5,5";
+                    }).classed("highlight", true);
+                    break;
+                case 7:
+                    // Highlight HIOs (outer black arcs and upper lines)
+                    svg.selectAll("path.outer-stroke").filter(function() {
+                        return d3.select(this).attr("stroke") === "black";
+                    }).classed("highlight", true);
+                    svg.selectAll("line").filter(function(d) {
+                        return d && d.weight > 0;
+                    }).classed("highlight", true);
+                    break;
+                case 8:
+                    // Highlight LIOs (inner black arcs and lower lines)
+                    svg.selectAll("path.inner-stroke").filter(function() {
+                        return d3.select(this).attr("stroke") === "black";
+                    }).classed("highlight", true);
+                    svg.selectAll("line").filter(function(d) {
+                        return d && d.weight < 0;
+                    }).classed("highlight", true);
+                    break;
+            }
+        }
+
+        function removeHighlights() {
+            d3.select(".dynamic-div-x3 svg").selectAll(".highlight").classed("highlight", false);
+        }
+
+        function renderLegendofSecondRow(donutArray, barcodeArray){
+            let svg = d3.select(".dynamic-div-x3").append("svg")
+            .attr("width", 760)
+            .attr("height", 1400)
+
+            const totalHeight = 1400;
+            const donutHeight = totalHeight * 0.6;
+            const barcodeHeight = totalHeight * 0.4;
+            const width = 760;
+            const radius = ((donutHeight / 1.4) - 400) * 1.5;
+
+            donutArray.push({
+                CDFdifference: undefined,
+                color: "rgb(255, 255, 255)",
+                colorDifference: undefined,
+                interventionColor: undefined,
+                ncbi_taxon_id: undefined,
+                organism: undefined,
+                weight: "0.5"
+            });
+
+            const totalWeight = d3.sum(donutArray, d => Math.abs(d.weight));
+            const normalizedWeights = donutArray.map(d => Math.abs(d.weight) / totalWeight);
+
+            const pie = d3.pie()
+            .value((d, i) => normalizedWeights[i])
+            .sort(null)
+            .startAngle(Math.PI)
+            .endAngle(Math.PI / 2 - 2 * Math.PI);
+
+            const arc = d3.arc()
+            .innerRadius(radius * 0.6)
+            .outerRadius(radius);
+
+            const innerArc = d3.arc()
+            .innerRadius(radius * 0.57)
+            .outerRadius(radius * 0.57)
+            .cornerRadius(0);
+
+            const innerArc2 = d3.arc()
+            .innerRadius(radius * 0.54)
+            .outerRadius(radius * 0.54)
+            .cornerRadius(0);
+
+            const outerArc = d3.arc()
+            .innerRadius(radius * 1.03)
+            .outerRadius(radius * 1.03)
+            .cornerRadius(0);
+
+            const outerArc2 = d3.arc()
+            .innerRadius(radius * 1.06)
+            .outerRadius(radius * 1.06)
+            .cornerRadius(0);
+
+            const donutGroup = svg.append("g")
+            .attr("transform", `translate(${380}, ${360})`);
+
+            const arcData = pie(donutArray);
+
+            donutGroup.selectAll("path.main")
+                .data(arcData)
+                .enter().append("path")
+                .attr("class", "main")
+                .attr("d", arc)
+                .attr("fill", d => d.data.color)
+                .attr("stroke", "black")
+                .style("stroke-width", "2px");
+
+            donutGroup.selectAll("path.inner-stroke")
+            .data(pie(donutArray))
+            .enter().append("path")
+            .attr("class", "inner-stroke")
+            .attr("id", "LIOHIO") 
+            .attr("d", innerArc2)
+            .attr("fill", "none")
+            .attr("stroke", d => (d.data.weight < 0 || d.data.color === "rgb(255, 200, 200)") ? "black" : "white")
+            .style("stroke-width", "10px")
+            .style("opacity", 1)
+        
+            donutGroup.selectAll("path.outer-stroke")
+                .data(pie(donutArray))
+                .enter().append("path")
+                .attr("class", "outer-stroke")
+                .attr("id", "LIOHIO") 
+                .attr("d", outerArc2)
+                .attr("fill", "none")
+                .attr("stroke", d => (d.data.weight > 0 && d.data.color != 'rgb(255, 255, 255)' && d.data.color != 'rgb(255, 200, 200)') ? "black" : "white")
+                .style("stroke-width", "10px")
+                .style("opacity", 1)
+
+            const barWidth = (width / barcodeArray.length) - 31;
+            const totalStripWidth = barWidth * barcodeArray.length;
+            const stripLeftMargin = (width - totalStripWidth) / 2;
+            const barcodeGroup = svg.append("g")
+            .attr("transform", `translate(${stripLeftMargin}, ${810})`);
+            
+            barcodeGroup.selectAll("rect")
+            .data(barcodeArray)
+            .enter().append("rect")
+            .attr("x", (d, i) => i * barWidth)
+            .attr("y", 0)
+            .attr("width", barWidth - 1)
+            .attr("height", barcodeHeight/10)
+            .attr("fill", d => d.color)
+            .attr("stroke", "black")
+            .style("stroke-width", "1px");
+
+            barcodeGroup.selectAll("line")
+            .data(barcodeArray)
+            .enter().append("line")
+            .attr("id", "LIOHIO") 
+            .attr("x1", (d, i) => i * barWidth)
+            .attr("x2", (d, i) => i * barWidth + barWidth - 2)
+            .attr("y1", d => d.weight > 0 ? -10 : barcodeHeight/10 + 10)
+            .attr("y2", d => d.weight > 0 ? -10 : barcodeHeight/10 + 10)
+            .attr("stroke", "black")
+            .attr("stroke-width", "4px")
+            .attr("stroke-linecap", "round")
+            .style("opacity", 1)
+
+            donutGroup.append("defs").append("marker")
+                .attr("id", "arrowhead")
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 8).attr("refY", 0)
+                .attr("markerWidth", 10).attr("markerHeight", 10)
+                .attr("orient", "auto-start-reverse")
+                .append("path")
+                .attr("d", "M0,-5L10,0L0,5")
+                .attr("fill", "black");
+
+            barcodeGroup.append("defs").append("marker")
+                .attr("id", "barcode-arrowhead")
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 8).attr("refY", 0)
+                .attr("markerWidth", 10).attr("markerHeight", 10)
+                .attr("orient", "auto-start-reverse")
+                .append("path")
+                .attr("d", "M0,-5L10,0L0,5")
+                .attr("fill", "black");
+
+            // Add dotted lines from white arc to strip ends
+            const whiteArcData = arcData[arcData.length - 1];
+            const donutCenterX = 380;
+            const donutCenterY = 370;
+            
+            const whiteArcStartAngle = whiteArcData.startAngle;
+            const whiteArcEndAngle = whiteArcData.endAngle;
+            const outerRadius = arc.outerRadius()();
+            
+            const startX = donutCenterX + Math.sin(whiteArcStartAngle) * outerRadius;
+            const startY = donutCenterY - Math.cos(whiteArcStartAngle) * outerRadius;
+            
+            const endX = donutCenterX + Math.sin(whiteArcEndAngle) * outerRadius;
+            const endY = donutCenterY - Math.cos(whiteArcEndAngle) * outerRadius;
+            
+            const stripY = 810;
+            const stripLeftX = stripLeftMargin;
+            const stripRightX = stripLeftMargin + totalStripWidth;
+            
+            svg.append("line")
+                .attr("x1", startX)
+                .attr("y1", startY)
+                .attr("x2", stripLeftX)
+                .attr("y2", stripY)
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .attr("stroke-dasharray", "5,5");
+            
+            svg.append("line")
+                .attr("x1", endX)
+                .attr("y1", endY)
+                .attr("x2", stripRightX)
+                .attr("y2", stripY)
+                .attr("stroke", "black")
+                .attr("stroke-width", 2)
+                .attr("stroke-dasharray", "5,5");
+
+            // Adding gradient for red box only
+            const gradient5 = svg.append("defs")
+                .append("linearGradient")
+                .attr("id", "gradient7")
+                .attr("x1", "0%").attr("y1", "0%")
+                .attr("x2", "100%").attr("y2", "0%");
+            gradient5.append("stop").attr("offset", "0%").attr("stop-color", "rgb(255, 200, 200)")
+            gradient5.append("stop").attr("offset", "100%").attr("stop-color", "darkred");
+            
+            // Blue rectangle (about half the size of red)
+            svg.append("rect")
+                .attr("x", 0).attr("y", 1000)
+                .attr("width", 200).attr("height", 30)
+                .style("fill", "rgb(210, 215, 255)")
+                .attr("stroke", "black")
+                .style("stroke-width", "2px");
+            
+            // Red rectangle with gradient
+            svg.append("rect")
+                .attr("x", 260).attr("y", 1000)
+                .attr("width", 500).attr("height", 30)
+                .style("fill", "url(#gradient7)")
+                .attr("stroke", "black")
+                .style("stroke-width", "2px");
+
+            // Text beneath blue box: "Healthy"
+            svg.append("text").attr("x", 100).attr("y", 1070).attr("font-size", "35").attr("fill", "Black")
+                .attr("text-anchor", "middle").style("font-weight", "bold").text("Healthy")
+            
+            // Text on left side of red box: "Low"
+            svg.append("text")
+                .attr("x", 280)
+                .attr("y", 1070)
+                .attr("font-size", "35")
+                .attr("fill", "Black")
+                .attr("text-anchor", "start")
+                .style("font-weight", "bold")
+                .text("Low")
+            
+            // Text on right side of red box: "High"
+            svg.append("text")
+                .attr("x", 740)
+                .attr("y", 1070)
+                .attr("font-size", "35")
+                .attr("fill", "Black")
+                .attr("text-anchor", "end")
+                .style("font-weight", "bold")
+                .text("High")
+            
+            // Text beneath red box: "Disease similarity"
+            svg.append("text").attr("x", 510).attr("y", 1110).attr("font-size", "35").attr("fill", "Black")
+                .attr("text-anchor", "middle").style("font-weight", "bold")
+                .text("Disease similarity")
+        }
+
+        // Dummy data
+        const dummyDonutArray = [
+            { color: "rgb(210, 215, 255)", weight: 1.5, organism: "Organism A" },
+            { color: "rgb(255, 200, 200)", weight: 1.0, organism: "Organism B" },
+            { color: "darkred", weight: 0.7, organism: "Organism C" }
+        ];
+
+        const dummyBarcodeArray = [
+            { color: "rgb(210, 215, 255)", weight: 0.3 },
+            { color: "rgb(255, 200, 200)", weight: -0.4 },
+            { color: "darkred", weight: 0.7 },
+            { color: "rgb(210, 215, 255)", weight: 0.2 },
+            { color: "rgb(255, 200, 200)", weight: -0.5 },
+            { color: "darkred", weight: 0.6 },
+            { color: "rgb(210, 215, 255)", weight: 0.4 },
+            { color: "rgb(255, 200, 200)", weight: -0.3 }
+        ];
+
+        window.addEventListener('DOMContentLoaded', function() {
+            renderLegendofSecondRow(dummyDonutArray, dummyBarcodeArray);
+        });
+    </script>
+</body>
+</html>
