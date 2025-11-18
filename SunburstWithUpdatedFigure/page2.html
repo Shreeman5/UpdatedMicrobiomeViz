@@ -29,14 +29,20 @@
         }
         .visualization-area {
             flex-shrink: 0;
+            position: relative;
         }
         .nav-panel {
             flex-shrink: 0;
-            width: 80px;
+            width: 500px;
             display: flex;
             flex-direction: column;
             gap: 20px;
             padding-top: 75px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
         .nav-box {
             width: 70px;
@@ -52,8 +58,36 @@
             cursor: pointer;
             transition: all 0.2s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
-        .nav-box:hover {
+        .nav-box:hover, .nav-box.active {
+            background: #4CAF50;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .nav-label {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            white-space: nowrap;
+        }
+        .viz-box {
+            background: white;
+            border: 3px solid #333;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: absolute;
+            z-index: 10;
+        }
+        .viz-box:hover, .viz-box.active {
             background: #4CAF50;
             color: white;
             transform: scale(1.1);
@@ -69,10 +103,10 @@
             background: #f9f9f9;
             border: 3px solid #333;
             border-radius: 10px;
-            padding: 30px;
+            padding: 2px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             display: none;
-            min-height: 150px;
+            min-height: 50px;
             position: absolute;
             top: 0;
             left: 0;
@@ -82,16 +116,16 @@
             display: block;
         }
         .tooltip-panel p {
-            margin: 14px 0;
+            margin: 20px 0;
             font-size: 35px;
-            line-height: 1.6;
+            line-height: 0.8;
             color: #333;
         }
         .back-button {
             display: inline-block;
             padding: 15px 40px;
-            background-color: #4CAF50;
-            color: white;
+            background-color: white;
+            color: black;
             text-decoration: none;
             border-radius: 5px;
             font-weight: bold;
@@ -99,9 +133,10 @@
             transition: background-color 0.3s;
             cursor: pointer;
             font-size: 45px;
+            border: 3px solid black;  /* Add this line */
         }
         .back-button:hover {
-            background-color: #45a049;
+            background-color: white;
         }
         .dynamic-div-x3 {
             margin-top: 0;
@@ -125,10 +160,10 @@
 <body>
     <div class="container">
         <a href="javascript:history.back()" class="back-button">← Go Back</a>
-        <h1>TUTORIAL (with fake example) -- Please hover over the numbers in order</h1>
+        <h1>TUTORIAL (with fake example) -- Hover over the numbers to learn details about the example</h1>
         
         <div class="content-wrapper">
-            <div class="visualization-area">
+            <div class="visualization-area" id="visualizationArea">
                 <div class="dynamic-div-x3"></div>
             </div>
             <div class="nav-panel" id="navPanel"></div>
@@ -141,8 +176,8 @@
     <script>
         const tooltipData = {
             1: [
-                "Donut (3 arcs) + Strip (8 rectangles) show 11",
-                "organisms (3+8) in this example."
+                "Donut (3 arcs, not counting the white arc) + Strip (8",
+                "rectangles) show 11 organisms (3+8) in this example."
             ],
             2: [
                 "The first arc always starts at 6 'o' clock but may stop",
@@ -150,25 +185,25 @@
                 "12 'o' clock but that might be different for other",
                 "examples. Notice that the arc is going",
                 "counter-clockwise. The first arc always has the",
-                "biggest size. The first arc contains the microorganism",
-                "that is found most frequently in disease literature.",
+                "biggest size. The first arc contains the organism that",
+                "is found most frequently in disease literature.",
                 "Therefore, the first arc contains the most important",
                 "organism. Blue indicates that this organism does not",
                 "match the organism profile of a diseased sample."
             ],
             3: [
-                "The second arc starts wherever the first arc ends. The",
-                "second arc has the second biggest size. The second",
-                "arc contains the second most important organism.",
-                "Light red color indicates that this organism somewhat",
-                "matches the organism profile of a diseased sample."
+                "The second arc starts wherever the first arc ends. ",
+                "The second arc has the second biggest size. The ",
+                "second arc contains the second most important ",
+                "organism. Light red color indicates that this organism ",
+                "somewhat matches the organism profile of a",
+                "diseased sample."
             ],
             4: [
-                "As you can see, importance of organism decreases",
-                "counter-clockwise. The third arc contains the third",
-                "most important organism. Really dark red color",
-                "indicates that this organism matches the organism",
-                "profile of a diseased sample."
+                "The third arc contains the third most important",
+                "organism. Really dark red color indicates that this",
+                "organism matches the organism profile of a diseased",
+                "sample."
             ],
             5: [
                 "The strip beneath the donut contains organisms that",
@@ -177,7 +212,9 @@
                 "the strip are ordered left to right in terms of",
                 "importance. The donut contains organisms that are",
                 "the most important. In other examples, the split",
-                "may be different. Organisms from the strip can be",
+                "may be different. For instance, the donut could",
+                "contain 30 organisms and the strip may contain 50",
+                "organisms. Organisms from the strip can be",
                 "classified as noise."
             ],
             6: [
@@ -189,10 +226,10 @@
                 "Since the most important organism is blue and the",
                 "second most important organism is light red, it is",
                 "hard to tell whether this example matches a disease",
-                "profile. To illustrate further, If all the donut",
-                "arcs were red, we would say that the example matches",
-                "a disease profile and if all the donut arcs were blue,",
-                "we would say that the example does not match a",
+                "profile. To illustrate further, If all the donut arcs were",
+                "red, we would say that the example matches a",
+                "disease profile and if all the donut arcs were blue, we",
+                "would say that the example does not match a",
                 "disease profile."
             ],
             7: [
@@ -222,21 +259,105 @@
             ]
         };
 
-        // Create navigation boxes
+        const navLabels = {
+            1: "General Information",
+            2: "Biggest Arc",
+            3: "Second Biggest Arc",
+            4: "Third Biggest Arc",
+            5: "White Arc + Strip",
+            6: "Similarity to Disease Profile",
+            7: "High Indicator Organisms (HIOs)",
+            8: "Low Indicator Organisms (LIOs)"
+        };
+
+        // Position data for each numbered box in the visualization (x, y coordinates, width, height)
+        const vizPositions = {
+            1: { x: 330, y: 320, width: 100, height: 100, fontSize: 60},
+            2: { x: 580, y: 330, width: 75, height: 75, fontSize: 40},
+            3: { x: 340, y: 80, width: 75, height: 75, fontSize: 40},
+            4: { x: 90, y: 320, width: 75, height: 75, fontSize: 40 },
+            5: { x: 200, y: 680, width: 75, height: 75, fontSize: 40 },
+            6: { x: 330, y: 950, width: 100, height: 100, fontSize: 60 },
+            7: [
+                { x: 590, y: 610, width: 40, height: 40, fontSize: 25},
+                { x: 460, y: 745, width: 40, height: 40, fontSize: 25}
+                ],
+            8: [
+                { x: 190, y: 890, width: 50, height: 50 },
+                { x: 305, y: 230, width: 50, height: 50 }
+                ]
+        };
+
+        // Create vertical navigation boxes with labels
         const navPanel = d3.select("#navPanel");
         for (let i = 1; i <= 8; i++) {
-            navPanel.append("div")
+            const navItem = navPanel.append("div")
+                .attr("class", "nav-item");
+            
+            navItem.append("div")
                 .attr("class", "nav-box")
                 .attr("data-number", i)
                 .text(i)
                 .on("mouseover", function() {
                     showTooltip(i);
                     highlightElements(i);
+                    highlightBoxes(i);
                 })
                 .on("mouseout", function() {
                     hideTooltip();
                     removeHighlights();
+                    unhighlightBoxes();
                 });
+            
+            // Add label if it exists
+            if (navLabels[i]) {
+                navItem.append("div")
+                    .attr("class", "nav-label")
+                    .text(navLabels[i]);
+            }
+        }
+
+        // Create numbered boxes within the visualization area
+        const visualArea = d3.select("#visualizationArea");
+        for (let i = 1; i <= 8; i++) {
+            const pos = vizPositions[i];
+            
+            // Check if pos is an array (multiple boxes) or single object
+            const positions = Array.isArray(pos) ? pos : [pos];
+            
+            // Create a box for each position
+            positions.forEach(position => {
+                visualArea.append("div")
+                    .attr("class", "viz-box")
+                    .attr("data-number", i)
+                    .style("left", position.x + "px")
+                    .style("top", position.y + "px")
+                    .style("width", position.width + "px")
+                    .style("height", position.height + "px")
+                    .style("font-size", position.fontSize + "px")
+                    .text(i)
+                    .on("mouseover", function() {
+                        showTooltip(i);
+                        highlightElements(i);
+                        highlightBoxes(i);
+                    })
+                    .on("mouseout", function() {
+                        hideTooltip();
+                        removeHighlights();
+                        unhighlightBoxes();
+                    });
+            });
+        }
+
+        function highlightBoxes(num) {
+            // Highlight both nav-box and viz-box with the same number
+            d3.selectAll(`.nav-box[data-number="${num}"]`).classed("active", true);
+            d3.selectAll(`.viz-box[data-number="${num}"]`).classed("active", true);
+        }
+
+        function unhighlightBoxes() {
+            d3.selectAll(".nav-box").classed("active", false);
+            d3.selectAll(".viz-box").classed("active", false);
         }
 
         function showTooltip(num) {
@@ -543,46 +664,46 @@
             
             // Blue rectangle (about half the size of red)
             svg.append("rect")
-                .attr("x", 0).attr("y", 1000)
-                .attr("width", 200).attr("height", 30)
+                .attr("x", 55).attr("y", 1080)
+                .attr("width", 150).attr("height", 40)
                 .style("fill", "rgb(210, 215, 255)")
                 .attr("stroke", "black")
                 .style("stroke-width", "2px");
             
             // Red rectangle with gradient
             svg.append("rect")
-                .attr("x", 260).attr("y", 1000)
-                .attr("width", 500).attr("height", 30)
+                .attr("x", 260).attr("y", 1080)
+                .attr("width", 420).attr("height", 40)
                 .style("fill", "url(#gradient7)")
                 .attr("stroke", "black")
                 .style("stroke-width", "2px");
 
             // Text beneath blue box: "Healthy"
-            svg.append("text").attr("x", 100).attr("y", 1070).attr("font-size", "35").attr("fill", "Black")
-                .attr("text-anchor", "middle").style("font-weight", "bold").text("Healthy")
+            svg.append("text").attr("x", 125).attr("y", 1110).attr("font-size", "35").attr("fill", "#2c3e50")
+                .attr("text-anchor", "middle").style("font-weight", "bold").text("None")
             
             // Text on left side of red box: "Low"
             svg.append("text")
-                .attr("x", 280)
-                .attr("y", 1070)
+                .attr("x", 265)
+                .attr("y", 1110)
                 .attr("font-size", "35")
-                .attr("fill", "Black")
+                .attr("fill", "#2c3e50")
                 .attr("text-anchor", "start")
                 .style("font-weight", "bold")
                 .text("Low")
             
             // Text on right side of red box: "High"
             svg.append("text")
-                .attr("x", 740)
-                .attr("y", 1070)
+                .attr("x", 675)
+                .attr("y", 1110)
                 .attr("font-size", "35")
-                .attr("fill", "Black")
+                .attr("fill", "white")
                 .attr("text-anchor", "end")
                 .style("font-weight", "bold")
                 .text("High")
             
             // Text beneath red box: "Disease similarity"
-            svg.append("text").attr("x", 510).attr("y", 1110).attr("font-size", "35").attr("fill", "Black")
+            svg.append("text").attr("x", 380).attr("y", 1180).attr("font-size", "35").attr("fill", "Black")
                 .attr("text-anchor", "middle").style("font-weight", "bold")
                 .text("Disease similarity")
         }

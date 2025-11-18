@@ -1320,7 +1320,7 @@ class Tab2Viz{
         .attr("y", 20)
         .attr("width", 200)
         .attr("height", 40)
-        .attr("fill", "#4CAF50")
+        .attr("fill", "white")
         .attr("stroke", "#333")
         .attr("stroke-width", 2)
         .attr("rx", 5);
@@ -1328,12 +1328,12 @@ class Tab2Viz{
     // Add link text
     linkGroup.append("text")
         .attr("x", width - 110)
-        .attr("y", 48)
+        .attr("y", 52)
         .attr("text-anchor", "middle")
         .attr("font-size", "35px")
         .attr("font-weight", "bold")
-        .attr("fill", "white")
-        .text("See Tutorial");
+        .attr("fill", "black")
+        .text("Tutorial");
 
     // Define colors for x-axis categories
     const colors = ["rgb(210, 215, 255)", "rgb(255, 200, 200)", "darkred"]; // light blue, light red, dark red
@@ -1360,7 +1360,7 @@ class Tab2Viz{
     // Draw axes
     svg.append("line")
         .attr("x1", marginLeft)
-        .attr("y1", 100)
+        .attr("y1", 150)
         .attr("x2", marginLeft)
         .attr("y2", 100 + gridHeight)
         .attr("stroke", "#333")
@@ -1420,7 +1420,7 @@ const startY = 100 + gridHeight + 38;
 // Blue "Healthy" rectangle
 svg.append("rect")
     .attr("x", startX)
-    .attr("y", startY)
+    .attr("y", startY - 20)
     .attr("width", blueRectWidth)
     .attr("height", rectHeight)
     .attr("fill", "rgb(210, 215, 255)")
@@ -1429,7 +1429,7 @@ svg.append("rect")
 
 svg.append("text")
     .attr("x", startX + blueRectWidth / 2)
-    .attr("y", startY + rectHeight / 2 + 7)
+    .attr("y", startY + rectHeight / 2 + 7 - 20)
     .attr("text-anchor", "middle")
     .attr("font-size", "30px")
     .attr("font-weight", "600")
@@ -1454,7 +1454,7 @@ redGradient.append("stop")
 // Red gradient rectangle
 svg.append("rect")
     .attr("x", startX + blueRectWidth + spacing + 50)
-    .attr("y", startY)
+    .attr("y", startY - 20)
     .attr("width", redRectWidth + 60)
     .attr("height", rectHeight)
     .attr("fill", "url(#redGradient)")
@@ -1464,7 +1464,7 @@ svg.append("rect")
 // "Low" label on left side of red rectangle
 svg.append("text")
     .attr("x", startX + blueRectWidth + spacing + 53)
-    .attr("y", startY + rectHeight / 2 + 7)
+    .attr("y", startY + rectHeight / 2 + 7 - 20)
     .attr("font-size", "30px")
     .attr("font-weight", "600")
     .attr("fill", "#2c3e50")
@@ -1473,7 +1473,7 @@ svg.append("text")
 // "High" label on right side of red rectangle
 svg.append("text")
     .attr("x", startX + blueRectWidth + spacing + redRectWidth - 20 + 130)
-    .attr("y", startY + rectHeight / 2 + 7)
+    .attr("y", startY + rectHeight / 2 + 7 - 20)
     .attr("text-anchor", "end")
     .attr("font-size", "30px")
     .attr("font-weight", "600")
@@ -1511,7 +1511,7 @@ svg.append("text")
 
     svg.append("text")
         .attr("x", (marginLeft + gridWidth)/4)
-        .attr("y", 125 + gridHeight + 5)
+        .attr("y", startY + rectHeight + 10)
         .attr("text-anchor", "start")
         .attr("font-size", "30px")  // AXIS LABEL SIZE
         .attr("font-weight", "bold")
@@ -1532,23 +1532,33 @@ svg.append("text")
 
     svg.append("line")
         .attr("x1", marginLeft)
-        .attr("y1", 100)
+        .attr("y1", 150)
         .attr("x2", marginLeft)
-        .attr("y2", 60)
+        .attr("y2", 110)
         .attr("stroke", "#333")
         .attr("stroke-width", 3)
         .attr("marker-end", "url(#arrowY)");
 
+    // Y-axis label - "Literature" (top line)
     svg.append("text")
-        .attr("x", -(height / 2))  // Position at middle of height (will become y after rotation)
-        .attr("y", 30)  // Distance from left edge
-        .attr("text-anchor", "middle")
+        .attr("x", 0)  // Position at middle of shortened axis
+        .attr("y", 45)  // Distance from left edge
+        .attr("text-anchor", "start")
         .attr("font-size", "30px")  // AXIS LABEL SIZE
         .attr("font-weight", "bold")
-        .attr("transform", "rotate(-90)")  // Rotate 90 degrees counterclockwise
-        .text("More Literature Evidence");
-}
+        // .attr("transform", "rotate(-90)")  // Rotate 90 degrees counterclockwise
+        .text("Literature");
 
+    // Y-axis label - "Evidence" (bottom line)
+    svg.append("text")
+        .attr("x", 0)  // Same position
+        .attr("y", 80)  // Slightly further from left edge
+        .attr("text-anchor", "start")
+        .attr("font-size", "30px")  // AXIS LABEL SIZE
+        .attr("font-weight", "bold")
+        // .attr("transform", "rotate(-90)")  // Rotate 90 degrees counterclockwise
+        .text("Evidence");
+}
 
     // renders legend
     renderLegend(){
