@@ -180,91 +180,55 @@
                 "rectangles) show 11 organisms (3+8) in this example."
             ],
             2: [
-                "The first arc always starts at 6 'o' clock but may stop",
-                "anywhere in the donut. In this example, it stops at",
-                "12 'o' clock but that might be different for other",
-                "examples. Notice that the arc is going",
-                "counter-clockwise. The first arc always has the",
-                "biggest size. The first arc contains the organism that",
-                "is found most frequently in disease literature.",
-                "Therefore, the first arc contains the most important",
-                "organism. Blue indicates that this organism does not",
-                "match the organism profile of a diseased sample."
+                "The largest arc, which starts at the bottom of the",
+                "donut, contains the organism that is found most",
+                "frequently in disease literature. In this case, blue",
+                "indicates that it does not match the profile of a",
+                "diseased organism."
             ],
             3: [
-                "The second arc starts wherever the first arc ends. ",
-                "The second arc has the second biggest size. The ",
-                "second arc contains the second most important ",
-                "organism. Light red color indicates that this organism ",
-                "somewhat matches the organism profile of a",
-                "diseased sample."
+                "Preceding counter-clockwise, the second arc",
+                "contains the organism found second most frequently",
+                "in disease literature. Light red indicates that it",
+                "somewhat matches the profile of a diseased",
+                "organism."
             ],
             4: [
-                "The third arc contains the third most important",
-                "organism. Really dark red color indicates that this",
-                "organism matches the organism profile of a diseased",
-                "sample."
+                "Basically, arc size is proportional to frequency of",
+                "organism in disease literature. With more organisms,",
+                "more arcs are present in the donut."
             ],
             5: [
-                "The strip beneath the donut contains organisms that",
-                "are not as important. In this example, 8 organisms",
-                "from the donut are shown in the strip. Organisms in",
-                "the strip are ordered left to right in terms of",
-                "importance. The donut contains organisms that are",
-                "the most important. In other examples, the split",
-                "may be different. For instance, the donut could",
-                "contain 30 organisms and the strip may contain 50",
-                "organisms. Organisms from the strip can be",
-                "classified as noise."
+                "The strip beneath the donut shows organisms that",
+                "are less important, ordered from left to right. "
             ],
             6: [
-                "In this example, we would say that the person may",
-                "have a matching profile to a given disease. Even",
-                "though the organisms in the strip are more red, we",
-                "have to understand that the organisms in the donut",
-                "are more important than the organisms in the strip.",
-                "Since the most important organism is blue and the",
-                "second most important organism is light red, it is",
-                "hard to tell whether this example matches a disease",
-                "profile. To illustrate further, If all the donut arcs were",
-                "red, we would say that the example matches a",
-                "disease profile and if all the donut arcs were blue, we",
-                "would say that the example does not match a",
-                "disease profile."
+                "The more red there is in the donut, the closer it is",
+                "to a disease profile. The more blue there is in the",
+                "donut, the closer it is to a healthy profile."
             ],
             7: [
-                "Here, we introduce High Indicator Organisms (HIOs).",
-                "HIOs in the donut have a black outer arc. HIOs in",
-                "the strip have an upper black line. In this visual,",
-                "there are 7 HIOs, 4 red and 3 blue. As indicated by",
-                "the name, HIOs exist in high abundance in disease",
-                "samples. Therefore, if an example has a high",
-                "abundance of an HIO, that HIO will be colored some",
-                "shade of red, otherwise it is colored blue. HIOs",
-                "and LIOs (discussed in number 8) have no effect on",
-                "how close an example/sample is to a disease."
+                "High Indicator Organisms (HIOs) exist in high",
+                "abundance in disease profiles. For an HIO, reducing",
+                "its presence makes the sample less similar to the",
+                "disease profile. HIOs in the donut have a black outer",
+                "arc and HIOs in the strip have an upper black line."
             ],
             8: [
-                "We see Low Indicator Organisms (LIOs) here. LIOs",
-                "have a black inner arc in the donut and a lower",
-                "black line in the strip. In this visual, there are 4 LIOs,",
-                "all red. As indicated by the name, LIOs exist in low",
-                "abundance in disease samples. Therefore, if an",
-                "example has a low abundance of an LIO, that LIO will",
-                "be colored some shade of red, otherwise it is colored",
-                "blue. HIOs and LIOs are important because they help",
-                "researchers figure out which HIOs to decrease",
-                "abundance of and which LIOs to increase abundance",
-                "of in a given sample."
+                "Low Indicator Organisms (LIOs) exist in low",
+                "abundance in disease profiles. For an LIO, increasing",
+                "its presence makes the sample less similar to the",
+                "disease profile. LIOs in the donut have a black inner",
+                "arc and LIOs in the strip have a lower black line."
             ]
         };
 
         const navLabels = {
             1: "General Information",
-            2: "Biggest Arc",
-            3: "Second Biggest Arc",
-            4: "Third Biggest Arc",
-            5: "White Arc + Strip",
+            2: "Most Important Organism",
+            3: "Arc 2",
+            4: "Additional Arcs",
+            5: "Strip",
             6: "Similarity to Disease Profile",
             7: "High Indicator Organisms (HIOs)",
             8: "Low Indicator Organisms (LIOs)"
