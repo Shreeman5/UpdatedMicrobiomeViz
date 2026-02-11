@@ -1,13 +1,18 @@
 // Initial function that regulates other functions based on selected tab and samples
 // Renders tabs and things inside tabs
 // If 0 samples are selected, this renders nothing and throws an alert
+window.onload = function() {
+  getSelectedOptions();
+};
+
 function getSelectedOptions() {
-    const selectElement = document.getElementById('multiSelect');
-    const selectedOptions = Array.from(selectElement.selectedOptions).map(option => option.value);
+    // const selectElement = document.getElementById('multiSelect');
+    const selectedOptions = 'Audra Walker' //Array.from(selectElement.selectedOptions).map(option => option.value);
+    console.log(selectedOptions)
     if (selectedOptions.length === 0){
         removeCheckBoxes()
         removeLegendDivs()
-        removeT2Slider()
+        // removeT2Slider()
         removeT2Dropdown()
         removeVizDivs()
         alert('Select at least one sample')
@@ -17,7 +22,7 @@ function getSelectedOptions() {
         renderCheckboxes(selectedOptions) 
         removeLegendDivs()
         renderLegendDivs()
-        removeT2Slider()
+        // removeT2Slider()
         renderT2Slider(selectedOptions)
         removeT2Dropdown()
         renderT2Dropdown()
@@ -193,7 +198,7 @@ function removeT2Dropdown(){
     elements.forEach(element => {
         element.style.visibility = 'hidden';
     });
-    document.getElementById('selectInput-T2').value = '';
+    // document.getElementById('selectInput-T2').value = '';
 }
 
 // render tab 2 dropdown
@@ -202,13 +207,13 @@ function renderT2Dropdown(){
     elements.forEach(element => {
         element.style.visibility = 'visible';
     });
-    document.getElementById('selectInput-T2').placeholder = 'Search for Actions';
+    // document.getElementById('selectInput-T2').placeholder = 'Search for Actions';
 }
 
 // removes Checkboxes on all the tabs
 function removeCheckBoxes(){
-    const checkboxes = document.getElementById('checkboxes')
-    checkboxes.innerHTML = ''
+    // const checkboxes = document.getElementById('checkboxes')
+    // checkboxes.innerHTML = ''
 }
 
 // find checkboxes clicked
@@ -419,13 +424,23 @@ function renderVizDivs(numberOfDivs){
         //     height = 1220
         // }
         
-        newDiv.style.position = 'absolute';
-        newDiv.style.left = x + 'px';
-        newDiv.style.top = y + 'px';
-        newDiv.style.width = width + 'px';
-        newDiv.style.height = height + 'px';
+        if (i === 3){
+            newDiv.style.position = 'absolute';
+            newDiv.style.left = '100px';
+            newDiv.style.top = '0px';
+            newDiv.style.width = '2300px';
+            newDiv.style.height = '1300px';
+        }
+        else {
+            newDiv.style.position = 'absolute';
+            newDiv.style.left = '0px';
+            newDiv.style.top = '2600px';
+            newDiv.style.width = '2300px';
+            newDiv.style.height = '1300px';
+        }
         
         container.appendChild(newDiv);
+        
         
         if (i <= 2){
             if ((i + 1) % 3 === 0) { 

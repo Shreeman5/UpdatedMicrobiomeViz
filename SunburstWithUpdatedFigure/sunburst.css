@@ -157,11 +157,11 @@ select {
 
 #allDivs {
     position: fixed;
-    top: 400px; /* Fixed top position */
+    top: 0px; /* Fixed top position */
     left: 600px; /* Fixed left position */
     width: 100%; /* Set width */
     height: 3800px; /* Set height */
-    overflow: auto;  /* Enable scrolling */
+    /*overflow: auto;   Enable scrolling */
     position: relative; /* Make this the reference point for children */
 }
 /* Visualization divs */
@@ -176,7 +176,7 @@ select {
 #legendDiv {
     position: relative;
     top: 180px; /* Fixed top position */
-    left: 1300px; /* Fixed left position */
+    left: 1900px; /* Fixed left position */
     width: 3000px; /* Set width */
     height: 460px; /* Set height */
     overflow: auto; /* Enable scrolling if content overflows */
@@ -191,7 +191,7 @@ select {
 
 #legendDiv2 {
     position: absolute;
-    top: 900px; /* Fixed top position */
+    top: 1700px; /* Fixed top position */
     left: 0px; /* Fixed left position */
     width: 800px; /* Set width */
     height: 1100px; /* Set height */
@@ -205,7 +205,7 @@ select {
 
 #legendDiv3 {
     position: absolute;
-    top: 2100px; /* Fixed top position */
+    top: 450px; /* Fixed top position */
     left: 0px; /* Fixed left position */
     width: 600px; /* Set width */
     height: 600px; /* Set height */
