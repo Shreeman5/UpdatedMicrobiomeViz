@@ -334,7 +334,7 @@ class Tab2Viz{
     const linkGroup = svg.append("g")
         .style("cursor", "pointer")
         .on("click", function() {
-            window.location.href = "page2.html"; // Change this to your target HTML file
+            window.open("page2.html", "_blank");
         });
 
     // Add background rectangle for the link (optional, for better visibility)
