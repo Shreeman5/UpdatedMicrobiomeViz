@@ -176,8 +176,9 @@
     <script>
         const tooltipData = {
             1: [
-                "Donut (3 arcs, not counting the white arc) + Strip (8",
-                "rectangles) show 11 organisms (3+8) in this example."
+                "Donut (3 arcs, not counting the white arc) + Strip",
+                "(8 rectangles) show 11 organisms (3+8) in this",
+                "example."
             ],
             2: [
                 "The largest arc, which starts at the bottom of the",
@@ -188,38 +189,44 @@
             ],
             3: [
                 "Preceding counter-clockwise, the second arc",
-                "contains the organism found second most frequently",
-                "in disease literature. Light red indicates that it",
-                "somewhat matches the profile of a diseased",
-                "organism."
+                "contains the organism found second most",
+                "frequently in disease literature. Light red indicates",
+                "that it somewhat matches the profile of a",
+                "diseased organism."
             ],
             4: [
                 "Basically, arc size is proportional to frequency of",
-                "organism in disease literature. With more organisms,",
-                "more arcs are present in the donut."
+                "organism in disease literature. With more",
+                "organisms, more arcs are present in the donut."
             ],
             5: [
-                "The strip beneath the donut shows organisms that",
-                "are less important, ordered from left to right. "
+                "The strip beneath the donut shows organisms",
+                "that are less important, ordered from left to right."
             ],
             6: [
                 "The more red there is in the donut, the closer it is",
                 "to a disease profile. The more blue there is in the",
-                "donut, the closer it is to a healthy profile."
+                "donut, the further away it is from a disease",
+                "profile."
             ],
             7: [
-                "High Indicator Organisms (HIOs) exist in high",
-                "abundance in disease profiles. For an HIO, reducing",
-                "its presence makes the sample less similar to the",
-                "disease profile. HIOs in the donut have a black outer",
-                "arc and HIOs in the strip have an upper black line."
+                "Enriched Indicator Organisms (EIOs) exist in",
+                "greater abundance in disease profiles. For an",
+                "EIO, decreasing its presence makes the sample",
+                "less similar to the disease profile. EIOs in the",
+                "donut have a black outer arc and EIOs in the strip",
+                "have an upper black line. EIOs are also called",
+                "HIOs (High Indicator Organisms)."
             ],
             8: [
-                "Low Indicator Organisms (LIOs) exist in low",
-                "abundance in disease profiles. For an LIO, increasing",
-                "its presence makes the sample less similar to the",
-                "disease profile. LIOs in the donut have a black inner",
-                "arc and LIOs in the strip have a lower black line."
+                "Depleted Indicator Organisms (DIOs) exist in",
+                "limited abundance in disease profiles. For a DIO,",
+                "increasing its presence makes the sample less",
+                "similar to the disease profile. DIOs in the donut",
+                "have a black inner arc and DIOs in the strip have",
+                "a lower black line. DIOs are also called LIOs",
+                "(Low Indicator Organisms)."
+
             ]
         };
 
@@ -230,8 +237,8 @@
             4: "Additional Arcs",
             5: "Strip",
             6: "Similarity to Disease Profile",
-            7: "High Indicator Organisms (HIOs)",
-            8: "Low Indicator Organisms (LIOs)"
+            7: "Enriched Indicator Organisms (EIOs)",
+            8: "Depleted Indicator Organisms (DIOs)"
         };
 
         // Position data for each numbered box in the visualization (x, y coordinates, width, height)
@@ -342,6 +349,7 @@
                 const tooltipAreaRect = tooltipArea.getBoundingClientRect();
                 const offset = navBoxRect.top - tooltipAreaRect.top;
                 panel.style.top = `${offset}px`;
+                panel.style.left = `${navBoxRect.right - tooltipAreaRect.left + 530}px`;
             }
         }
 

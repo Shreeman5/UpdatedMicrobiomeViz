@@ -330,33 +330,49 @@ class Tab2Viz{
         .attr("width", width)
         .attr("height", height);
 
-    // Add clickable link to another page
+    // Add style for pulse animation
+    const style = document.createElement("style");
+    style.textContent = `
+        @keyframes pulse {
+            0% { filter: drop-shadow(0 0 4px #f0a500); }
+            50% { filter: drop-shadow(0 0 12px #f0a500); }
+            100% { filter: drop-shadow(0 0 4px #f0a500); }
+        }
+        .tutorial-btn {
+            animation: pulse 1.5s infinite;
+            cursor: pointer;
+        }
+        .tutorial-btn:hover rect {
+            fill: #f0a500 !important;
+        }
+    `;
+    document.head.appendChild(style);
+
     const linkGroup = svg.append("g")
-        .style("cursor", "pointer")
+        .attr("class", "tutorial-btn")
         .on("click", function() {
             window.open("page2.html", "_blank");
         });
 
-    // Add background rectangle for the link (optional, for better visibility)
     linkGroup.append("rect")
-        .attr("x", width - 210)
-        .attr("y", 20)
-        .attr("width", 200)
-        .attr("height", 40)
-        .attr("fill", "white")
-        .attr("stroke", "#333")
-        .attr("stroke-width", 2)
-        .attr("rx", 5);
+        .attr("x", width - 220)
+        .attr("y", 15)
+        .attr("width", 210)
+        .attr("height", 50)
+        .attr("fill", "#f0a500")       // bright amber
+        .attr("stroke", "#c47f00")
+        .attr("stroke-width", 3)
+        .attr("rx", 8);
 
-    // Add link text
     linkGroup.append("text")
-        .attr("x", width - 110)
+        .attr("x", width - 115)
         .attr("y", 52)
         .attr("text-anchor", "middle")
         .attr("font-size", "35px")
         .attr("font-weight", "bold")
-        .attr("fill", "black")
-        .text("Tutorial");
+        .attr("fill", "white")
+        .text("Tutorial");        // changed wording to feel more inviting
+
 
     // Define colors for x-axis categories
     const colors = ["rgb(210, 215, 255)", "rgb(255, 200, 200)", "darkred"]; // light blue, light red, dark red
@@ -1252,7 +1268,7 @@ svg.append("text")
                 .attr("text-anchor", "middle") 
                 .style("font-weight", "bold")
                 .style("text-decoration", "underline")
-                .text('ERR719231 (Sample) Proximity to Crohns Disease')
+                .text('ERR719231 (Sample) Proximity to Crohns Disease -- Hover for details')
 
                 svg.append("text")
                 // .attr("x", -450)
@@ -2192,7 +2208,9 @@ svg.append("text")
 
                 // Split the array into two parts
                 const donutArray = newArray.slice(0, 30);
+                // console.log(donutArray)
                 const barcodeArray = newArray.slice(30);
+                // console.log(barcodeArray)
 
                 const legendArray1 = newArray.slice(9, 11)
                 let legendArray2 = newArray.slice(9, 11)
@@ -2260,46 +2278,111 @@ svg.append("text")
                 const arcData = pie(donutArray);
 
                 donutGroup.selectAll("path.main")
-                .data(arcData)
-                .enter().append("path")
-                .attr("class", "main")
-                .attr("d", arc)
-                .attr("fill", d => {
-                // if (d.data.CDFdifference == undefined){
-                // return "grey"
-                // }
-                return d.data.color
-                })
-                .attr("stroke", "black")
-                .style("stroke-width", "2px")
-                
+                        .data(arcData)
+                        .enter().append("path")
+                        .attr("class", "main")
+                        .attr("d", arc)
+                        .attr("fill", d => {
+                            // console.log(d.data.color)
+                            return d.data.color
+                        })
+                        .attr("stroke", "black")
+                        .style("stroke-width", "2px")
+                        .on("mouseover", function(event, d) {
+                            const elementColor = d.data.color;
+
+                            // Skip tooltip for white arcs
+                            if (d3.rgb(elementColor).r === 255 && d3.rgb(elementColor).g === 255 && d3.rgb(elementColor).b === 255) return;
+
+                            const colorScale = d3.interpolateRgb("rgb(255, 200, 200)", "darkred");
+
+                            const getSimilarityFromColor = (elementColor, steps = 100, threshold = 30) => {
+                                let closestT = null;
+                                let closestDistance = Infinity;
+                                for (let i = 0; i <= steps; i++) {
+                                    const t = i / steps;
+                                    const scaleColor = d3.rgb(colorScale(t));
+                                    const elemColor = d3.rgb(elementColor);
+                                    const distance = Math.sqrt(
+                                        Math.pow(scaleColor.r - elemColor.r, 2) +
+                                        Math.pow(scaleColor.g - elemColor.g, 2) +
+                                        Math.pow(scaleColor.b - elemColor.b, 2)
+                                    );
+                                    if (distance < closestDistance) {
+                                        closestDistance = distance;
+                                        closestT = t;
+                                    }
+                                }
+                                return closestDistance <= threshold ? closestT : null;
+                            };
+
+                            const getSimilarityLabel = (t) => {
+                                if (t < 0.33) return "Low";
+                                if (t < 0.66) return "Medium";
+                                return "High";
+                            };
+
+                            const showSimilarityTooltip = (organism, similarityLabel) => {
+                                let tooltip = document.getElementById("similarityTooltip");
+                                if (!tooltip) {
+                                    tooltip = document.createElement("div");
+                                    tooltip.id = "similarityTooltip";
+                                    tooltip.style.position = "absolute";
+                                    tooltip.style.background = "white";
+                                    tooltip.style.border = "1px solid black";
+                                    tooltip.style.padding = "5px 10px";
+                                    tooltip.style.borderRadius = "4px";
+                                    tooltip.style.pointerEvents = "none";
+                                    tooltip.style.fontSize = "30px";
+                                    document.body.appendChild(tooltip);
+                                }
+                                tooltip.innerHTML = `<strong>${organism}</strong><br>Disease Similarity: ${similarityLabel}`;
+                                tooltip.style.display = "block";
+                                tooltip.style.left = (event.pageX + 10) + "px";
+                                tooltip.style.top = (event.pageY - 20) + "px";
+                            };
+
+                            const t = getSimilarityFromColor(elementColor);
+                            const label = t === null ? "None" : getSimilarityLabel(t);
+                            showSimilarityTooltip(d.data.organism, label);
+                        })
+                        .on("mouseout", function() {
+                            const tooltip = document.getElementById("similarityTooltip");
+                            if (tooltip) tooltip.style.display = "none";
+                        });                                         
 
 
                     
 
-                // Add the lifted inner strokes for negative weights
                 donutGroup.selectAll("path.inner-stroke")
-                .data(pie(donutArray))
-                .enter().append("path")
-                // .attr("id", "LIOHIO")
-                .attr("class", "inner-stroke")
-                .attr("d", innerArc)
-                .attr("fill", "none")
-                .attr("stroke", d => d.data.weight < 0 ? "black" : "white")
-                .style("stroke-width", "10px")
-                // .style("opacity", 0)
-            
-                // Add the lifted outer strokes for positive weights
+                    .data(pie(donutArray))
+                    .enter().append("path")
+                    .attr("class", "inner-stroke")
+                    .attr("d", d => {
+                        const span = d.endAngle - d.startAngle;
+                        const strokePad = Math.min(0.03, span * 0.05); // never more than 10% of the arc
+                        const padded = { ...d, startAngle: d.startAngle + strokePad, endAngle: d.endAngle - strokePad };
+                        return innerArc(padded);
+                    })
+                    .attr("fill", "none")
+                    .attr("stroke", d => d.data.weight < 0 ? "black" : "white")
+                    .style("stroke-width", "10px")
+                    .style("opacity", 0); // hidden by default
+
                 donutGroup.selectAll("path.outer-stroke")
                     .data(pie(donutArray))
                     .enter().append("path")
-                    // .attr("id", "LIOHIO")
                     .attr("class", "outer-stroke")
-                    .attr("d", outerArc)
+                    .attr("d", d => {
+                        const span = d.endAngle - d.startAngle;
+                        const strokePad = Math.min(0.03, span * 0.05);
+                        const padded = { ...d, startAngle: d.startAngle + strokePad, endAngle: d.endAngle - strokePad };
+                        return outerArc(padded);
+                    })
                     .attr("fill", "none")
                     .attr("stroke", d => d.data.weight > 0 && d.data.color != 'rgb(255, 255, 255)' ? "black" : "white")
                     .style("stroke-width", "10px")
-                    // .style("opacity", 0)
+                    .style("opacity", 0); // hidden by default
 
                
                 
@@ -2335,34 +2418,130 @@ svg.append("text")
 
                 // Create bars
                 barcodeGroup.selectAll("rect")
-                .data(barcodeArray)
-                .enter().append("rect")
-                .attr("x", (d, i) => i * barWidth)
-                .attr("y", 0)
-                .attr("width", barWidth - 1) // -1 for spacing between bars
-                .attr("height", barcodeHeight/10)
-                .attr("fill", d => {
-                    // if (d.CDFdifference == undefined){
-                    //     return "grey"
-                    // }
-                    return d.color
-                })
-                .attr("stroke", "black")
-                .style("stroke-width", "1px");
+                    .data(barcodeArray)
+                    .enter().append("rect")
+                    .attr("x", (d, i) => i * barWidth)
+                    .attr("y", 0)
+                    .attr("width", barWidth - 1)
+                    .attr("height", barcodeHeight/10)
+                    .attr("fill", d => {
+                        return d.color
+                    })
+                    .attr("stroke", "black")
+                    .style("stroke-width", "1px")
+                    .on("mouseover", function(event, d) {
+                        const elementColor = d.color;
+
+                        // Skip tooltip for white bars
+                        if (d3.rgb(elementColor).r === 255 && d3.rgb(elementColor).g === 255 && d3.rgb(elementColor).b === 255) return;
+
+                        const colorScale = d3.interpolateRgb("rgb(255, 200, 200)", "darkred");
+
+                        const getSimilarityFromColor = (elementColor, steps = 100, threshold = 30) => {
+                            let closestT = null;
+                            let closestDistance = Infinity;
+                            for (let i = 0; i <= steps; i++) {
+                                const t = i / steps;
+                                const scaleColor = d3.rgb(colorScale(t));
+                                const elemColor = d3.rgb(elementColor);
+                                const distance = Math.sqrt(
+                                    Math.pow(scaleColor.r - elemColor.r, 2) +
+                                    Math.pow(scaleColor.g - elemColor.g, 2) +
+                                    Math.pow(scaleColor.b - elemColor.b, 2)
+                                );
+                                if (distance < closestDistance) {
+                                    closestDistance = distance;
+                                    closestT = t;
+                                }
+                            }
+                            return closestDistance <= threshold ? closestT : null;
+                        };
+
+                        const getSimilarityLabel = (t) => {
+                            if (t < 0.33) return "Low";
+                            if (t < 0.66) return "Medium";
+                            return "High";
+                        };
+
+                        const showSimilarityTooltip = (organism, similarityLabel) => {
+                            let tooltip = document.getElementById("similarityTooltip");
+                            if (!tooltip) {
+                                tooltip = document.createElement("div");
+                                tooltip.id = "similarityTooltip";
+                                tooltip.style.position = "absolute";
+                                tooltip.style.background = "white";
+                                tooltip.style.border = "1px solid black";
+                                tooltip.style.padding = "5px 10px";
+                                tooltip.style.borderRadius = "4px";
+                                tooltip.style.pointerEvents = "none";
+                                tooltip.style.fontSize = "30px";
+                                document.body.appendChild(tooltip);
+                            }
+                            tooltip.innerHTML = `<strong>${organism}</strong><br>Disease Similarity: ${similarityLabel}`;
+                            tooltip.style.display = "block";
+                            tooltip.style.left = (event.pageX + 10) + "px";
+                            tooltip.style.top = (event.pageY - 20) + "px";
+                        };
+
+                        const t = getSimilarityFromColor(elementColor);
+                        const label = t === null ? "None" : getSimilarityLabel(t);
+                        showSimilarityTooltip(d.organism, label);
+                    })
+                    .on("mouseout", function() {
+                        const tooltip = document.getElementById("similarityTooltip");
+                        if (tooltip) tooltip.style.display = "none";
+                    });
 
 
                 barcodeGroup.selectAll("line")
-                .data(barcodeArray)
-                .enter().append("line")
-                .attr("id", "LIOHIO")
-                .attr("x1", (d, i) => i * barWidth)  // Center of each bar
-                .attr("x2", (d, i) => i * barWidth + barWidth - 2)
-                .attr("y1", d => d.weight > 0 ? -10 : barcodeHeight/10 + 10)  // Lift 10px from top or bottom
-                .attr("y2", d => d.weight > 0 ? -10 : barcodeHeight/10 + 10)
-                .attr("stroke", "black")
-                .attr("stroke-width", "4px")
-                .attr("stroke-linecap", "round")
+                    .data(barcodeArray)
+                    .enter().append("line")
+                    .attr("id", "LIOHIO")
+                    .attr("x1", (d, i) => i * barWidth + 2)           // +2 gap at start
+                    .attr("x2", (d, i) => i * barWidth + barWidth - 4) // -2 gap at end
+                    .attr("y1", d => d.weight > 0 ? -10 : barcodeHeight/10 + 10)
+                    .attr("y2", d => d.weight > 0 ? -10 : barcodeHeight/10 + 10)
+                    .attr("stroke", "black")
+                    .attr("stroke-width", "4px")
+                    .attr("stroke-linecap", "round")
+                    .style("opacity", 0); // hidden by default
                 // .style("opacity", 0)
+
+                // === Toggle button ===
+                let strokesVisible = false;
+
+                const toggleGroup = svg.append("g")
+                    .style("cursor", "pointer")
+                    .on("click", function() {
+                        strokesVisible = !strokesVisible;
+                        const newOpacity = strokesVisible ? 1 : 0;
+
+                        donutGroup.selectAll("path.inner-stroke").style("opacity", newOpacity);
+                        donutGroup.selectAll("path.outer-stroke").style("opacity", newOpacity);
+                        barcodeGroup.selectAll("line#LIOHIO").style("opacity", newOpacity);
+
+                        // Update button label
+                        toggleLabel.text(strokesVisible ? "Hide Indicators" : "Show Indicators");
+                    });
+
+                toggleGroup.append("rect")
+                    .attr("x", -220)
+                    .attr("y", -540) // positioned below the Tutorial button
+                    .attr("width", 240)
+                    .attr("height", 40)
+                    .attr("fill", "#4a90d9")
+                    .attr("stroke", "#2c5f8a")
+                    .attr("stroke-width", 2)
+                    .attr("rx", 5);
+
+                const toggleLabel = toggleGroup.append("text")
+                    .attr("x", -100)
+                    .attr("y", -510)
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", "30px")
+                    .attr("font-weight", "bold")
+                    .attr("fill", "white")
+                    .text("Show Indicators");
 
 
                 let startingpoint2 = -575 + availablespace + 540
