@@ -2278,78 +2278,77 @@ svg.append("text")
                 const arcData = pie(donutArray);
 
                 donutGroup.selectAll("path.main")
-                        .data(arcData)
-                        .enter().append("path")
-                        .attr("class", "main")
-                        .attr("d", arc)
-                        .attr("fill", d => {
-                            // console.log(d.data.color)
-                            return d.data.color
-                        })
-                        .attr("stroke", "black")
-                        .style("stroke-width", "2px")
-                        .on("mouseover", function(event, d) {
-                            const elementColor = d.data.color;
+                    .data(arcData)
+                    .enter().append("path")
+                    .attr("class", "main")
+                    .attr("d", arc)
+                    .attr("fill", d => {
+                        return d.data.color
+                    })
+                    .attr("stroke", "black")
+                    .style("stroke-width", "2px")
+                    .on("mouseover", function(event, d) {
+                        const elementColor = d.data.color;
 
-                            // Skip tooltip for white arcs
-                            if (d3.rgb(elementColor).r === 255 && d3.rgb(elementColor).g === 255 && d3.rgb(elementColor).b === 255) return;
+                        // Skip tooltip for white arcs
+                        if (d3.rgb(elementColor).r === 255 && d3.rgb(elementColor).g === 255 && d3.rgb(elementColor).b === 255) return;
 
-                            const colorScale = d3.interpolateRgb("rgb(255, 200, 200)", "darkred");
+                        const colorScale = d3.interpolateRgb("rgb(255, 200, 200)", "darkred");
 
-                            const getSimilarityFromColor = (elementColor, steps = 100, threshold = 30) => {
-                                let closestT = null;
-                                let closestDistance = Infinity;
-                                for (let i = 0; i <= steps; i++) {
-                                    const t = i / steps;
-                                    const scaleColor = d3.rgb(colorScale(t));
-                                    const elemColor = d3.rgb(elementColor);
-                                    const distance = Math.sqrt(
-                                        Math.pow(scaleColor.r - elemColor.r, 2) +
-                                        Math.pow(scaleColor.g - elemColor.g, 2) +
-                                        Math.pow(scaleColor.b - elemColor.b, 2)
-                                    );
-                                    if (distance < closestDistance) {
-                                        closestDistance = distance;
-                                        closestT = t;
-                                    }
+                        const getSimilarityFromColor = (elementColor, steps = 100, threshold = 30) => {
+                            let closestT = null;
+                            let closestDistance = Infinity;
+                            for (let i = 0; i <= steps; i++) {
+                                const t = i / steps;
+                                const scaleColor = d3.rgb(colorScale(t));
+                                const elemColor = d3.rgb(elementColor);
+                                const distance = Math.sqrt(
+                                    Math.pow(scaleColor.r - elemColor.r, 2) +
+                                    Math.pow(scaleColor.g - elemColor.g, 2) +
+                                    Math.pow(scaleColor.b - elemColor.b, 2)
+                                );
+                                if (distance < closestDistance) {
+                                    closestDistance = distance;
+                                    closestT = t;
                                 }
-                                return closestDistance <= threshold ? closestT : null;
-                            };
+                            }
+                            return closestDistance <= threshold ? closestT : null;
+                        };
 
-                            const getSimilarityLabel = (t) => {
-                                if (t < 0.33) return "Low";
-                                if (t < 0.66) return "Medium";
-                                return "High";
-                            };
+                        const getSimilarityLabel = (t) => {
+                            if (t < 0.33) return "Low";
+                            if (t < 0.66) return "Medium";
+                            return "High";
+                        };
 
-                            const showSimilarityTooltip = (organism, similarityLabel) => {
-                                let tooltip = document.getElementById("similarityTooltip");
-                                if (!tooltip) {
-                                    tooltip = document.createElement("div");
-                                    tooltip.id = "similarityTooltip";
-                                    tooltip.style.position = "absolute";
-                                    tooltip.style.background = "white";
-                                    tooltip.style.border = "1px solid black";
-                                    tooltip.style.padding = "5px 10px";
-                                    tooltip.style.borderRadius = "4px";
-                                    tooltip.style.pointerEvents = "none";
-                                    tooltip.style.fontSize = "30px";
-                                    document.body.appendChild(tooltip);
-                                }
-                                tooltip.innerHTML = `<strong>${organism}</strong><br>Disease Similarity: ${similarityLabel}`;
-                                tooltip.style.display = "block";
-                                tooltip.style.left = (event.pageX + 10) + "px";
-                                tooltip.style.top = (event.pageY - 20) + "px";
-                            };
+                        const showSimilarityTooltip = (organism, similarityLabel, arcColor) => {
+                            let tooltip = document.getElementById("similarityTooltip");
+                            if (!tooltip) {
+                                tooltip = document.createElement("div");
+                                tooltip.id = "similarityTooltip";
+                                tooltip.style.position = "absolute";
+                                tooltip.style.background = "white";
+                                tooltip.style.border = "1px solid black";
+                                tooltip.style.padding = "5px 10px";
+                                tooltip.style.borderRadius = "4px";
+                                tooltip.style.pointerEvents = "none";
+                                tooltip.style.fontSize = "30px";
+                                document.body.appendChild(tooltip);
+                            }
+                            tooltip.innerHTML = `<strong>${organism}</strong><br><strong>Disease Similarity: <span style="color: ${arcColor}">${similarityLabel}</span></strong>`;
+                            tooltip.style.display = "block";
+                            tooltip.style.left = (event.pageX + 10) + "px";
+                            tooltip.style.top = (event.pageY - 20) + "px";
+                        };
 
-                            const t = getSimilarityFromColor(elementColor);
-                            const label = t === null ? "None" : getSimilarityLabel(t);
-                            showSimilarityTooltip(d.data.organism, label);
-                        })
-                        .on("mouseout", function() {
-                            const tooltip = document.getElementById("similarityTooltip");
-                            if (tooltip) tooltip.style.display = "none";
-                        });                                         
+                        const t = getSimilarityFromColor(elementColor);
+                        const label = t === null ? "None" : getSimilarityLabel(t);
+                        showSimilarityTooltip(d.data.organism, label, elementColor);
+                    })
+                    .on("mouseout", function() {
+                        const tooltip = document.getElementById("similarityTooltip");
+                        if (tooltip) tooltip.style.display = "none";
+                    });
 
 
                     
@@ -2463,7 +2462,7 @@ svg.append("text")
                             return "High";
                         };
 
-                        const showSimilarityTooltip = (organism, similarityLabel) => {
+                        const showSimilarityTooltip = (organism, similarityLabel, arcColor) => {
                             let tooltip = document.getElementById("similarityTooltip");
                             if (!tooltip) {
                                 tooltip = document.createElement("div");
@@ -2477,7 +2476,7 @@ svg.append("text")
                                 tooltip.style.fontSize = "30px";
                                 document.body.appendChild(tooltip);
                             }
-                            tooltip.innerHTML = `<strong>${organism}</strong><br>Disease Similarity: ${similarityLabel}`;
+                            tooltip.innerHTML = `<strong>${organism}</strong><br><strong>Disease Similarity: <span style="color: ${arcColor}">${similarityLabel}</span></strong>`;
                             tooltip.style.display = "block";
                             tooltip.style.left = (event.pageX + 10) + "px";
                             tooltip.style.top = (event.pageY - 20) + "px";
@@ -2485,7 +2484,7 @@ svg.append("text")
 
                         const t = getSimilarityFromColor(elementColor);
                         const label = t === null ? "None" : getSimilarityLabel(t);
-                        showSimilarityTooltip(d.organism, label);
+                        showSimilarityTooltip(d.organism, label, elementColor);
                     })
                     .on("mouseout", function() {
                         const tooltip = document.getElementById("similarityTooltip");
