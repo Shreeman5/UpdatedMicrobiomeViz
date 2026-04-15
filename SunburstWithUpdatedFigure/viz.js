@@ -334,16 +334,16 @@ class Tab2Viz{
     const style = document.createElement("style");
     style.textContent = `
         @keyframes pulse {
-            0% { filter: drop-shadow(0 0 4px #f0a500); }
-            50% { filter: drop-shadow(0 0 12px #f0a500); }
-            100% { filter: drop-shadow(0 0 4px #f0a500); }
+            0% { filter: drop-shadow(0 0 4px black); }
+            50% { filter: drop-shadow(0 0 12px black); }
+            100% { filter: drop-shadow(0 0 4px black); }
         }
         .tutorial-btn {
             animation: pulse 1.5s infinite;
             cursor: pointer;
         }
         .tutorial-btn:hover rect {
-            fill: #f0a500 !important;
+            fill: black !important;
         }
     `;
     document.head.appendChild(style);
@@ -359,8 +359,8 @@ class Tab2Viz{
         .attr("y", 15)
         .attr("width", 210)
         .attr("height", 50)
-        .attr("fill", "#f0a500")       // bright amber
-        .attr("stroke", "#c47f00")
+        .attr("fill", "black")       // bright amber
+        .attr("stroke", "black")
         .attr("stroke-width", 3)
         .attr("rx", 8);
 
@@ -375,7 +375,7 @@ class Tab2Viz{
 
 
     // Define colors for x-axis categories
-    const colors = ["rgb(210, 215, 255)", "rgb(255, 200, 200)", "darkred"]; // light blue, light red, dark red
+    const colors = ["green", "yellow", "darkred"]; // light blue, light red, dark red
     const colorLabels = ["Light Blue", "Light Red", "Dark Red"];
 
     // Define arc sizes for y-axis categories (reversed: big to small)
@@ -462,7 +462,7 @@ svg.append("rect")
     .attr("y", startY - 20)
     .attr("width", blueRectWidth)
     .attr("height", rectHeight)
-    .attr("fill", "rgb(210, 215, 255)")
+    .attr("fill", "green")
     .attr("stroke", "#333")
     .attr("stroke-width", 2);
 
@@ -472,7 +472,7 @@ svg.append("text")
     .attr("text-anchor", "middle")
     .attr("font-size", "30px")
     .attr("font-weight", "600")
-    .attr("fill", "#2c3e50")
+    .attr("fill", "white")
     .text("None");
 
 // Gradient definition for red rectangle
@@ -484,7 +484,7 @@ const redGradient = svg.append("defs")
 
 redGradient.append("stop")
     .attr("offset", "0%")
-    .attr("stop-color", "rgb(255, 200, 200)");
+    .attr("stop-color", "yellow");
 
 redGradient.append("stop")
     .attr("offset", "100%")
@@ -1264,7 +1264,7 @@ svg.append("text")
                 .attr("y", -580)
                 .attr("x", -540)
                 .attr("font-size", "35")
-                .attr("fill", "green")
+                .attr("fill", "black")
                 .attr("text-anchor", "middle") 
                 .style("font-weight", "bold")
                 .style("text-decoration", "underline")
@@ -1931,9 +1931,9 @@ svg.append("text")
 
                 const bivariateColorScaleLIO = (value) => {
                     if (value < 0.5) {
-                        return d3.interpolateRgb("darkred", "rgb(255, 200, 200)")(value / 0.49999999999999999999999999);
+                        return d3.interpolateRgb("darkred", "yellow")(value / 0.49999999999999999999999999);
                     } else if (value > 0.5){
-                        return d3.interpolateRgb("rgb(210, 215, 255)", "rgb(210, 215, 255)")((value - 0.50000000000000000000000001) / (1 - 0.50000000000000000000000001));
+                        return d3.interpolateRgb("green", "green")((value - 0.50000000000000000000000001) / (1 - 0.50000000000000000000000001));
                     }
                     else if (value === 0.5){
                         return "white"
@@ -1942,9 +1942,9 @@ svg.append("text")
 
                 const bivariateColorScaleHIO = (value) => {
                     if (value < 0.5) {
-                        return d3.interpolateRgb("rgb(210, 215, 255)", "rgb(210, 215, 255)")(value / 0.49999999999999999999999999);
+                        return d3.interpolateRgb("green", "green")(value / 0.49999999999999999999999999);
                     } else if (value > 0.5) {
-                        return d3.interpolateRgb("rgb(255, 200, 200)", "darkred")((value - 0.50000000000000000000000001) / (1 - 0.50000000000000000000000001));
+                        return d3.interpolateRgb("yellow", "darkred")((value - 0.50000000000000000000000001) / (1 - 0.50000000000000000000000001));
                     }else if (value === 0.5){
                         return "white"
                     }
@@ -2203,7 +2203,7 @@ svg.append("text")
                 }
 
                 newArray.sort((a, b) => Math.abs(b.weight) - Math.abs(a.weight));
-                // console.log(newArray)
+                console.log(newArray)
                 
 
                 // Split the array into two parts
@@ -2240,6 +2240,8 @@ svg.append("text")
                     organism: undefined,
                     weight: "3"
                 });
+
+                
                 
 
                 // Normalize weights for donut
@@ -2293,7 +2295,7 @@ svg.append("text")
                         // Skip tooltip for white arcs
                         if (d3.rgb(elementColor).r === 255 && d3.rgb(elementColor).g === 255 && d3.rgb(elementColor).b === 255) return;
 
-                        const colorScale = d3.interpolateRgb("rgb(255, 200, 200)", "darkred");
+                        const colorScale = d3.interpolateRgb("yellow", "darkred");
 
                         const getSimilarityFromColor = (elementColor, steps = 100, threshold = 30) => {
                             let closestT = null;
@@ -2364,7 +2366,7 @@ svg.append("text")
                         return innerArc(padded);
                     })
                     .attr("fill", "none")
-                    .attr("stroke", d => d.data.weight < 0 ? "black" : "white")
+                    .attr("stroke", d => d.data.weight < 0 ? d.data.color : "white")
                     .style("stroke-width", "10px")
                     .style("opacity", 0); // hidden by default
 
@@ -2379,32 +2381,29 @@ svg.append("text")
                         return outerArc(padded);
                     })
                     .attr("fill", "none")
-                    .attr("stroke", d => d.data.weight > 0 && d.data.color != 'rgb(255, 255, 255)' ? "black" : "white")
+                    .attr("stroke", d => d.data.weight > 0 && d.data.color != 'rgb(255, 255, 255)' ? d.data.color : "white")
                     .style("stroke-width", "10px")
                     .style("opacity", 0); // hidden by default
 
                
                 
-                svg.append("line")
+                // Left connector
+                svg.append("path")
                     .attr("class", "label-line")
-                    .attr("x1", -578)
-                    .attr("y1", 448)
-                    .attr("x2", -975)
-                    .attr("y2", 550)
+                    .attr("d", "M -581,448 C -548,579 -1025,449 -975,550")
+                    .attr("fill", "none")
                     .attr("stroke", "black")
-                    .attr("stroke-width", 3)
-                    .attr("stroke-dasharray", "5,5")
+                    .attr("stroke-width", 1.5)
+                    .attr("opacity", 1)
 
-                
-                svg.append("line")
+                // Right connector (mirrored)
+                svg.append("path")
                     .attr("class", "label-line")
-                    .attr("x1", -537)
-                    .attr("y1", 450)
-                    .attr("x2", -103)
-                    .attr("y2", 550)
+                    .attr("d", "M -540,450 C -573,579 -89,449 -106,550")
+                    .attr("fill", "none")
                     .attr("stroke", "black")
-                    .attr("stroke-width", 3)
-                    .attr("stroke-dasharray", "5,5")
+                    .attr("stroke-width", 1.5)
+                    .attr("opacity", 1)
 
                 // Create bar code chart (bottom 40%)
                 const barWidth = (width / barcodeArray.length) - 4;
@@ -2434,7 +2433,7 @@ svg.append("text")
                         // Skip tooltip for white bars
                         if (d3.rgb(elementColor).r === 255 && d3.rgb(elementColor).g === 255 && d3.rgb(elementColor).b === 255) return;
 
-                        const colorScale = d3.interpolateRgb("rgb(255, 200, 200)", "darkred");
+                        const colorScale = d3.interpolateRgb("yellow", "darkred");
 
                         const getSimilarityFromColor = (elementColor, steps = 100, threshold = 30) => {
                             let closestT = null;
@@ -2483,6 +2482,7 @@ svg.append("text")
                         };
 
                         const t = getSimilarityFromColor(elementColor);
+                        console.log(t)
                         const label = t === null ? "None" : getSimilarityLabel(t);
                         showSimilarityTooltip(d.organism, label, elementColor);
                     })
@@ -2500,7 +2500,7 @@ svg.append("text")
                     .attr("x2", (d, i) => i * barWidth + barWidth - 4) // -2 gap at end
                     .attr("y1", d => d.weight > 0 ? -10 : barcodeHeight/10 + 10)
                     .attr("y2", d => d.weight > 0 ? -10 : barcodeHeight/10 + 10)
-                    .attr("stroke", "black")
+                    .attr("stroke", d => d.color)
                     .attr("stroke-width", "4px")
                     .attr("stroke-linecap", "round")
                     .style("opacity", 0); // hidden by default
@@ -2528,8 +2528,8 @@ svg.append("text")
                     .attr("y", -540) // positioned below the Tutorial button
                     .attr("width", 240)
                     .attr("height", 40)
-                    .attr("fill", "#4a90d9")
-                    .attr("stroke", "#2c5f8a")
+                    .attr("fill", "black")
+                    .attr("stroke", "black")
                     .attr("stroke-width", 2)
                     .attr("rx", 5);
 

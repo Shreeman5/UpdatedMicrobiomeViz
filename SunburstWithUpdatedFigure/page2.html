@@ -31,14 +31,53 @@
             flex-shrink: 0;
             position: relative;
         }
-        .nav-panel {
+
+        /* ── NEW: wrapper that stacks both nav columns side-by-side ── */
+        .nav-columns-wrapper {
             flex-shrink: 0;
-            width: 500px;
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            margin-top: 60px;  /* ← add this, adjust to taste */
+        }
+
+        /* ── Each column has a header + items ── */
+        .nav-column {
+            display: flex;
+            flex-direction: column;
+            gap: 0px;
+        }
+
+        .nav-column-header {
+            font-size: 26px;
+            font-weight: bold;
+            color: white;
+            background: #555;
+            border-radius: 8px 8px 0 0;
+            padding: 10px 18px;
+            text-align: center;
+            margin-bottom: 12px;
+            white-space: nowrap;
+        }
+
+        /* Disease similarity column header */
+        .nav-column.disease .nav-column-header {
+            background: black;
+        }
+
+        /* Indicator organisms column header */
+        .nav-column.indicator .nav-column-header {
+            background: black;
+        }
+
+        .nav-panel {
             display: flex;
             flex-direction: column;
             gap: 20px;
-            padding-top: 75px;
+            padding-top: 0px;
+            width: 500px;
         }
+
         .nav-item {
             display: flex;
             align-items: center;
@@ -108,6 +147,7 @@
             display: none;
             min-height: 50px;
             position: absolute;
+             max-width: 800px;   /* ← add this */
             top: 0;
             left: 0;
             right: 0;
@@ -133,7 +173,7 @@
             transition: background-color 0.3s;
             cursor: pointer;
             font-size: 45px;
-            border: 3px solid black;  /* Add this line */
+            border: 3px solid black;
         }
         .back-button:hover {
             background-color: white;
@@ -148,25 +188,41 @@
             font-size: 48px;
         }
         .highlight {
-            filter: drop-shadow(0 0 10px gold) drop-shadow(0 0 20px gold);
+            filter: drop-shadow(0 0 10px #00e5ff) drop-shadow(0 0 20px #00e5ff);
             animation: pulse 1s infinite;
         }
         @keyframes pulse {
-            0%, 100% { filter: drop-shadow(0 0 10px gold) drop-shadow(0 0 20px gold); }
-            50% { filter: drop-shadow(0 0 15px gold) drop-shadow(0 0 30px gold); }
+            0%, 100% { filter: drop-shadow(0 0 10px #00e5ff) drop-shadow(0 0 20px #00e5ff); }
+            50% { filter: drop-shadow(0 0 15px #00e5ff) drop-shadow(0 0 30px #00e5ff); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- <a href="javascript:history.back()" class="back-button">← Go Back</a> -->
         <h1>TUTORIAL (with fake example) -- Hover over the numbers to learn details about the example</h1>
         
         <div class="content-wrapper">
             <div class="visualization-area" id="visualizationArea">
                 <div class="dynamic-div-x3"></div>
             </div>
-            <div class="nav-panel" id="navPanel"></div>
+
+            <!-- Two nav columns side by side -->
+            <div class="nav-columns-wrapper">
+
+                <!-- Column 1: Disease Similarity (1–6) -->
+                <div class="nav-column disease">
+                    <div class="nav-column-header">Disease Similarity</div>
+                    <div class="nav-panel" id="navPanelDisease"></div>
+                </div>
+
+                <!-- Column 2: Indicator Organisms (7–8) -->
+                <div class="nav-column indicator">
+                    <div class="nav-column-header">Organism Types</div>
+                    <div class="nav-panel" id="navPanelIndicator"></div>
+                </div>
+
+            </div>
+
             <div class="tooltip-area">
                 <div class="tooltip-panel" id="tooltipPanel"></div>
             </div>
@@ -183,14 +239,14 @@
             2: [
                 "The largest arc, which starts at the bottom of the",
                 "donut, contains the organism that is found most",
-                "frequently in disease literature. In this case, blue",
+                "frequently in disease literature. In this case, green",
                 "indicates that it does not match the profile of a",
                 "diseased organism."
             ],
             3: [
                 "Preceding counter-clockwise, the second arc",
                 "contains the organism found second most",
-                "frequently in disease literature. Light red indicates",
+                "frequently in disease literature. Yellow indicates",
                 "that it somewhat matches the profile of a",
                 "diseased organism."
             ],
@@ -205,26 +261,23 @@
             ],
             6: [
                 "The more red there is in the donut, the closer it is",
-                "to a disease profile. The more blue there is in the",
+                "to a disease profile. The more green there is in the",
                 "donut, the further away it is from a disease",
                 "profile."
             ],
             7: [
-                "Enriched Indicator Organisms (EIOs) exist in",
-                "greater abundance in disease profiles. More of",
-                "this organism is linked to disease. EIOs in the",
-                "donut have a black outer arc and EIOs in the strip",
-                "have an upper black line. EIOs are also called",
-                "HIOs (High Indicator Organisms)."
+                "Abundant organisms in the donut have an outer", 
+                "curve and have an upper line in the strip. More",
+                "of these organisms are linked to disease and less",
+                "of these organisms are linked to no disease. They",
+                "are also called HIOs (High Indicator Organisms)."
             ],
             8: [
-                "Depleted Indicator Organisms (DIOs) exist in",
-                "limited abundance in disease profiles. Less of",
-                "this organism is linked to disease. DIOs in the",
-                "donut have a black inner arc and DIOs in the strip",
-                "have a lower black line. DIOs are also called LIOs",
-                "(Low Indicator Organisms)."
-
+                "Deficient organisms in the donut have an inner", 
+                "curve and have a lower line in the strip. Less",
+                "of these organisms are linked to disease and more",
+                "of these organisms are linked to no disease. They",
+                "are also called LIOs (Low Indicator Organisms)."
             ]
         };
 
@@ -235,11 +288,11 @@
             4: "Additional Arcs",
             5: "Strip",
             6: "Similarity to Disease Profile",
-            7: "Enriched Indicator Organisms (EIOs)",
-            8: "Depleted Indicator Organisms (DIOs)"
+            7: "Abundant Organisms",
+            8: "Deficient Organisms"
         };
 
-        // Position data for each numbered box in the visualization (x, y coordinates, width, height)
+        // Position data for each numbered box in the visualization
         const vizPositions = {
             1: { x: 330, y: 320, width: 100, height: 100, fontSize: 60},
             2: { x: 580, y: 330, width: 75, height: 75, fontSize: 40},
@@ -257,44 +310,41 @@
                 ]
         };
 
-        // Create vertical navigation boxes with labels
-        const navPanel = d3.select("#navPanel");
-        for (let i = 1; i <= 8; i++) {
-            const navItem = navPanel.append("div")
-                .attr("class", "nav-item");
-            
-            navItem.append("div")
-                .attr("class", "nav-box")
-                .attr("data-number", i)
-                .text(i)
-                .on("mouseover", function() {
-                    showTooltip(i);
-                    highlightElements(i);
-                    highlightBoxes(i);
-                })
-                .on("mouseout", function() {
-                    hideTooltip();
-                    removeHighlights();
-                    unhighlightBoxes();
-                });
-            
-            // Add label if it exists
-            if (navLabels[i]) {
+        // Build nav items for a given panel element and range of numbers
+        function buildNavItems(panelSelector, numbers) {
+            const navPanel = d3.select(panelSelector);
+            numbers.forEach(i => {
+                const navItem = navPanel.append("div").attr("class", "nav-item");
                 navItem.append("div")
-                    .attr("class", "nav-label")
-                    .text(navLabels[i]);
-            }
+                    .attr("class", "nav-box")
+                    .attr("data-number", i)
+                    .text(i)
+                    .on("mouseover", function() {
+                        showTooltip(i);
+                        highlightElements(i);
+                        highlightBoxes(i);
+                    })
+                    .on("mouseout", function() {
+                        hideTooltip();
+                        removeHighlights();
+                        unhighlightBoxes();
+                    });
+                if (navLabels[i]) {
+                    navItem.append("div").attr("class", "nav-label").text(navLabels[i]);
+                }
+            });
         }
+
+        // Disease similarity: 1–6 → left column
+        buildNavItems("#navPanelDisease", [1, 2, 3, 4, 5, 6]);
+        // Indicator organisms: 7–8 → right column
+        buildNavItems("#navPanelIndicator", [7, 8]);
 
         // Create numbered boxes within the visualization area
         const visualArea = d3.select("#visualizationArea");
         for (let i = 1; i <= 8; i++) {
             const pos = vizPositions[i];
-            
-            // Check if pos is an array (multiple boxes) or single object
             const positions = Array.isArray(pos) ? pos : [pos];
-            
-            // Create a box for each position
             positions.forEach(position => {
                 visualArea.append("div")
                     .attr("class", "viz-box")
@@ -319,7 +369,6 @@
         }
 
         function highlightBoxes(num) {
-            // Highlight both nav-box and viz-box with the same number
             d3.selectAll(`.nav-box[data-number="${num}"]`).classed("active", true);
             d3.selectAll(`.viz-box[data-number="${num}"]`).classed("active", true);
         }
@@ -339,15 +388,14 @@
             });
             panel.classList.add("active");
             
-            // Align tooltip top with the corresponding nav box
             const navBox = document.querySelector(`.nav-box[data-number="${num}"]`);
             const tooltipArea = panel.parentElement;
             if (navBox && tooltipArea) {
                 const navBoxRect = navBox.getBoundingClientRect();
                 const tooltipAreaRect = tooltipArea.getBoundingClientRect();
                 const offset = navBoxRect.top - tooltipAreaRect.top;
-                panel.style.top = `${offset}px`;
-                panel.style.left = `${navBoxRect.right - tooltipAreaRect.left + 530}px`;
+                panel.style.top = `${700}px`;
+                panel.style.left = `${-1090}px`;
             }
         }
 
@@ -359,81 +407,58 @@
 
         function highlightElements(num) {
             const svg = d3.select(".dynamic-div-x3 svg");
-            
-            // Remove any existing highlights
             svg.selectAll(".highlight").classed("highlight", false);
-            
             switch(num) {
                 case 1:
-                    // Highlight entire donut and strip
                     svg.selectAll("path.main").classed("highlight", true);
-                    // Highlight strip rectangles
                     svg.selectAll("rect").filter(function() {
                         const y = d3.select(this).attr("y");
                         return y === "0" && d3.select(this).attr("height") !== "30" && d3.select(this).attr("height") !== "50" && d3.select(this).attr("height") !== "60" && d3.select(this).attr("height") !== "70" && d3.select(this).attr("height") !== "80";
                     }).classed("highlight", true);
-                    // Also highlight dotted lines
                     svg.selectAll("line").filter(function() {
                         return d3.select(this).attr("stroke-dasharray") === "5,5";
                     }).classed("highlight", true);
                     break;
                 case 2:
-                    // Highlight first (blue) arc
                     svg.select("path.main").classed("highlight", true);
                     break;
                 case 3:
-                    // Highlight second (light red) arc
-                    svg.selectAll("path.main").filter(function(d, i) {
-                        return i === 1;
-                    }).classed("highlight", true);
+                    svg.selectAll("path.main").filter(function(d, i) { return i === 1; }).classed("highlight", true);
                     break;
                 case 4:
-                    // Highlight third (dark red) arc
-                    svg.selectAll("path.main").filter(function(d, i) {
-                        return i === 2;
-                    }).classed("highlight", true);
+                    svg.selectAll("path.main").filter(function(d, i) { return i === 2; }).classed("highlight", true);
                     break;
                 case 5:
-                    // Highlight white arc and strip
-                    svg.selectAll("path.main").filter(function(d, i) {
-                        return i === 3;
-                    }).classed("highlight", true);
-                    // Highlight strip rectangles
+                    svg.selectAll("path.main").filter(function(d, i) { return i === 3; }).classed("highlight", true);
                     svg.selectAll("rect").filter(function() {
                         const y = d3.select(this).attr("y");
                         return y === "0" && d3.select(this).attr("height") !== "30" && d3.select(this).attr("height") !== "50" && d3.select(this).attr("height") !== "60" && d3.select(this).attr("height") !== "70" && d3.select(this).attr("height") !== "80";
                     }).classed("highlight", true);
-                    // Also highlight dotted lines
                     svg.selectAll("line").filter(function() {
                         return d3.select(this).attr("stroke-dasharray") === "5,5";
                     }).classed("highlight", true);
                     break;
                 case 6:
-                    // Highlight entire donut and strip (same as case 1)
                     svg.selectAll("path.main").classed("highlight", true);
-                    // Highlight strip rectangles
                     svg.selectAll("rect").filter(function() {
                         const y = d3.select(this).attr("y");
                         return y === "0" && d3.select(this).attr("height") !== "30" && d3.select(this).attr("height") !== "50" && d3.select(this).attr("height") !== "60" && d3.select(this).attr("height") !== "70" && d3.select(this).attr("height") !== "80";
                     }).classed("highlight", true);
-                    // Also highlight dotted lines
                     svg.selectAll("line").filter(function() {
                         return d3.select(this).attr("stroke-dasharray") === "5,5";
                     }).classed("highlight", true);
                     break;
                 case 7:
-                    // Highlight HIOs (outer black arcs and upper lines)
-                    svg.selectAll("path.outer-stroke").filter(function() {
-                        return d3.select(this).attr("stroke") === "black";
+                    svg.selectAll("path.outer-stroke").filter(function(d) {
+                        return d.data.weight > 0 && d.data.color !== 'rgb(255, 255, 255)';
                     }).classed("highlight", true);
                     svg.selectAll("line").filter(function(d) {
                         return d && d.weight > 0;
                     }).classed("highlight", true);
                     break;
                 case 8:
-                    // Highlight LIOs (inner black arcs and lower lines)
-                    svg.selectAll("path.inner-stroke").filter(function() {
-                        return d3.select(this).attr("stroke") === "black";
+                    svg.selectAll("path.inner-stroke").filter(function(d) {
+                        return d.data.weight < 0;
                     }).classed("highlight", true);
                     svg.selectAll("line").filter(function(d) {
                         return d && d.weight < 0;
@@ -480,19 +505,9 @@
             .innerRadius(radius * 0.6)
             .outerRadius(radius);
 
-            const innerArc = d3.arc()
-            .innerRadius(radius * 0.57)
-            .outerRadius(radius * 0.57)
-            .cornerRadius(0);
-
             const innerArc2 = d3.arc()
             .innerRadius(radius * 0.54)
             .outerRadius(radius * 0.54)
-            .cornerRadius(0);
-
-            const outerArc = d3.arc()
-            .innerRadius(radius * 1.03)
-            .outerRadius(radius * 1.03)
             .cornerRadius(0);
 
             const outerArc2 = d3.arc()
@@ -521,7 +536,7 @@
             .attr("id", "LIOHIO") 
             .attr("d", innerArc2)
             .attr("fill", "none")
-            .attr("stroke", d => (d.data.weight < 0 || d.data.color === "rgb(255, 200, 200)") ? "black" : "white")
+            .attr("stroke", d => d.data.weight < 0 ? d.data.color : "none")
             .style("stroke-width", "10px")
             .style("opacity", 1)
         
@@ -532,7 +547,7 @@
                 .attr("id", "LIOHIO") 
                 .attr("d", outerArc2)
                 .attr("fill", "none")
-                .attr("stroke", d => (d.data.weight > 0 && d.data.color != 'rgb(255, 255, 255)' && d.data.color != 'rgb(255, 200, 200)') ? "black" : "white")
+                .attr("stroke", d => d.data.weight > 0 && d.data.color != 'rgb(255, 255, 255)' ? d.data.color : "none")
                 .style("stroke-width", "10px")
                 .style("opacity", 1)
 
@@ -557,11 +572,11 @@
             .data(barcodeArray)
             .enter().append("line")
             .attr("id", "LIOHIO") 
-            .attr("x1", (d, i) => i * barWidth)
-            .attr("x2", (d, i) => i * barWidth + barWidth - 2)
+            .attr("x1", (d, i) => i * barWidth + 2)
+            .attr("x2", (d, i) => i * barWidth + barWidth - 8)
             .attr("y1", d => d.weight > 0 ? -10 : barcodeHeight/10 + 10)
             .attr("y2", d => d.weight > 0 ? -10 : barcodeHeight/10 + 10)
-            .attr("stroke", "black")
+            .attr("stroke", d => d.color)
             .attr("stroke-width", "4px")
             .attr("stroke-linecap", "round")
             .style("opacity", 1)
@@ -605,42 +620,37 @@
             const stripLeftX = stripLeftMargin;
             const stripRightX = stripLeftMargin + totalStripWidth;
             
-            svg.append("line")
-                .attr("x1", startX)
-                .attr("y1", startY)
-                .attr("x2", stripLeftX)
-                .attr("y2", stripY)
+            // Left connector
+            svg.append("path")
+                .attr("d", `M ${startX},${startY - 10} C ${startX},${startY + 80} ${stripLeftX - 40},${stripY - 80} ${stripLeftX},${stripY}`)
+                .attr("fill", "none")
                 .attr("stroke", "black")
-                .attr("stroke-width", 2)
-                .attr("stroke-dasharray", "5,5");
-            
-            svg.append("line")
-                .attr("x1", endX)
-                .attr("y1", endY)
-                .attr("x2", stripRightX)
-                .attr("y2", stripY)
-                .attr("stroke", "black")
-                .attr("stroke-width", 2)
-                .attr("stroke-dasharray", "5,5");
+                .attr("stroke-width", 1.5)
+                .attr("opacity", 1);
 
-            // Adding gradient for red box only
+            // Right connector
+            svg.append("path")
+                .attr("d", `M ${endX},${endY - 10} C ${endX - 60},${endY + 80} ${stripRightX},${stripY - 80} ${stripRightX},${stripY}`)
+                .attr("fill", "none")
+                .attr("stroke", "black")
+                .attr("stroke-width", 1.5)
+                .attr("opacity", 1);
+
             const gradient5 = svg.append("defs")
                 .append("linearGradient")
                 .attr("id", "gradient7")
                 .attr("x1", "0%").attr("y1", "0%")
                 .attr("x2", "100%").attr("y2", "0%");
-            gradient5.append("stop").attr("offset", "0%").attr("stop-color", "rgb(255, 200, 200)")
+            gradient5.append("stop").attr("offset", "0%").attr("stop-color", "yellow")
             gradient5.append("stop").attr("offset", "100%").attr("stop-color", "darkred");
             
-            // Blue rectangle (about half the size of red)
             svg.append("rect")
                 .attr("x", 55).attr("y", 1080)
                 .attr("width", 150).attr("height", 40)
-                .style("fill", "rgb(210, 215, 255)")
+                .style("fill", "green")
                 .attr("stroke", "black")
                 .style("stroke-width", "2px");
             
-            // Red rectangle with gradient
             svg.append("rect")
                 .attr("x", 260).attr("y", 1080)
                 .attr("width", 420).attr("height", 40)
@@ -648,52 +658,37 @@
                 .attr("stroke", "black")
                 .style("stroke-width", "2px");
 
-            // Text beneath blue box: "Healthy"
-            svg.append("text").attr("x", 125).attr("y", 1110).attr("font-size", "35").attr("fill", "#2c3e50")
+            svg.append("text").attr("x", 125).attr("y", 1110).attr("font-size", "35").attr("fill", "white")
                 .attr("text-anchor", "middle").style("font-weight", "bold").text("None")
             
-            // Text on left side of red box: "Low"
             svg.append("text")
-                .attr("x", 265)
-                .attr("y", 1110)
-                .attr("font-size", "35")
-                .attr("fill", "#2c3e50")
-                .attr("text-anchor", "start")
-                .style("font-weight", "bold")
-                .text("Low")
+                .attr("x", 265).attr("y", 1110).attr("font-size", "35").attr("fill", "#2c3e50")
+                .attr("text-anchor", "start").style("font-weight", "bold").text("Low")
             
-            // Text on right side of red box: "High"
             svg.append("text")
-                .attr("x", 675)
-                .attr("y", 1110)
-                .attr("font-size", "35")
-                .attr("fill", "white")
-                .attr("text-anchor", "end")
-                .style("font-weight", "bold")
-                .text("High")
+                .attr("x", 675).attr("y", 1110).attr("font-size", "35").attr("fill", "white")
+                .attr("text-anchor", "end").style("font-weight", "bold").text("High")
             
-            // Text beneath red box: "Disease similarity"
             svg.append("text").attr("x", 380).attr("y", 1180).attr("font-size", "35").attr("fill", "Black")
                 .attr("text-anchor", "middle").style("font-weight", "bold")
                 .text("Disease similarity")
         }
 
-        // Dummy data
         const dummyDonutArray = [
-            { color: "rgb(210, 215, 255)", weight: 1.5, organism: "Organism A" },
-            { color: "rgb(255, 200, 200)", weight: 1.0, organism: "Organism B" },
+            { color: "green", weight: 1.5, organism: "Organism A" },
+            { color: "yellow", weight: -1.0, organism: "Organism B" },
             { color: "darkred", weight: 0.7, organism: "Organism C" }
         ];
 
         const dummyBarcodeArray = [
-            { color: "rgb(210, 215, 255)", weight: 0.3 },
-            { color: "rgb(255, 200, 200)", weight: -0.4 },
+            { color: "green", weight: 0.3 },
+            { color: "yellow", weight: -0.4 },
             { color: "darkred", weight: 0.7 },
-            { color: "rgb(210, 215, 255)", weight: 0.2 },
-            { color: "rgb(255, 200, 200)", weight: -0.5 },
+            { color: "green", weight: 0.2 },
+            { color: "yellow", weight: -0.5 },
             { color: "darkred", weight: 0.6 },
-            { color: "rgb(210, 215, 255)", weight: 0.4 },
-            { color: "rgb(255, 200, 200)", weight: -0.3 }
+            { color: "green", weight: 0.4 },
+            { color: "yellow", weight: -0.3 }
         ];
 
         window.addEventListener('DOMContentLoaded', function() {
